@@ -1,0 +1,13 @@
+<?xml version="1.1" encoding="UTF-8"?>
+
+<channel name="displays" version="1.0">
+  <property name="ActiveProfile" type="string" value="Default"/>
+  <property name="Default" type="empty">
+    <property name="eDP-1" type="string" value="eDP-1">
+      <property name="Resolution" type="string" value="1920x1080"/>
+      <property name="Active" type="bool" value="true"/>
+      <property name="Scale" type="double" value="0.90908999999999995"/>
+      <property name="RefreshRate" type="double" value="60.030000000000001"/>
+    </property>
+  </property>
+</channel>
