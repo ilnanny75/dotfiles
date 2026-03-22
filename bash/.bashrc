@@ -1,32 +1,22 @@
-#================================================
-#   O.S.      : Gnu Linux                       =
-#   Author    : Cristian Pozzessere   = ilnanny =
-#   D.A.Page  : http://ilnanny.deviantart.com   =
-#   Github    : https://github.com/ilnanny      =
-#================================================
-# File di configurazione globale di  Bash Shell
-# I file di configurazione per le varie distro
-# sono collocate in /etc/bash
-#================================================
 
-# ____________________________  Shell Interattiva
-case $- in
-    *i*) ;;
-      *) return;;
-esac
+# --- Alias per il Design ---
+# Per convertire velocemente un PNG in un'icona (es: ico 48x48)
+alias img-info='identify -format "%w x %h %b\n"'
+# Pulizia veloce del sistema MX
+alias pulisci='sudo apt autoremove && sudo apt autoclean'
+# Scorciatoia per tornare al laboratorio icone
+alias icone='cd ~/dotfiles/graphics/icons'
 
-# ____________________________  Profili
-for SH in /etc/profile.d/*.sh; do
-       . $SH
-done
 
-# ____________________________  Alias
-for sh in /etc/bash/bashrc.d/* ; do
-	[[ -r ${sh} ]] && source "${sh}"
-done
+# --- Funzione ilnanny Designer ---
+# Converte SVG in PNG alla dimensione scelta
+# Utilizzo: svg2png file.svg 128 (creerà file-128.png)
+svg2png() {
+    if [ -z "$1" ] || [ -z "$2" ]; then
+        echo "Utilizzo: svg2png nomefile.svg dimensione"
+        return 1
+    fi
+    convert -background none -size "$2"x"$2" "$1" "${1%.*}-$2.png"
+    echo "Convertito: ${1%.*}-$2.png"
+}
 
-if [ -f ~/.bash_aliases ]; then
-. ~/.bash_aliases
-fi
-
-# ____________________________  Fine
