@@ -1,0 +1,16 @@
+#!/bin/bash
+#==========================================================
+# Author    : Cristian Pozzessere (ilnanny)
+# Function  : Cambia i colori HEX in massa nei file SVG
+# Usage     : colorchange #VECCHIO #NUOVO
+#==========================================================
+
+if [ -z "$1" ] || [ -z "$2" ]; then
+    echo "Utilizzo: colorchange #colore_vecchio #colore_nuovo"
+    echo "Esempio: colorchange #359bfa #C094C0"
+    exit 1
+fi
+
+echo "Sostituzione di $1 con $2 in tutti i file SVG..."
+sed -i "s/$1/$2/gI" *.svg
+echo "Fatto! Ricordati di aggiornare la cache delle icone."
