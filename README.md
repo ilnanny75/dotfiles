@@ -6,16 +6,20 @@
 
 ---
 
-## 🛠️ La mia Cassetta degli Attrezzi (MX Linux 2026)
-Questo repository contiene la mia configurazione personalizzata e gli script che uso dal 2012 per il design di icone su Linux.
+## 🚀 Installazione Rapida
+Per configurare tutto su una nuova macchina (Debian/MX), apri il terminale e scrivi:
 
-### ✨ Script Inclusi:
-* **`crea-tema`**: Genera una struttura icone conforme a Freedesktop.
-* **`trova-icona`**: Ricerca rapida nei percorsi di sistema.
-* **`svg2png`**: Conversione rapida da terminale via ImageMagick.
-* **`gestisci-git`**: Tool interattivo per gestire i miei repository.
-* **`ilnanny-links`**: Automazione per la creazione di symlink nelle icone.
+```bash
+cd ~/dotfiles
+chmod +x ilnanny-setup.sh
+./ilnanny-setup.sh
 
----
+📖 Cosa contiene?
 
-> "Disegno icone per amore del software libero dal 2012."
+    Bash Modulare: Configurazione in /etc/bash/bashrc.d/
+
+    Scripts: Utility per icone e sistema in scripts/bin/
+
+    Editors: Configurazione per Nano e Vim
+
+    Memorandum: Leggi il file MEMORANDUM.md per la lista dei comandi.
