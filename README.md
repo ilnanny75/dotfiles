@@ -1,44 +1,19 @@
-🛠️ ilnanny Lab - Dotfiles 2026
+# 🛠️ ilnanny Lab - Dotfiles 2026
 
-<div align="center">
+![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white) [![GitHub Profile](https://img.shields.io/badge/VISITA-PROFILO-black?style=flat-square)](https://github.com/ilnanny75)
 
-Laboratorio personale di icone, script e configurazioni Linux (Debian/MX).
+![DeviantArt](https://img.shields.io/badge/DeviantArt-05CC47?style=for-the-badge&logo=deviantart&logoColor=white) [![DeviantArt Profile](https://img.shields.io/badge/VISITA-PROFILO-black?style=flat-square)](http://ilnanny.deviantart.com)
 
-</div>
-🚀 Setup Istantaneo
+![Gnome-Look](https://img.shields.io/badge/Gnome--Look-303133?style=for-the-badge&logo=gnome&logoColor=white) [![Gnome-Look Profile](https://img.shields.io/badge/VISITA-PROFILO-black?style=flat-square)](https://www.gnome-look.org/u/ilnanny75/products)
 
+![OpenClipart](https://img.shields.io/badge/OpenClipart-2F2F2F?style=for-the-badge&logo=inkscape&logoColor=white) [![OpenClipart Profile](https://img.shields.io/badge/VISITA-PROFILO-black?style=flat-square)](https://openclipart.org/artist/ilnanny)
+
+---
+
+**Laboratorio personale di icone, script e configurazioni Linux (Debian/MX).**
+
+## 🚀 Setup Istantaneo
 Se hai appena scaricato i dotfiles, rendi tutto operativo con un solo comando:
-Bash
 
+```bash
 cd ~/dotfiles && chmod +x ilnanny-setup.sh && ./ilnanny-setup.sh
-
-📂 Struttura del Repository
-
-    /scripts/bin: Utility per icone, GTK e manutenzione sistema.
-
-    /etc/bash/bashrc.d: Moduli Bash e Alias personalizzati.
-
-    /editors: Configurazione estetica per Nano e Vim.
-
-    Guida ai Comandi (Memorandum): La lista completa di cosa fanno i miei script.
-
-⚡ Comandi Rapidi
-
-    pigia : Sincronizza tutto su GitHub (Add + Commit + Push)
-
-    searchscripts : Cerca codice o parole nei tuoi 85+ script
-
-    colorchange : Cambia i colori HEX negli SVG in massa
-
-<div align="center">
-Creato con passione da <b>Cristian Pozzessere (ilnanny)</b>
-</div>
-🛠️ Istruzioni per un risultato perfetto:
-
-    Apri il file: gy ~/dotfiles/README.md
-
-    Svuotalo completamente.
-
-    Incolla il testo qui sopra.
-
-    Salva e usa il comando magico: pigia
