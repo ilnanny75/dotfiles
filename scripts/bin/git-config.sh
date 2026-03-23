@@ -1,37 +1,25 @@
-#! /bin/sh
-#================================================
-#================================================
-#   O.S.      : Gnu Linux                       =
-#   Author    : Cristian Pozzessere   = ilnanny =
-#   D.A.Page  : http://ilnanny.deviantart.com   =
-#   Github    : https://github.com/ilnanny      =
-#================================================
-#================================================
-#set -e
+#!/bin/bash
+#==========================================================
+#  ILNANNY GIT CONFIG - 2026 (Double ID Version)
+#==========================================================
 
-# Let's get your name for Git
-echo "Enter your name for Git"
+echo "--- Configurazione Identità Git ---"
 
-read input0
+# 1. IDENTITÀ AUTORE (Quella che appare nei commit)
+AUTHOR_NAME="ilnanny75"
+AUTHOR_EMAIL="ilnannyhack@gmail.com"
 
-# Setting Git global user name
-git config --global user.name "$input0"
+git config --global user.name "$AUTHOR_NAME"
+git config --global user.email "$AUTHOR_EMAIL"
+git config --global core.editor "geany"
+git config --global init.defaultBranch main
 
-# Let's get your email for Git
-echo "Enter your email for Git"
+echo -e "\n✅ Autore impostato: $AUTHOR_NAME ($AUTHOR_EMAIL)"
+echo -e "⚠️  Ricorda: Per il login GitHub usa: cristianpozzessere@gmail.com"
 
-read input1
-
-# Setting Git global email
-git config --global user.email "$input1"
-
-# Tell me your editor
-echo "What editor do you prefer?"
-echo "geany, leafpad, notepadqq, etc."
-
-read input2
-
-# Setting editor
-git config --global core.editor "$input2"
-
-echo "Git global user info set!"
+# 2. TEST CONNESSIONE (Opzionale)
+echo -e "\nVuoi testare la connessione a GitHub? (s/n)"
+read -p "> " TEST
+if [[ $TEST == "s" ]]; then
+    ssh -T git@github.com 2>&1 | grep "successfully authenticated" || echo "Verifica le tue credenziali per cristianpozzessere@gmail.com"
+fi

@@ -1,27 +1,31 @@
 #!/bin/bash
+#==========================================================
+# ILNANNY GIT-UP - Sincronizzazione Totale 2026
+#==========================================================
 
-# verifica se disponi degli ultimi file di github
-echo "Verifica prima i file più recenti online"
-git pull
+echo "--- 🔄 Sincronizzazione con GitHub ---"
+git pull origin main --rebase
 
-# Esegue il backup di tutti i files nella cartella del progetto
+# Pulizia: Ignora file temporanei di Geany o Inkscape se presenti
+echo "--- 🧹 Pulizia file temporanei ---"
+find . -name "*~" -delete
+find . -name "*.swp" -delete
+
+echo "--- 📂 Preparazione file ---"
 git add --all .
 
-# Dai un commento al commit
 echo "####################################"
-echo "Scrivi il tuo Commento!"
+echo "  SCRIVI IL TUO COMMENTO!"
 echo "####################################"
+read -p "> " input
+input=${input:-"Update $(date +'%d-%m-%Y %H:%M')"}
 
-read input
-
-# Effettua il commit nel repository locale con un messaggio contenente i dettagli dell'ora e il testo di commit
-
+# Commit con data e ora automatica se non scrivi nulla
 git commit -m "$input"
 
-#  Invia i file locali a github
-
-git push -u origin master
+echo "--- 🚀 Invio a GitHub (Branch: main) ---"
+git push -u origin main
 
 echo "################################################################"
-echo "###################    Repository Aggiornato    ######################"
+echo "###             REPOSITORY AGGIORNATO CON SUCCESSO           ###"
 echo "################################################################"
