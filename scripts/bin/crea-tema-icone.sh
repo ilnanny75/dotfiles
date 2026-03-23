@@ -35,7 +35,7 @@ cat <<EOF > "$BASE_DIR/index.theme"
 [Icon Theme]
 Name=$NOMEPETEMA
 Comment=Created by ilnanny (Cristian Pozzessere) - 2026
-Inherits=Papirus,Adwaita,hicolor
+Inherits=Adwaita,hicolor
 Example=folder
 
 # Directory List
