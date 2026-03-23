@@ -33,3 +33,12 @@ cd ~/dotfiles && chmod +x ilnanny-setup.sh && ./ilnanny-setup.sh
 <div align="center">
 Creato con passione da <b>Cristian Pozzessere (ilnanny)</b>
 </div>
+🛠️ Istruzioni per un risultato perfetto:
+
+    Apri il file: gy ~/dotfiles/README.md
+
+    Svuotalo completamente.
+
+    Incolla il testo qui sopra.
+
+    Salva e usa il comando magico: pigia
