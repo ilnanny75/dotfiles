@@ -23,10 +23,12 @@ cd ~/dotfiles && chmod +x ilnanny-setup.sh && ./ilnanny-setup.sh
     Guida ai Comandi (Memorandum): La lista completa di cosa fanno i miei script.
 
 ⚡ Comandi Rapidi
-Alias	Funzione
-pigia	Sincronizza tutto su GitHub (Add + Commit + Push)
-searchscripts	Cerca codice o parole nei tuoi 85+ script
-colorchange	Cambia i colori HEX negli SVG in massa
+
+    pigia : Sincronizza tutto su GitHub (Add + Commit + Push)
+
+    searchscripts : Cerca codice o parole nei tuoi 85+ script
+
+    colorchange : Cambia i colori HEX negli SVG in massa
 
 <div align="center">
 Creato con passione da <b>Cristian Pozzessere (ilnanny)</b>
