@@ -1,6 +1,6 @@
 #!/bin/bash
 # Source : https://github.com/Morgareth99/Funtoo-Dots/blob/master/Funtoo-Dots/Scripts/sysinfo.sh
-# Edited : Erik Dubois - changed to work on ArcoLinux
+# Edited : ilnanny75 - changed to work on ArcoLinux
 #
 # install software
 # sudo pacman -S wmctrl

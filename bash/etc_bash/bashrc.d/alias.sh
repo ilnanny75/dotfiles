@@ -31,7 +31,7 @@ alias free="free -mt"
 alias gc="git clone"
 alias grep="grep -i --color=auto"
 alias gruppi="cut -d: -f1 /etc/group"
-alias gy='sudo geany'
+alias gy='geany'
 alias htop="xterm -e htop"
 alias hw="hwinfo --short"
 alias info='info --vi-keys --init-file=${XDG_CONFIG_HOME}/infokey'

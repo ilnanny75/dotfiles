@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright (c) 2019 Erik Dubois
+# Copyright (c) 2019 ilnanny75
 # Copyright (c) 2019 Brad Heffernan
 # Copyright (c) 2016-2018 Dylan Araps
 # parts are coming from neofetch
@@ -8,7 +8,7 @@
 
 # The MIT License (MIT)
 #
-# Copyright (c) 2016-2018 Dylan Araps, Erik Dubois, Brad Heffernan
+# Copyright (c) 2016-2018 Dylan Araps, ilnanny75, Brad Heffernan
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
