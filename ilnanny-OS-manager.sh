@@ -38,32 +38,53 @@ case $opt in
     1)
         header
         echo -e "${GIALLO}--> Applicazione Link Simbolici...${NC}"
-        # Bash
+
+        # --- BASH ---
+        echo "Configuro Bash..."
         ln -sf ~/dotfiles/bash/etc_bash/bashrc ~/.bashrc
+
         # Thunar
         mkdir -p ~/.config/Thunar
         ln -sf ~/dotfiles/config/Thunar/uca.xml ~/.config/Thunar/uca.xml
         ln -sf ~/dotfiles/config/Thunar/accels.scm ~/.config/Thunar/accels.scm
         ln -sf ~/dotfiles/config/Thunar/renamerrc ~/.config/Thunar/renamerrc
+
         # XFCE
         xfconfd --terminate 2>/dev/null
         mkdir -p ~/.config/xfce4
         ln -sf ~/dotfiles/config/xfce4/xfconf ~/.config/xfce4/xfconf
+
+        # --- GEANY (Temi e Config) ---
+        echo -e "${GIALLO}--> Ripristino Geany (ilnanny Edition)...${NC}"
+        mkdir -p ~/.config/geany/colorschemes
+        ln -sf ~/dotfiles/config/geany/geany.conf ~/.config/geany/geany.conf
+        cp ~/Themes/Geany-themes/*.conf ~/.config/geany/colorschemes/
+        echo -e "${VERDE}✔ Geany configurato!${NC}"
+
         # Scripts
         mkdir -p ~/bin
         ln -sf ~/dotfiles/scripts/bin/* ~/bin/
-        echo -e "${VERDE}✔ Sistema ripristinato!${NC}"
+
+        echo -e "${VERDE}✔ Sistema ripristinato con successo!${NC}"
         ;;
     2)
         header
         echo -e "${BLU}--> Salvataggio configurazioni nel repo...${NC}"
+        # Thunar
         cp ~/.config/Thunar/uca.xml ~/dotfiles/config/Thunar/
+        # XFCE
         mkdir -p ~/dotfiles/config/xfce4
         cp -r ~/.config/xfce4/xfconf ~/dotfiles/config/xfce4/
-        echo -e "${VERDE}✔ Backup completato.${NC}"
+        # Geany
+        echo -e "${BLU}--> Salvataggio Config Geany...${NC}"
+        mkdir -p ~/dotfiles/config/geany
+        cp ~/.config/geany/geany.conf ~/dotfiles/config/geany/
+
+        echo -e "${VERDE}✔ Backup completato con successo.${NC}"
         ;;
     3)
         header
+        echo -e "${ROSSO}--> Pulizia vecchi script...${NC}"
         rm -v ~/dotfiles/install.sh ~/dotfiles/ilnanny-setup.sh ~/dotfiles/scripts/bin/ilnanny-bootstrap.sh 2>/dev/null
         echo -e "${VERDE}✔ Pulizia completata.${NC}"
         ;;

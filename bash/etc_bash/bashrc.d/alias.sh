@@ -48,7 +48,6 @@ alias meteo='curl wttr.in/Taranto'
 alias microcode='grep . /sys/devices/system/cpu/vulnerabilities/*'
 alias mp='sudo mousepad'
 alias mv="mv -v"
-alias myscript='geany /home/ilnanny/bin/zz-ilnanny'
 alias nn='sudo nano'
 alias paths="echo '${PATH//:/$'\n'}'"
 alias pgrep="pgrep -l"
@@ -98,3 +97,4 @@ alias wiki='cd /media/Dati/Git/Dotfiles/Wiki/Gentoo-wiki/ && whereis'
 
 # ___     Fine
 
+alias gy='geany'
