@@ -1,19 +1,15 @@
-# 🛠️ ilnanny Lab - Dotfiles 2026
+🛠️ ilnanny Lab - Dotfiles 2026
 
 <div align="center">
 
-[![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/ilnanny75)
-[![DeviantArt](https://img.shields.io/badge/DeviantArt-05CC47?style=for-the-badge&logo=deviantart&logoColor=white)](http://ilnanny.deviantart.com)
-[![Gnome-Look](https://img.shields.io/badge/Gnome--Look-303133?style=for-the-badge&logo=gnome&logoColor=white)](https://www.gnome-look.org/u/ilnanny75/products)
-[![OpenClipart](https://img.shields.io/badge/OpenClipart-2F2F2F?style=for-the-badge&logo=inkscape&logoColor=white)](https://openclipart.org/artist/ilnanny)
+Laboratorio personale di icone, script e configurazioni Linux (Debian/MX).
 
----
-**Laboratorio personale di icone, script e configurazioni Linux (Debian/MX).**
 </div>
+🚀 Setup Istantaneo
 
-## 🚀 Setup Istantaneo
 Se hai appena scaricato i dotfiles, rendi tutto operativo con un solo comando:
-```bash
+Bash
+
 cd ~/dotfiles && chmod +x ilnanny-setup.sh && ./ilnanny-setup.sh
 
 📂 Struttura del Repository
