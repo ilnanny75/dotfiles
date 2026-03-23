@@ -28,11 +28,11 @@ export MANWIDTH=90
 export HISTSIZE=10000
 export GPG_TTY=$(tty)
 export BROWSER="firefox"
-export FILEMANAGER"thunar"
+export FILEMANAGER="thunar"
 export HISTIGNORE="q:f:v"
 export LANG="it_IT.UTF-8"
 export LC_TYPE="it_IT.UTF-8"
-export PATH="$HOME/bin:$PATH"
+export PATH="$HOME/dotfiles/scripts/bin:$HOME/bin:$PATH"
 export XDG_CONFIG_HOME="$HOME/.config"
 export GTK2_RC_FILES="$HOME/.gtkrc-2.0"
 export PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:/usr/lib/pkgconfig:$PATH"

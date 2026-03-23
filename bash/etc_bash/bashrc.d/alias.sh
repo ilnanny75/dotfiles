@@ -1,10 +1,10 @@
 #!/bin/bash
 #================================================
 #================================================
-#   O.S.      : Gnu Linux                       =
-#   Author    : Cristian Pozzessere   = ilnanny =
+#   O.S.      : Gnu Linux                                         =
+#   Author    : Cristian Pozzessere      = ilnanny =
 #   D.A.Page  : http://ilnanny.deviantart.com   =
-#   Github    : https://github.com/ilnanny      =
+#   Github    : https://github.com/ilnanny75     =
 #================================================
 #================================================
 
