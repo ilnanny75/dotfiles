@@ -1,0 +1,14 @@
+[Desktop Entry]
+Type=X-GNOME-Metatheme
+Name=Noktomix
+Comment=Flat dark asymptomatic GTK+ colors
+Encoding=UTF-8
+
+[X-GNOME-Metatheme]
+Type=X-GNOME-Metatheme
+GtkTheme=Noktomix
+MetacityTheme=Adapta
+IconTheme=Blender
+CursorTheme=Lila_HD-cursor
+CursorSize=18
+ButtonLayout=:close

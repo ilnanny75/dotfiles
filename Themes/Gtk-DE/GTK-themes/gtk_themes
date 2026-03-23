@@ -1,0 +1,35 @@
+#!/bin/bash
+#================================================
+#================================================
+#   O.S.      : Gnu Linux                       =
+#   Author    : Cristian Pozzessere   = ilnanny =
+#   D.A.Page  : http://ilnanny.deviantart.com   =
+#   Github    : https://github.com/ilnanny75      =
+#================================================
+#   Project:    GTK Themes                      =
+#================================================
+set -o errexit
+[[ $(whoami) == 'root' ]] || exec sudo su -c $0 root
+
+echo " Copio i themi gtk nella cartella /usr/share/themes"
+
+cp -a -r  ../GTK-themes/Noktomix /usr/share/themes/
+cp -a -r  ../GTK-themes/Celedark /usr/share/themes/
+cp -a -r  ../GTK-themes/Classico /usr/share/themes/
+cp -a -r  ../GTK-themes/Crynge /usr/share/themes/
+cp -a -r  ../GTK-themes/Grigio /usr/share/themes/
+cp -a -r  ../GTK-themes/Larry-Dark /usr/share/themes/
+cp -a -r  ../GTK-themes/Larrycow /usr/share/themes/
+cp -a -r  ../GTK-themes/Lila-Gtk /usr/share/themes/
+cp -a -r  ../GTK-themes/Mybrown /usr/share/themes/
+cp -a -r  ../GTK-themes/Newclear /usr/share/themes/
+cp -a -r  ../GTK-themes/Nocciola /usr/share/themes/
+cp -a -r  ../GTK-themes/Stonex /usr/share/themes/
+cp -a -r  ../GTK-themes/Teiera /usr/share/themes/
+cp -a -r  ../GTK-themes/Nordic-bluish-accent-standard-buttons /usr/share/themes/
+cp -a -r  ../GTK-themes/Nordic-Polar-standard-buttons /usr/share/themes/
+cp -a -r  ../GTK-themes/Nordic-standard-buttons /usr/share/themes/
+sleep 2
+echo " Temi copiati ,puoi chiudere il terminale "
+
+exit 0
