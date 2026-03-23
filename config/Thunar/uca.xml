@@ -81,7 +81,7 @@
 	<icon>printer-printing</icon>
 	<name>Stampa</name>
 	<unique-id>1480694167418860-1</unique-id>
-	<command>xfprint4 %f</command>
+	<command>gtklp %f</command>
 	<description></description>
 	<patterns>*.pdf;*.doc;*.txt;*.docx;*.odt;*.jpeg;*.gif;*.jpg;*.png;*.ttf;*.xcf;*.ai;*.psd</patterns>
 	<image-files/>

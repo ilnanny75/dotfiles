@@ -25,6 +25,7 @@
         <value type="int" value="38"/>
         <value type="int" value="14"/>
         <value type="int" value="42"/>
+        <value type="int" value="5"/>
         <value type="int" value="13"/>
         <value type="int" value="44"/>
         <value type="int" value="7"/>
@@ -106,6 +107,7 @@
     <property name="plugin-6" type="string" value="power-manager-plugin"/>
     <property name="plugin-7" type="string" value="systray">
       <property name="known-legacy-items" type="array">
+        <value type="string" value="connessione wi-fi «tim-47375923» attiva: tim-47375923 (63%)"/>
         <value type="string" value="connessione wi-fi «tim-47375923» attiva: tim-47375923 (70%)"/>
         <value type="string" value="connessione wi-fi «tim-47375923» attiva: tim-47375923 (67%)"/>
         <value type="string" value="connessione wi-fi «tim-47375923» attiva: tim-47375923 (66%)"/>
@@ -142,6 +144,11 @@
     <property name="plugin-4" type="string" value="launcher">
       <property name="items" type="array">
         <value type="string" value="17740477431.desktop"/>
+      </property>
+    </property>
+    <property name="plugin-5" type="string" value="launcher">
+      <property name="items" type="array">
+        <value type="string" value="17742141961.desktop"/>
       </property>
     </property>
   </property>
