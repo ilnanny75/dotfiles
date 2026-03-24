@@ -13,6 +13,28 @@
 </action>
 
 <action>
+	<icon>system-run</icon>
+	<name>Rendi eseguibile</name>
+	<unique-id>id-chmod-x-010</unique-id>
+	<command>chmod +x %f</command>
+	<description>Rende il file selezionato un programma eseguibile</description>
+	<patterns>*</patterns>
+	<other-files/>
+	<text-files/>
+</action>
+
+<action>
+	<icon>system-run</icon>
+	<name>Esegui Script</name>
+	<unique-id>id-run-script-005</unique-id>
+	<command>xfce4-terminal -e %f --hold</command>
+	<description>Esegue lo script e tiene aperta la finestra</description>
+	<patterns>*</patterns>
+	<other-files/>
+	<text-files/>
+</action>
+
+<action>
 	<icon>emblem-symbolic-link</icon>
 	<name>Crea Symlink</name>
 	<unique-id>id-symlink-002</unique-id>
@@ -46,17 +68,6 @@
 	<patterns>*</patterns>
 	<text-files/>
 	<other-files/>
-</action>
-
-<action>
-	<icon>system-run</icon>
-	<name>Esegui Script</name>
-	<unique-id>id-run-script-005</unique-id>
-	<command>xfce4-terminal -e %f --hold</command>
-	<description>Esegue lo script e tiene aperta la finestra</description>
-	<patterns>*</patterns>
-	<other-files/>
-	<text-files/>
 </action>
 
 <action>
