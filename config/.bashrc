@@ -1,0 +1,34 @@
+#==========================================================
+#  O.S.      : Gnu Linux (MX 2026)
+#  Author    : Cristian Pozzessere (ilnanny)
+#  Github    : https://github.com/ilnanny75
+#  File      : Master Bash Config - ILNANNY DOTFILES 2026
+#==========================================================
+
+# 1. Controllo Shell Interattiva
+case $- in
+    *i*) ;;
+      *) return;;
+esac
+
+# 2. Caricamento Profili di Sistema (Standard Debian)
+for SH in /etc/profile.d/*.sh; do
+    [ -r "$SH" ] && . "$SH"
+done
+
+# 3. IL CUORE DEI DOTFILES (Punta alla tua Home, non a /etc)
+# Carica tutti i file .sh e alias dalla tua cartella personale
+MY_BASH_DIR="$HOME/dotfiles/bash/etc_bash/bashrc.d"
+
+if [ -d "$MY_BASH_DIR" ]; then
+    for file in "$MY_BASH_DIR"/*; do
+        # Carica solo file leggibili, saltando eventuali backup
+        [ -r "$file" ] && . "$file"
+    done
+fi
+
+# 4. PATH Personale (Per far funzionare i tuoi script ovunque)
+export PATH="$HOME/dotfiles/scripts/bin:$HOME/bin:$PATH"
+
+
+# Fine del file Master. Ora tutto è modulare nei tuoi dotfiles!
