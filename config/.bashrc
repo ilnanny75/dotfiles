@@ -32,3 +32,5 @@ export PATH="$HOME/dotfiles/scripts/bin:$HOME/bin:$PATH"
 
 
 # Fine del file Master. Ora tutto è modulare nei tuoi dotfiles!
+export EDITOR='geany'
+export VISUAL='geany'
