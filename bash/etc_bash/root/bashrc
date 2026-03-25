@@ -1,36 +1,49 @@
-#================================================
-#   O.S.      : Gnu Linux                                          =
-#   Author    : Cristian Pozzessere       = ilnanny =
-#   D.A.Page  : http://ilnanny.deviantart.com    =
-#   Github    : https://github.com/ilnanny75      =
-#================================================
-#      Configurazioni Globali Bash Shell
-# I file di configurazione per le varie distro
-# sono collocate in /etc/bash - etc/bash/bash.d
-#================================================
+#==========================================================
+#   BASHRC ROOT - Lab 2026 (Gentoo/Slackware Edition)
+#==========================================================
+# Author    : Cristian Pozzessere = ilnanny =
+# GitHub    : https://github.com/ilnanny75
+#==========================================================
 
-# ________________________  Shell Interattiva
+# --- 🛑 Controllo Sicurezza ------------------------------
+# Solo root deve eseguire questo file
+if [ "$(id -u)" -ne 0 ]; then
+    return
+fi
+
+# --- 🐚 Shell Interattiva --------------------------------
 case $- in
     *i*) ;;
       *) return;;
 esac
 
-# ________________________  Profili
+# --- 📁 Profili di Sistema -------------------------------
 for SH in /etc/profile.d/*.sh; do
-       . $SH
+    [ -r "$SH" ] && . "$SH"
 done
 
-# ________________________  Alias
-for sh in /etc/bash/bashrc.d/* ; do
-	[[ -r ${sh} ]] && source "${sh}"
-done
+# --- 🚀 CARICAMENTO ALIAS DAL TUO LAB 2026 ---------------
+# Qui root va a leggere i tuoi file dentro ~/dotfiles
+# NOTA: Assicurati che il nome utente sia 'ilnanny'
+MY_USER="ilnanny"
 
-if [ -f ~/.bash_aliases ]; then
-. ~/.bash_aliases
+if [ -d "/home/$MY_USER/dotfiles/bash/etc_bash/bashrc.d/" ]; then
+    for sh in "/home/$MY_USER/dotfiles/bash/etc_bash/bashrc.d/"*; do
+        if [ -r "${sh}" ]; then
+            . "${sh}"
+        fi
+    done
 fi
 
-# ________________________  Shell
+# --- 🎨 Prompt ROOT (Rosso Sicurezza) --------------------
+# Nota: Non carichiamo ps1.sh per root per mantenere
+# la distinzione visiva di pericolo.
+export PS1="\[\e[01;31m\]┌─[ROOT]───[\u@\h]───[\w]\n└───▶ \[\e[0m\]"
 
-PS1="\[\e[0;31m\][\u]\[\e[0;32m\][\A]\[\e[0;31m\][\w]\\$\[$(tput sgr0)\]"
+# --- 📂 Alias Specifici per ROOT -------------------------
+alias bashome='geany /root/.bashrc'
+alias fstab='geany /etc/fstab'
+alias vedi='ls -sh --color=auto -I "*.png" -I "*.jpg"'   # Fix anti-codice strano
+alias treed='tree -h --du -a -C -I "*.png|*.jpg|*.pdf"' # Fix anti-codice strano
 
 # ________________________  Fine

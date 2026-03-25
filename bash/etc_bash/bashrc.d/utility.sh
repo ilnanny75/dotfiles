@@ -1,48 +1,35 @@
 #!/bin/bash
 #==========================================================
-# UTILITY ILNANNY 2026 - Funzioni TTY e Sistema
+# UTILITY ILNANNY 2026 - Estrattore e Info
 #==========================================================
 
-# --- 📦 Estrazione e Compressione File ---
-extract() {                                                     # Funzione universale per estrarre/creare archivi
-    arg="$1"; shift                                             # Gestisce il primo argomento (-e o -n)
+# --- 📦 Estrattore Universale ----------------------------
+extract() {                                             # Gestione archivi
+    arg="$1"; shift
     case $arg in
-        -e|--extract)                                           # Modalità estrazione
-            if [[ $1 && -e $1 ]]; then                          # Verifica se il file esiste
+        -e|--extract)
+            if [[ $1 && -e $1 ]]; then
                 case $1 in
-                    *.tar.bz2|*.tbz2) tar xvjf "$1" ;;          # Estrae archivi bzip2
-                    *.tar.gz|*.tgz)   tar xvzf "$1" ;;          # Estrae archivi gzip
-                    *.tar.xz)         tar xpvf "$1" ;;          # Estrae archivi xz
-                    *.tar)            tar xvf "$1"  ;;          # Estrae archivi tar semplici
-                    *.zip)            unzip "$1"    ;;          # Estrae file zip
-                    *.7z|*.7zip)      7za e "$1"    ;;          # Estrae file 7zip
-                    *.rar)            unrar x "$1"  ;;          # Estrae file rar
-                    *) printf "'%s' non supportato" "$1" ;;     # Errore formato sconosciuto
+                    *.tar.bz2|*.tbz2) tar xvjf "$1" ;;  # Estrae bzip2
+                    *.tar.gz|*.tgz)   tar xvzf "$1" ;;  # Estrae gzip
+                    *.zip)            unzip "$1"    ;;  # Estrae zip
+                    *.7z|*.7zip)      7za e "$1"    ;;  # Estrae 7zip
+                    *.rar)            unrar x "$1"  ;;  # Estrae rar
+                    *) echo "'$1' non supportato"   ;;  # Errore formato
                 esac
             fi ;;
-        -n|--new)                                               # Modalità creazione nuovo archivio
+        -n|--new)                                       # Crea archivi
             case $1 in
-                *.tar.gz)  shift; tar -cvzf "$@"    ;;          # Crea un nuovo tar.gz
-                *.zip)     shift; zip -9r "$@"      ;;          # Crea un nuovo zip alla massima compressione
-                *.7z)      shift; 7z a -mx9 "$@"    ;;          # Crea un nuovo 7z alla massima compressione
+                *.zip) shift; zip -9r "$@" ;;           # Crea zip compresso
+                *.7z)  shift; 7z a -mx9 "$@" ;;         # Crea 7z massimo
             esac ;;
     esac
 }
 
-# --- 🔍 Informazioni di Sistema (ii) ---
-ii() {                                                          # Mostra un riepilogo completo della macchina
-    echo -e "\nSei connesso su: \e[1;31m$HOSTNAME\e[m"          # Mostra il nome della macchina
-    echo -e "\n\e[1;31mKernel:\e[m "; uname -a                  # Mostra versione kernel e architettura
-    echo -e "\n\e[1;31mUtenti:\e[m "; who | awk '{print $1}'    # Elenca gli utenti attualmente loggati
-    echo -e "\n\e[1;31mData:\e[m   "; date                      # Mostra data e ora attuale
-    echo -e "\n\e[1;31mUptime:\e[m "; uptime                    # Mostra da quanto tempo il PC è acceso
-    echo -e "\n\e[1;31mMemoria:\e[m"; free -h                   # Mostra la RAM libera in formato leggibile
-    echo -e "\n\e[1;31mDisco:\e[m  "; df -hT /                  # Mostra lo spazio su disco della root
-    echo -e "\n\e[1;31mIP Loc.:\e[m "; hostname -I               # Mostra l'indirizzo IP locale
+# --- 🔍 Info Macchina ------------------------------------
+ii() {                                                  # Riepilogo sistema
+    echo -e "\nSei su: \e[1;31m$HOSTNAME\e[m"           # Nome Host
+    echo -e "\n\e[1;31mKernel:\e[m "; uname -a          # Versione Kernel
+    echo -e "\n\e[1;31mMemoria:\e[m"; free -h           # RAM leggibile
+    echo -e "\n\e[1;31mIP Loc.:\e[m "; hostname -I       # IP Locale
 }
-
-# --- 🌿 Supporto Gentoo (se presente) ---
-alias emerge='emerge --color=y'                                 # Forza l'uso dei colori in emerge
-alias eix='eix -F'                                              # Formattazione ottimizzata per eix
-
-# ________________________  Fine del file utility.sh

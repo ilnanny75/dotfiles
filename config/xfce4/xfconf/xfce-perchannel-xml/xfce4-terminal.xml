@@ -23,6 +23,7 @@
   <property name="misc-tab-position" type="string" value="GTK_POS_TOP"/>
   <property name="misc-highlight-urls" type="bool" value="true"/>
   <property name="misc-copy-on-select" type="bool" value="true"/>
+  <property name="unsafe-paste" type="bool" value="false"/>
   <property name="color-foreground" type="string" value="#dcdcdc"/>
   <property name="color-background" type="string" value="#273e35363e4a"/>
   <property name="color-background-vary" type="bool" value="false"/>

@@ -26,3 +26,13 @@
 ### 🌐 Rete Rapida
 - `ip a` : Mostra il tuo indirizzo IP locale.
 - `ping -c 4 google.com` : Controlla se internet risponde.
+
+### 🧹 Pulizia e Visualizzazione Intelligente
+- `clear` : Pulisce lo schermo se quel codice strano ha incasinato tutto.
+- [cite_start]`tree -I "*.png|*.jpg|*.gif"` : Mostra l'albero escludendo le immagini (evita il lag). [cite: 1, 6]
+- `file nomefile` : Ti dice che tipo di file è PRIMA di aprirlo (evita di crashare il terminale).
+- `head -n 20 file.txt` : Legge solo le prime 20 righe (sicuro per testare i file).
+
+### 🛠️ Fix Terminale (Lab 2026)
+- `xfconf-query -c xfce4-terminal -p /unsafe-paste -n -t bool -s false` : Disabilita l'avviso "Incolla non sicuro".
+- `reset` : Se il terminale legge un binario e i caratteri diventano strani, questo comando ripristina i font corretti.

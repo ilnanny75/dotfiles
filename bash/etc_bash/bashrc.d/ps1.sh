@@ -1,30 +1,28 @@
 #!/bin/bash
 #==========================================================
-# PS1 ILNANNY 2026 - Versione Grafica Pulita
+# PS1 ILNANNY 2026 - Versione Simmetrica
 #==========================================================
 
-# --- Funzione Info Cartella: Calcola file e peso ---
+# --- Funzione Info: File e Peso --------------------------
 prompt_dir_info() {
-    local files=$(ls -1 2>/dev/null | wc -l)                # Conta i file nella cartella attuale
-    local size=$(ls -shd . 2>/dev/null | awk '{print $1}')  # Estrae la dimensione totale occupata
-    echo "$files files, $size"                              # Restituisce la stringa formattata
+    local f=$(ls -1 2>/dev/null | wc -l)                # Conta i file presenti
+    local s=$(ls -shd . 2>/dev/null | awk '{print $1}') # Peso totale cartella
+    echo "$f files, $s"                                 # Output pulito
 }
 
-# --- Funzione Stato: Mostra ✔ verde o ✘ rosso ---
+# --- Funzione Stato: Successo/Errore ---------------------
 prompt_status() {
     if [ $? -eq 0 ]; then
-        echo -e "\e[32m✔\e[0m"                             # Icona successo in verde
+        echo -e "\e[32m✔\e[0m"                         # Icona Verde (OK)
     else
-        echo -e "\e[31m✘\e[0m"                             # Icona errore in rosso
+        echo -e "\e[31m✘\e[0m"                         # Icona Rossa (Fail)
     fi
 }
 
-# --- Costruzione del Prompt ---
-# Nota: Usiamo variabili per i colori per rendere il PS1 più leggibile nel codice
+# --- Costruzione PS1 -------------------------------------
 R="\[\e[01;31m\]"   # Rosso
-G="\[\e[01;32m\]"   # Verde
 B="\[\e[01;34m\]"   # Blu
 W="\[\e[01;37m\]"   # Bianco
-RS="\[\e[0m\]"      # Reset colore
+RS="\[\e[0m\]"      # Reset
 
 export PS1="┌─[\$(prompt_status)]───[$W\u@\h$RS]───[$B\w$RS]───[$W\$(prompt_dir_info)$RS]\n└───▶ "
