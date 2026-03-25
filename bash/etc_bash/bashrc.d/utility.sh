@@ -1,100 +1,48 @@
 #!/bin/bash
-#================================================
-#================================================
-#   O.S.      : Gnu Linux                       =
-#   Author    : Cristian Pozzessere   = ilnanny =
-#   D.A.Page  : http://ilnanny.deviantart.com   =
-#   Github    : https://github.com/ilnanny      =
-#================================================
-#================================================
+#==========================================================
+# UTILITY ILNANNY 2026 - Funzioni TTY e Sistema
+#==========================================================
 
-#  ________________________________    Utilità TTY    ________________________________
-#
-## ___  Extract Files
-extract()
-{
-    arg="$1"; shift
+# --- 📦 Estrazione e Compressione File ---
+extract() {                                                     # Funzione universale per estrarre/creare archivi
+    arg="$1"; shift                                             # Gestisce il primo argomento (-e o -n)
     case $arg in
-        -e|--extract)
-            if [[ $1 && -e $1 ]]; then
+        -e|--extract)                                           # Modalità estrazione
+            if [[ $1 && -e $1 ]]; then                          # Verifica se il file esiste
                 case $1 in
-                    *.tbz2|*.tar.bz2) tar xvjf "$1" ;;
-                    *.tgz|*.tar.gz) tar xvzf "$1" ;;
-                    *.tar.xz) tar xpvf "$1" ;;
-                    *.tar) tar xvf "$1" ;;
-                    *.gz) gunzip "$1" ;;
-                    *.zip) unzip "$1" ;;
-                    *.bz2) bunzip2 "$1" ;;
-                    *.7zip) 7za e "$1" ;;
-                    *.rar) unrar x "$1" ;;
-                    *) printf "'%s' non può essere estratto" "$1"
+                    *.tar.bz2|*.tbz2) tar xvjf "$1" ;;          # Estrae archivi bzip2
+                    *.tar.gz|*.tgz)   tar xvzf "$1" ;;          # Estrae archivi gzip
+                    *.tar.xz)         tar xpvf "$1" ;;          # Estrae archivi xz
+                    *.tar)            tar xvf "$1"  ;;          # Estrae archivi tar semplici
+                    *.zip)            unzip "$1"    ;;          # Estrae file zip
+                    *.7z|*.7zip)      7za e "$1"    ;;          # Estrae file 7zip
+                    *.rar)            unrar x "$1"  ;;          # Estrae file rar
+                    *) printf "'%s' non supportato" "$1" ;;     # Errore formato sconosciuto
                 esac
-            else
-                printf "'%s' non è un file valido" "$1"
             fi ;;
-        -n|--new)
+        -n|--new)                                               # Modalità creazione nuovo archivio
             case $1 in
-                *.tar.*)
-                    name="${1%.*}"
-                    ext="${1#*.tar}"; shift
-                    tar cvf "$name" "$@"
-                    case $ext in
-                        .gz) gzip -9r "$name" ;;
-                        .bz2) bzip2 -9zv "$name"
-                    esac ;;
-                *.gz) shift; gzip -9rk "$@" ;;
-                *.zip) zip -9r "$@" ;;
-                *.7z) 7z a -mx9 "$@" ;;
-                *) printf "estensione non valida/non supportata"
+                *.tar.gz)  shift; tar -cvzf "$@"    ;;          # Crea un nuovo tar.gz
+                *.zip)     shift; zip -9r "$@"      ;;          # Crea un nuovo zip alla massima compressione
+                *.7z)      shift; 7z a -mx9 "$@"    ;;          # Crea un nuovo 7z alla massima compressione
             esac ;;
-        *) printf "argomento non valido '%s'" "$arg"
     esac
 }
 
-#
-## ___   Kill Pid
-killp()
-{
-    local pid name sig="-TERM"   # segnale di default
-    [[ $# -lt 1 || $# -gt 2 ]] && printf "Utilizza: killp [-SIGNAL] pattern" && return 1
-    [[ $# -eq 2 ]] && sig=$1
-    for pid in $(mp | awk '!/awk/ && $0~pat { print $1 }' pat=${!#}); do
-        name=$(mp | awk '$1~var { print $5 }' var=$pid)
-        ask "Kill process $pid <$name> with signal $sig?" && kill $sig $pid
-    done
+# --- 🔍 Informazioni di Sistema (ii) ---
+ii() {                                                          # Mostra un riepilogo completo della macchina
+    echo -e "\nSei connesso su: \e[1;31m$HOSTNAME\e[m"          # Mostra il nome della macchina
+    echo -e "\n\e[1;31mKernel:\e[m "; uname -a                  # Mostra versione kernel e architettura
+    echo -e "\n\e[1;31mUtenti:\e[m "; who | awk '{print $1}'    # Elenca gli utenti attualmente loggati
+    echo -e "\n\e[1;31mData:\e[m   "; date                      # Mostra data e ora attuale
+    echo -e "\n\e[1;31mUptime:\e[m "; uptime                    # Mostra da quanto tempo il PC è acceso
+    echo -e "\n\e[1;31mMemoria:\e[m"; free -h                   # Mostra la RAM libera in formato leggibile
+    echo -e "\n\e[1;31mDisco:\e[m  "; df -hT /                  # Mostra lo spazio su disco della root
+    echo -e "\n\e[1;31mIP Loc.:\e[m "; hostname -I               # Mostra l'indirizzo IP locale
 }
 
-#
-## ___   My IP
-mip()
-{
-    local ip
-    ip=$(/bin/ifconfig "$(ifconfig | awk -F: '/RUNNING/ && !/LOOP/ {print $1}')" |
-        awk '/inet/ { print $2 } ' | sed -e s/addr://)
-    printf "%s" "${ip:-Non connesso}"
-}
+# --- 🌿 Supporto Gentoo (se presente) ---
+alias emerge='emerge --color=y'                                 # Forza l'uso dei colori in emerge
+alias eix='eix -F'                                              # Formattazione ottimizzata per eix
 
-ii()
-{
-    echo -e "\nSei connesso in \e[1;31m$HOSTNAME"
-    echo -e "\n\e[1;31mInformazioni aggiuntive:\e[m " ; uname -a
-    echo -e "\n\e[1;31mUtenti loggati:\e[m "         ; w -hs | awk '{print $1}' | sort | uniq
-    echo -e "\n\e[1;31mData Odierna:\e[m "            ; date
-    echo -e "\n\e[1;31mStatistiche della Macchina:\e[m "           ; uptime
-    echo -e "\n\e[1;31mStatistiche della Memoria:\e[m "            ; free
-    echo -e "\n\e[1;31mSpazio sul Disco:\e[m "               ; mdf / $HOME
-    echo -e "\n\e[1;31mIndirizzo IP Locale:\e[m"         ; mip
-    echo -e "\n\e[1;31mConnessioni Aperte:\e[m "        ; netstat -pan --inet;
-    echo
-}
-
-#
-## ___   Gentoo Wgetpaste
-#
-if ${use_color} ; then
-       alias emerge='emerge --color=y'
-       alias eix='eix -F'
-fi
-#
-# ___            Fine
-
+# ________________________  Fine del file utility.sh

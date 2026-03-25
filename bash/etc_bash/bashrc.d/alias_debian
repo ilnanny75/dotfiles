@@ -3,22 +3,24 @@
 # ILNANNY ALIAS DEBIAN/MX - Lab 2026
 #==========================================================
 
-# --- Gestione Pacchetti ---
-alias update='sudo apt update && sudo apt upgrade'
-alias install='sudo apt install'
-alias instally='sudo apt install -y'
-alias remove='sudo apt purge && sudo apt autoremove'
-alias search='apt search'
-alias show='apt show'
+# --- 📦 Gestione Pacchetti (APT) ---
+alias update='sudo apt update && sudo apt upgrade'              # Aggiorna i repository e i pacchetti del sistema
+alias instally='sudo apt install -y'                            # Installa pacchetti confermando automaticamente
+alias purge='sudo apt purge && sudo apt autoremove'             # Rimuove pacchetti e pulisce le dipendenze inutili
+alias search='apt search'                                       # Cerca un pacchetto nei repository ufficiali
+alias show='apt show'                                           # Mostra i dettagli tecnici di un pacchetto
 
-# --- Scorciatoie di Sistema ---
-alias sourcelist='sudo geany /etc/apt/sources.list'
-alias gosource='thunar /etc/apt/sources.list.d/'
+# --- 📂 Scorciatoie di Sistema ---
+alias sourcelist='sudo geany /etc/apt/sources.list'             # Apre la lista dei repository con Geany
+alias gosource='thunar /etc/apt/sources.list.d/'                # Apre la cartella dei repository con Thunar
 
 # --- 🚀 ILNANNY LAB 2026 (I tuoi nuovi muscoli) ---
-alias pigia='~/dotfiles/scripts/bin/git-push.sh'
-alias up='~/dotfiles/scripts/bin/git-up.sh'
-alias check='~/dotfiles/scripts/bin/ilnanny-check.sh'
-alias cdd='cd ~/dotfiles/bash/etc_bash/bashrc.d/'
-alias memo='cat ~/dotfiles/MEMORANDUM.md'
-alias vedi='ls -sh --color=auto'
+alias dots='cd ~/dotfiles'                                      # Entra nella cartella dei tuoi dotfiles
+alias gbin='cd ~/dotfiles/scripts/bin'                          # Entra nella cartella dei tuoi script binari
+alias cdd='cd ~/dotfiles/bash/etc_bash/bashrc.d/'              # Entra nella cartella dei moduli di configurazione
+alias pigia='~/dotfiles/scripts/bin/git-push.sh'                # Esegue lo script per caricare i file su GitHub
+alias up='~/dotfiles/scripts/bin/git-up.sh'                     # Esegue lo script per aggiornare i file da GitHub
+alias check='~/dotfiles/scripts/bin/ilnanny-check.sh'           # Esegue lo script di controllo del sistema
+alias memo='cat ~/dotfiles/MEMORANDUM.md'                       # Legge rapidamente il tuo file memorandum
+alias vedi='ls -sh --color=auto'                                # Mostra i file con il loro peso specifico
+alias treed='tree -h --du -a -C'                                # Visualizza l'albero delle cartelle con le dimensioni

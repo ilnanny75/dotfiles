@@ -1,16 +1,30 @@
 #!/bin/bash
-#================================================
-#================================================
-#   O.S.      : Gnu Linux                       =
-#   Author    : Cristian Pozzessere   = ilnanny =
-#   D.A.Page  : http://ilnanny.deviantart.com   =
-#   Github    : https://github.com/ilnanny      =
-#================================================
-#================================================
+#==========================================================
+# PS1 ILNANNY 2026 - Versione Grafica Pulita
+#==========================================================
 
+# --- Funzione Info Cartella: Calcola file e peso ---
+prompt_dir_info() {
+    local files=$(ls -1 2>/dev/null | wc -l)                # Conta i file nella cartella attuale
+    local size=$(ls -shd . 2>/dev/null | awk '{print $1}')  # Estrae la dimensione totale occupata
+    echo "$files files, $size"                              # Restituisce la stringa formattata
+}
 
-# ________________________  Shell
+# --- Funzione Stato: Mostra ✔ verde o ✘ rosso ---
+prompt_status() {
+    if [ $? -eq 0 ]; then
+        echo -e "\e[32m✔\e[0m"                             # Icona successo in verde
+    else
+        echo -e "\e[31m✘\e[0m"                             # Icona errore in rosso
+    fi
+}
 
-export PS1="┌─[\`if [ \$? = 0 ]; then echo \[\e[32m\]✔\[\e[0m\]; else echo \[\e[31m\]✘\[\e[0m\]; fi\`]───[\[\e[01;49;39m\]\u\[\e[00m\]\[\e[01;49;39m\]@\H\[\e[00m\]]───[\[\e[1;49;34m\]\W\[\e[0m\]]───[\[\e[1;49;39m\]\$(ls | wc -l) files, \$(ls -lah | grep -m 1 total | sed 's/total //')\[\e[0m\]]\n└───▶ "
+# --- Costruzione del Prompt ---
+# Nota: Usiamo variabili per i colori per rendere il PS1 più leggibile nel codice
+R="\[\e[01;31m\]"   # Rosso
+G="\[\e[01;32m\]"   # Verde
+B="\[\e[01;34m\]"   # Blu
+W="\[\e[01;37m\]"   # Bianco
+RS="\[\e[0m\]"      # Reset colore
 
-# ________________________  Fine.
+export PS1="┌─[\$(prompt_status)]───[$W\u@\h$RS]───[$B\w$RS]───[$W\$(prompt_dir_info)$RS]\n└───▶ "
