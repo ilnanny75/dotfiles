@@ -1,74 +1,119 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #==========================================================
-#  ILNANNY OS MANAGER - 2026 EDITION (Final Fix)
+#   ILNANNY MASTER-SCRIPT 2026 - UNIVERSAL EDITION
+#   Sistemi: Void Linux, Debian/MX, Arch Linux
+#   Hardware: MateBook ES8336 & Universal
 #==========================================================
 
-DOTFILES="$HOME/dotfiles"
-THEMES_REPO="$HOME/Themes"
+CYAN='\033[0;36m'
+GREEN='\033[1;32m'
+RED='\033[1;31m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
 
-# Colori
-GREEN="\033[0;32m"
-BLUE="\033[0;34m"
-YELLOW="\033[1;33m"
-NC="\033[0m"
+# Rilevamento OS
+if [ -f /etc/os-release ]; then
+    . /etc/os-release
+    OS=$ID
+else
+    OS=$(uname -s)
+fi
 
-clear
-echo -e "${BLUE}==========================================${NC}"
-echo -e "${GREEN}    ILNANNY OS MANAGER - 2026 EDITION     ${NC}"
-echo -e "${BLUE}==========================================${NC}"
+header() {
+    clear
+    echo -e "${CYAN}╔════════════════════════════════════════════════════╗${NC}"
+    echo -e "║      ILNANNY MASTER-SCRIPT 2026 - OS: ${YELLOW}$OS${CYAN}      ║"
+    echo -e "╚════════════════════════════════════════════════════╝${NC}"
+}
 
-setup_system_defaults() {
-    echo -e "${YELLOW}⚙️ Configurazione Geany e Terminale...${NC}"
+# 1. DEPLOY DOTFILES (Link Simbolici)
+deploy_configs() {
+    echo -e "\n${YELLOW}>> Sincronizzazione Dotfiles per $OS...${NC}"
+    USER_HOME="/home/$SUDO_USER"
+    [ "$SUDO_USER" == "" ] && USER_HOME="$HOME"
+    DOT_DIR="$USER_HOME/dotfiles"
 
-    # --- Fix Geany ---
-    local GEANY_CONF="$HOME/.config/geany/geany.conf"
-    local DOT_GEANY="$DOTFILES/config/geany/geany.conf"
-    mkdir -p "$HOME/.config/geany"
+    # Creazione cartelle base
+    mkdir -p "$USER_HOME/.config"
+    mkdir -p "$USER_HOME/.themes"
 
-    if [ -f "$DOT_GEANY" ]; then
-        if [ -f "$GEANY_CONF" ] && [ ! -L "$GEANY_CONF" ]; then
-            mv "$GEANY_CONF" "${GEANY_CONF}.bk"
-        fi
-        ln -sf "$DOT_GEANY" "$GEANY_CONF"
-        echo -e "${GREEN}✅ Link Geany creato (Backup .bk salvato)${NC}"
+    # Link .config (Openbox, Geany, Thunar, ecc)
+    for folder in "$DOT_DIR/config/"*; do
+        ln -sf "$folder" "$USER_HOME/.config/$(basename "$folder")"
+    done
+
+    # Link Editor e X
+    ln -sf "$DOT_DIR/editors/.vimrc" "$USER_HOME/.vimrc"
+    ln -sf "$DOT_DIR/editors/.nanorc" "$USER_HOME/.nanorc"
+    ln -sf "$DOT_DIR/Void/home/.xinitrc" "$USER_HOME/.xinitrc"
+
+    # Link Alias (Specifico per OS)
+    mkdir -p /etc/bash/bashrc.d
+    if [ "$OS" == "void" ]; then
+        sudo ln -sf "$DOT_DIR/Void/etc/bash/bashrc.d/alias_void" /etc/bash/bashrc.d/alias_void
+    else
+        sudo ln -sf "$DOT_DIR/bash/etc_bash/bashrc.d/alias.sh" /etc/bash/bashrc.d/alias.sh
     fi
 
-    # --- Fix Terminale (Elimina avviso unsafe-paste) ---
-    xfconf-query -c xfce4-terminal -p /unsafe-paste -n -t bool -s false 2>/dev/null
-    echo -e "${GREEN}✅ Avviso 'Incolla non sicuro' rimosso per sempre!${NC}"
-
-    # --- Defaults ---
-    xdg-mime default geany.desktop text/plain 2>/dev/null
-    echo -e "${GREEN}✅ Impostazioni di sistema completate!${NC}"
+    # Permessi Script
+    chmod +x "$DOT_DIR/scripts/bin/"*.sh
+    echo -e "${GREEN}Deploy completato!${NC}"
 }
 
-backup_configs() {
-    echo -e "${YELLOW}📦 Sincronizzo configurazioni verso Dotfiles...${NC}"
-    mkdir -p "$DOTFILES/config/openbox" "$DOTFILES/config/gtk-3.0" "$DOTFILES/config/geany" "$DOTFILES/config/Thunar"
+# 2. INSTALLAZIONE SOFTWARE (Multi-Distro)
+install_software() {
+    APPS="geany git htop mpv nitrogen gvfs gvfs-mtp fzf vlc bleachbit"
+    echo -e "\n${YELLOW}>> Installazione software su $OS...${NC}"
 
-    # Backup file reali nel repository
-    [ -f ~/.config/openbox/rc.xml ] && cp ~/.config/openbox/*.xml "$DOTFILES/config/openbox/"
-    [ -f ~/.config/Thunar/uca.xml ] && cp ~/.config/Thunar/uca.xml "$DOTFILES/config/Thunar/"
-    [ -f ~/.bashrc ] && cp ~/.bashrc "$DOTFILES/config/"
-
-    echo -e "${GREEN}✅ Backup salvato!${NC}"
+    case $OS in
+        void) sudo xbps-install -Sy $APPS ;;
+        debian|mx) sudo apt update && sudo apt install -y $APPS ;;
+        arch) sudo pacman -Sy $APPS ;;
+        *) echo -e "${RED}Sistema non supportato.${NC}" ;;
+    esac
 }
 
-sync_themes() {
-    echo -e "${YELLOW}🎨 Sincronizzo Temi...${NC}"
-    mkdir -p ~/.themes ~/.config/geany/colorschemes
-    ln -sf "$THEMES_REPO/GTK-themes/"* ~/.themes/ 2>/dev/null
-    echo -e "${GREEN}✅ Temi linkati!${NC}"
+# 3. FIX AUDIO MATEBOOK (Solo se necessario)
+fix_matebook() {
+    MODEL=$(cat /sys/class/dmi/id/product_name 2>/dev/null)
+    if [[ "$MODEL" == *"MateBook"* && "$OS" == "void" ]]; then
+        echo -e "${GREEN}MateBook rilevato su Void. Applico fix audio...${NC}"
+        sudo xbps-install -Sy sof-firmware alsa-ucm-conf
+        sudo grub-mkconfig -o /boot/grub/grub.cfg
+    else
+        echo -e "${YELLOW}Fix non necessario o hardware diverso.${NC}"
+    fi
 }
 
-echo -e "1) ${BLUE}Configurazione Totale${NC} (Geany + Terminale + Temi)"
-echo -e "2) ${YELLOW}Esegui Backup${NC}"
-echo -e "3) Esci"
-read -p "Scegli: " opt
+# 4. MANUTENZIONE & README
+show_info() {
+    echo -e "\n1) WIKI 2) MEMO 3) TASTI 4) GIT"
+    read -p "Scegli: " choice
+    case $choice in
+        1) less ~/dotfiles/WIKI_LINUX.md ;;
+        2) less ~/dotfiles/MEMORANDUM.md ;;
+        3) less "~/dotfiles/scorciatoie da tastiera.md" ;;
+        4) less ~/dotfiles/PROMEMORIA_GIT.md ;;
+    esac
+}
 
-case $opt in
-    1) setup_system_defaults; backup_configs; sync_themes ;;
-    2) backup_configs ;;
-    3) exit 0 ;;
-    *) echo "Scelta non valida" ;;
-esac
+# --- MENU PRINCIPALE ---
+while true; do
+    header
+    echo -e "1) ${CYAN}DEPLOY DOTFILES${NC} (Link configurazioni)"
+    echo -e "2) ${YELLOW}INSTALLA SOFTWARE${NC} (Auto-rilevamento)"
+    echo -e "3) ${RED}FIX HARDWARE${NC} (MateBook)"
+    echo -e "4) ${GREEN}LEGGI DOCUMENTAZIONE${NC} (Wiki/Memo)"
+    echo -e "q) Esci"
+    echo -ne "\nOpzione: "
+    read -r opt
+    case $opt in
+        1) deploy_configs ;;
+        2) install_software ;;
+        3) fix_matebook ;;
+        4) show_info ;;
+        q) exit 0 ;;
+    esac
+    echo -e "\nPremi Invio..."
+    read
+done

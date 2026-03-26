@@ -1,31 +1,39 @@
-#================================================
-#   O.S.      : Void Linux
-#   Author    : Cristian Pozzessere = ilnanny75
-#   Progetto  : Alias personalizzati per XBPS
-#================================================
-
-# --- GESTIONE SERVIZI (runit) ---
-alias sv="sudo sv"           # Gestione rapida dei servizi (es. sv restart dbus)
-
-# --- LOGICAL VOLUME MANAGEMENT (LVM) ---
-alias lvs="sudo lvs"
-alias vgs="sudo vgs"
-alias vgdisplay="sudo vgdisplay"
-
-# --- XBPS: COMANDI DI BASE ---
-alias install="sudo xbps-install -S"     # Installa e sincronizza i repo
-alias update="sudo xbps-install -Su"      # Aggiorna l'intero sistema
-alias remove="sudo xbps-remove -R"        # Rimuove pacchetto e dipendenze non usate
-alias search="xbps-query -Rs"             # Cerca pacchetti nei repo (non serve sudo)
-alias query="xbps-query -f"               # Elenca i file contenuti in un pacchetto
-alias reconfigure="sudo xbps-reconfigure" # Riconfigura pacchetti (spesso usato per il kernel)
-
-# --- IDEE AGGIUNTIVE (Manutenzione e Pulizia) ---
-alias ccache="sudo xbps-remove -O"        # Pulisce la cache dei vecchi pacchetti scaricati
-alias orphans="sudo xbps-remove -o"       # Rimuove pacchetti orfani (dipendenze inutilizzate)
-alias pkg-check="sudo xbps-pkgdb -a"      # Controlla la consistenza del database pacchetti
-alias lock="sudo xbps-pkgdb -m hold"      # Blocca un pacchetto (evita aggiornamenti)
-alias unlock="sudo xbps-pkgdb -m unhold"  # Sblocca un pacchetto
-
-# --- UTILITY ---
-alias scritps-exec='chmod +x ~/Scripts/*.sh' # Rendi eseguibili al volo i tuoi script
+     1	#================================================
+     2	#    O.S.      : Void Linux
+     3	#    Author    : Cristian Pozzessere = ilnanny75
+     4	#    Progetto  : Alias 2026 (XBPS & Super Scripts)
+     5	#================================================
+     6	
+     7	# --- GESTIONE SERVIZI (runit) ---
+     8	alias sv="sudo sv"
+     9	
+    10	# --- LOGICAL VOLUME MANAGEMENT (LVM) ---
+    11	alias lvs="sudo lvs"
+    12	alias vgs="sudo vgs"
+    13	alias vgdisplay="sudo vgdisplay"
+    14	
+    15	# --- XBPS: COMANDI DI BASE ---
+    16	alias install="sudo xbps-install -S"
+    17	alias update="sudo xbps-install -Su"
+    18	alias remove="sudo xbps-remove -R"
+    19	alias search="xbps-query -Rs"
+    20	alias query="xbps-query -f"
+    21	alias reconfigure="sudo xbps-reconfigure"
+    22	
+    23	# --- MANUTENZIONE E PULIZIA ---
+    24	alias ccache="sudo xbps-remove -O"
+    25	alias orphans="sudo xbps-remove -o"
+    26	alias pkg-check="sudo xbps-pkgdb -a"
+    27	alias lock="sudo xbps-pkgdb -m hold"
+    28	alias unlock="sudo xbps-pkgdb -m unhold"
+    29	
+    30	# --- 🚀 ILNANNY SUPER SCRIPTS (Nuovi percorsi 2026) ---
+    31	alias fix-mate="~/dotfiles/scripts/bin/matebook-es8336-fixer.sh"
+    32	alias n-studio="~/dotfiles/scripts/bin/ilnanny-studio.sh"
+    33	alias n-git="~/dotfiles/scripts/bin/ilnanny-git-manager.sh"
+    34	alias n-hw="~/dotfiles/scripts/bin/ilnanny-hardware.sh"
+    35	alias n-admin="~/dotfiles/scripts/bin/ilnanny-admin.sh"
+    36	
+    37	# --- UTILITY RAPIDE ---
+    38	alias scripts-exec='chmod +x ~/dotfiles/scripts/bin/*.sh'
+    39	alias n-help='cat ~/dotfiles/scripts/bin/README.md'
