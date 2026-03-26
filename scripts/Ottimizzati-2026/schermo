@@ -1,0 +1,140 @@
+#!/bin/bash
+#================================================
+#   O.S.      : Gnu Linux                       =
+#   Author    : Cristian Pozzessere   = ilnanny =
+#   Github    : https://github.com/ilnanny75    =
+#================================================
+#   Progetto  : Configurazione schermo xrandr   =
+#================================================
+
+# Colori
+RED='\033[0;41;30m'
+STD='\033[0;0;39m'
+GREEN='\033[1;32;3m'
+LCYAN="\e[1;36m"
+YELLOW="\e[1;33m"
+ATTENZIONE="\e[0;31m"
+PURPLE="\e[1;35m"
+
+# Controlla che xrandr sia disponibile
+if ! command -v xrandr &>/dev/null; then
+    echo -e "${RED} xrandr non trovato. Installa il pacchetto xrandr.${STD}"
+    exit 1
+fi
+
+clear
+echo -e "${LCYAN}"
+echo " ╔══════════════════════════════════════╗"
+echo " ║     CONFIGURAZIONE SCHERMO XRANDR    ║"
+echo " ╚══════════════════════════════════════╝"
+echo -e "${STD}"
+
+# Mostra i monitor rilevati con le risoluzioni disponibili
+echo -e "${YELLOW} Monitor e risoluzioni rilevati:${STD}"
+echo
+xrandr | grep -E "connected|disconnected|^\s+[0-9]" | while IFS= read -r riga; do
+    if echo "$riga" | grep -q "connected"; then
+        echo -e "  ${GREEN}${riga}${STD}"
+    else
+        echo "    $riga"
+    fi
+done
+
+echo
+# Lista dei soli output connessi
+mapfile -t OUTPUTS < <(xrandr | awk '/ connected/{print $1}')
+
+if [[ ${#OUTPUTS[@]} -eq 0 ]]; then
+    echo -e "${RED} Nessun monitor connesso rilevato.${STD}"
+    exit 1
+fi
+
+# Selezione output
+echo -e "${YELLOW} Monitor disponibili:${STD}"
+for i in "${!OUTPUTS[@]}"; do
+    echo "  [$((i+1))] ${OUTPUTS[$i]}"
+done
+echo
+read -r -p " Seleziona monitor [1-${#OUTPUTS[@]}]: " scelta_out
+idx=$(( scelta_out - 1 ))
+if [[ $idx -lt 0 || $idx -ge ${#OUTPUTS[@]} ]]; then
+    echo -e "${RED} Scelta non valida.${STD}"; exit 1
+fi
+OUTPUT="${OUTPUTS[$idx]}"
+
+# Risoluzioni disponibili per l'output selezionato
+echo
+echo -e "${YELLOW} Risoluzioni disponibili per ${OUTPUT}:${STD}"
+mapfile -t RISOLUZIONI < <(xrandr | awk "/^${OUTPUT}/,/^[^ ]/" | grep -E "^\s+[0-9]" | awk '{print $1}')
+for i in "${!RISOLUZIONI[@]}"; do
+    echo "  [$((i+1))] ${RISOLUZIONI[$i]}"
+done
+echo "  [m] Inserisci manualmente"
+echo
+read -r -p " Seleziona risoluzione: " scelta_res
+if [[ "$scelta_res" == "m" ]]; then
+    read -r -p " Inserisci risoluzione (es. 1920x1080): " RISOLUZIONE
+else
+    ridx=$(( scelta_res - 1 ))
+    if [[ $ridx -lt 0 || $ridx -ge ${#RISOLUZIONI[@]} ]]; then
+        echo -e "${RED} Scelta non valida.${STD}"; exit 1
+    fi
+    RISOLUZIONE="${RISOLUZIONI[$ridx]}"
+fi
+
+# Rotazione
+echo
+echo -e "${YELLOW} Rotazione:${STD}"
+echo "  [1] Normal (default)"
+echo "  [2] Left (90°)"
+echo "  [3] Right (270°)"
+echo "  [4] Inverted (180°)"
+read -r -p " Scelta [1-4]: " rot
+case $rot in
+    2) ROTAZIONE="left" ;;
+    3) ROTAZIONE="right" ;;
+    4) ROTAZIONE="inverted" ;;
+    *) ROTAZIONE="normal" ;;
+esac
+
+# Posizione (solo se ci sono più monitor)
+POSIZIONE="0x0"
+if [[ ${#OUTPUTS[@]} -gt 1 ]]; then
+    echo
+    read -r -p " Posizione (es. 0x0, 1920x0) [Invio=0x0]: " pos_input
+    [[ -n "$pos_input" ]] && POSIZIONE="$pos_input"
+fi
+
+# Riepilogo e conferma
+echo
+echo -e "${PURPLE} Riepilogo configurazione:${STD}"
+echo -e "  Monitor    : ${GREEN}${OUTPUT}${STD}"
+echo -e "  Risoluzione: ${GREEN}${RISOLUZIONE}${STD}"
+echo -e "  Rotazione  : ${GREEN}${ROTAZIONE}${STD}"
+echo -e "  Posizione  : ${GREEN}${POSIZIONE}${STD}"
+echo
+read -r -p " Applica? [s/N]: " conferma
+if [[ ! "$conferma" =~ ^[sS]$ ]]; then
+    echo -e "${RED} Operazione annullata.${STD}"; exit 0
+fi
+
+# Applica la configurazione
+if xrandr --output "$OUTPUT" --mode "$RISOLUZIONE" --pos "$POSIZIONE" --rotate "$ROTAZIONE"; then
+    echo -e "${GREEN} ✔ Configurazione applicata con successo!${STD}"
+else
+    echo -e "${RED} ✘ Errore durante l'applicazione della configurazione.${STD}"
+    exit 1
+fi
+
+# Opzione: salva configurazione in ~/.xprofile
+echo
+read -r -p " Salvare la configurazione in ~/.xprofile per renderla permanente? [s/N]: " salva
+if [[ "$salva" =~ ^[sS]$ ]]; then
+    RIGA="xrandr --output ${OUTPUT} --mode ${RISOLUZIONE} --pos ${POSIZIONE} --rotate ${ROTAZIONE}"
+    # Rimuovi eventuali righe precedenti per lo stesso output
+    sed -i "/xrandr --output ${OUTPUT}/d" ~/.xprofile 2>/dev/null || true
+    echo "$RIGA" >> ~/.xprofile
+    echo -e "${GREEN} ✔ Configurazione salvata in ~/.xprofile${STD}"
+fi
+
+exit 0

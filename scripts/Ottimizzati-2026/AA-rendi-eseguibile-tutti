@@ -1,0 +1,39 @@
+#!/bin/bash
+#================================================
+#   O.S.      : Gnu Linux
+#   Author    : Cristian Pozzessere   = ilnanny
+#   Github    : https://github.com/ilnanny75
+#================================================
+#   Progetto  : Rendi eseguibili tutti i file .sh
+#================================================
+
+# Colori
+STD='\033[0;0;39m'
+LCYAN="\e[1;36m"
+GREEN='\033[1;32;3m'
+RED='\033[0;31m'
+
+clear
+echo -e "${LCYAN}"
+echo " ╔════════════════════════════════════════════════════╗"
+echo " ║ Rendo eseguibili tutti gli script nella cartella   ║"
+echo " ╚════════════════════════════════════════════════════╝"
+echo -e "${STD}"
+
+# Rileva automaticamente la cartella dove risiede lo script
+DIR_ATTUALE="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+echo -e "Lavoro nella directory: ${GREEN}$DIR_ATTUALE${STD}\n"
+
+# Esegue il comando chmod sui file .sh presenti nella cartella attuale e sottocartelle
+if find "$DIR_ATTUALE" -type f -name "*.sh" -exec chmod +x {} +; then
+    echo -e "${GREEN}Operazione completata con successo!${STD}"
+else
+    echo -e "${RED}Errore: Impossibile modificare alcuni file.${STD}"
+fi
+
+echo -e "\n------------------------------------------------"
+# Messaggio finale con attesa input dell'utente
+echo -e "${LCYAN}Fatto! Premi INVIO per uscire...${STD}"
+read -r
+exit 0

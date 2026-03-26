@@ -1,0 +1,34 @@
+#!/bin/bash
+#================================================
+#================================================
+#   O.S.      : Gnu Linux                       =
+#   Author    : Cristian Pozzessere   = ilnanny =
+#   D.A.Page  : http://ilnanny.deviantart.com   =
+#   Github    : https://github.com/ilnanny75    =
+#================================================
+#================================================
+
+echo "--- CONVERTER IMMAGINI (Inkscape 1.0+) ---"
+
+read -p "Estensione origine (svg, pdf, eps): " EXT_IN
+read -p "Estensione output (pdf, png, eps): " EXT_OUT
+read -p "DPI (es. 300): " DPI
+
+count=0
+for file in *."$EXT_IN"; do
+    [ -e "$file" ] || continue
+    filename="${file%.*}"
+
+    echo "Conversione: $file -> $filename.$EXT_OUT"
+
+    # Nuova sintassi Inkscape: --export-filename invece di -e o -A
+    if [ "$EXT_OUT" == "png" ]; then
+        inkscape "$file" --export-type="$EXT_OUT" --export-dpi="$DPI" --export-filename="$filename.$EXT_OUT"
+    else
+        inkscape "$file" --export-type="$EXT_OUT" --export-filename="$filename.$EXT_OUT"
+    fi
+    ((count++))
+done
+
+echo "Finito! Convertiti $count file."
+exit 0

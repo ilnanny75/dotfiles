@@ -1,0 +1,19 @@
+#!/bin/bash
+#================================================
+#   Author    : Cristian Pozzessere   = ilnanny =
+#   Project   : Steganografia Semplice          =
+#================================================
+
+echo "--- NASCONDI ARCHIVIO IN IMMAGINE ---"
+read -e -p "Trascina l'immagine (jpg/png): " IMG
+read -e -p "Trascina l'archivio (zip/rar): " ARC
+read -p "Nome del file finale (es. segreto.png): " OUT
+
+if [[ -f "$IMG" && -f "$ARC" ]]; then
+    cat "$IMG" "$ARC" > "$OUT"
+    echo "Fatto! Creato $OUT."
+    echo "Nota: Per estrarre i dati, apri $OUT con un gestore di archivi."
+else
+    echo "Errore: File non trovati."
+fi
+

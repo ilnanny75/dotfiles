@@ -1,0 +1,203 @@
+#!/bin/bash
+#================================================
+#   O.S.      : Gnu Linux                       =
+#   Author    : Cristian Pozzessere   = ilnanny =
+#   Github    : https://github.com/ilnanny75    =
+#================================================
+#   Progetto  : Gestione connessione WiFi        =
+#   Dipende   : NetworkManager (nmcli)           =
+#================================================
+
+# Colori
+RED='\033[0;41;30m'
+STD='\033[0;0;39m'
+GREEN='\033[1;32;3m'
+LCYAN="\e[1;36m"
+YELLOW="\e[1;33m"
+PURPLE="\e[1;35m"
+ATTENZIONE="\e[0;31m"
+
+# Controlla dipendenza nmcli
+if ! command -v nmcli &>/dev/null; then
+    echo -e "${RED} 'nmcli' non trovato. Installa NetworkManager.${STD}"
+    exit 1
+fi
+
+clear
+echo -e "${LCYAN}"
+echo " ╔══════════════════════════════════════╗"
+echo " ║       GESTIONE CONNESSIONE WiFi      ║"
+echo " ╚══════════════════════════════════════╝"
+echo -e "${STD}"
+
+# ── Mostra interfacce wireless disponibili ───────────────────────────
+echo -e "${YELLOW} Interfacce di rete wireless rilevate:${STD}"
+echo
+nmcli device status | grep wifi | while IFS= read -r riga; do
+    echo "  $riga"
+done
+echo
+
+# Menu principale
+while true; do
+    echo -e "${PURPLE} ╔══════════════════════════════════════╗"
+    echo -e "${PURPLE} ║         MENU WIFI                    ║"
+    echo -e "${PURPLE} ╠══════════════════════════════════════╣"
+    echo -e "${PURPLE} ║  [1] Scansiona reti disponibili      ║"
+    echo -e "${PURPLE} ║  [2] Connetti a una rete             ║"
+    echo -e "${PURPLE} ║  [3] Disconnetti                     ║"
+    echo -e "${PURPLE} ║  [4] Mostra connessione attiva       ║"
+    echo -e "${PURPLE} ║  [5] Mostra info scheda di rete      ║"
+    echo -e "${PURPLE} ║  [6] Abilita / Disabilita WiFi       ║"
+    echo -e "${PURPLE} ║  [0] Esci                            ║"
+    echo -e "${PURPLE} ╚══════════════════════════════════════╝${STD}"
+    echo
+    read -r -p " Scelta [0-6]: " scelta
+
+    case $scelta in
+
+        # ── SCANSIONE ────────────────────────────────────────────────
+        1)
+            echo
+            echo -e "${YELLOW} Aggiorno la lista reti WiFi...${STD}"
+            nmcli device wifi rescan 2>/dev/null
+            sleep 1
+            echo
+            echo -e "${YELLOW} Reti disponibili:${STD}"
+            echo
+            nmcli -f IN-USE,SSID,MODE,CHAN,RATE,SIGNAL,BARS,SECURITY \
+                  device wifi list 2>/dev/null
+            echo
+            read -r -p " Premi Invio per continuare..."
+            clear ;;
+
+        # ── CONNESSIONE ──────────────────────────────────────────────
+        2)
+            echo
+            # Scansiona prima
+            nmcli device wifi rescan 2>/dev/null; sleep 1
+            echo -e "${YELLOW} Reti disponibili:${STD}"
+            echo
+            nmcli -f SSID,SIGNAL,BARS,SECURITY device wifi list 2>/dev/null
+            echo
+
+            read -r -p " SSID della rete a cui connettersi: " SSID
+            if [[ -z "$SSID" ]]; then
+                echo -e "${RED} SSID non inserito.${STD}"; continue
+            fi
+
+            # Controlla se la rete è già salvata (connessione senza password)
+            if nmcli connection show "$SSID" &>/dev/null; then
+                echo -e "${LCYAN} Rete già salvata, connetto senza richiedere password...${STD}"
+                PASS=""
+            else
+                # Controlla se la rete è aperta (nessuna sicurezza)
+                SICUREZZA=$(nmcli -f SSID,SECURITY device wifi list 2>/dev/null \
+                    | grep -F "$SSID" | awk '{print $NF}')
+                if [[ -z "$SICUREZZA" || "$SICUREZZA" == "--" ]]; then
+                    echo -e "${LCYAN} Rete aperta (nessuna password).${STD}"
+                    PASS=""
+                else
+                    # Chiedi la password in modo sicuro (nascosta)
+                    read -r -s -p " Password: " PASS
+                    echo
+                fi
+            fi
+
+            echo
+            echo -e "${YELLOW} Connessione a '${SSID}'...${STD}"
+            if [[ -z "$PASS" ]]; then
+                nmcli device wifi connect "$SSID"
+            else
+                nmcli device wifi connect "$SSID" password "$PASS"
+            fi
+
+            if [[ $? -eq 0 ]]; then
+                echo -e "${GREEN} ✔ Connesso a '${SSID}'.${STD}"
+            else
+                echo -e "${RED} ✘ Connessione fallita.${STD}"
+                echo -e "${ATTENZIONE}   Verifica SSID e password.${STD}"
+            fi
+            echo
+            read -r -p " Premi Invio per continuare..."
+            clear ;;
+
+        # ── DISCONNESSIONE ───────────────────────────────────────────
+        3)
+            echo
+            # Rileva interfaccia WiFi attiva
+            IFACE=$(nmcli device status | awk '/wifi.*connected/{print $1; exit}')
+            if [[ -z "$IFACE" ]]; then
+                echo -e "${ATTENZIONE} Nessuna connessione WiFi attiva.${STD}"
+            else
+                echo -e "${YELLOW} Disconnetto '${IFACE}'...${STD}"
+                nmcli device disconnect "$IFACE" && \
+                    echo -e "${GREEN} ✔ Disconnesso.${STD}" || \
+                    echo -e "${RED} ✘ Errore durante la disconnessione.${STD}"
+            fi
+            echo
+            read -r -p " Premi Invio per continuare..."
+            clear ;;
+
+        # ── CONNESSIONE ATTIVA ───────────────────────────────────────
+        4)
+            echo
+            echo -e "${YELLOW} Connessione attiva:${STD}"
+            echo
+            nmcli connection show --active 2>/dev/null
+            echo
+            echo -e "${YELLOW} Dettagli IP:${STD}"
+            nmcli device show 2>/dev/null | grep -E "DEVICE|IP4|GATEWAY|DNS"
+            echo
+            read -r -p " Premi Invio per continuare..."
+            clear ;;
+
+        # ── INFO HARDWARE ────────────────────────────────────────────
+        5)
+            echo
+            echo -e "${YELLOW} Informazioni hardware di rete:${STD}"
+            echo
+            # Usa lshw se disponibile, altrimenti nmcli
+            if command -v lshw &>/dev/null; then
+                sudo lshw -C network 2>/dev/null
+            else
+                nmcli device show 2>/dev/null
+            fi
+            echo
+            read -r -p " Premi Invio per continuare..."
+            clear ;;
+
+        # ── ABILITA/DISABILITA ───────────────────────────────────────
+        6)
+            echo
+            STATO=$(nmcli radio wifi 2>/dev/null)
+            echo -e "${YELLOW} Stato attuale WiFi: ${GREEN}${STATO}${STD}"
+            echo
+            if [[ "$STATO" == "enabled" ]]; then
+                read -r -p " Disabilitare il WiFi? [s/N]: " risp
+                if [[ "$risp" =~ ^[sS]$ ]]; then
+                    nmcli radio wifi off && \
+                        echo -e "${RED} ● WiFi disabilitato.${STD}" || \
+                        echo -e "${RED} Errore.${STD}"
+                fi
+            else
+                read -r -p " Abilitare il WiFi? [s/N]: " risp
+                if [[ "$risp" =~ ^[sS]$ ]]; then
+                    nmcli radio wifi on && \
+                        echo -e "${GREEN} ● WiFi abilitato.${STD}" || \
+                        echo -e "${RED} Errore.${STD}"
+                fi
+            fi
+            echo
+            read -r -p " Premi Invio per continuare..."
+            clear ;;
+
+        0)
+            echo -e "${LCYAN} Uscita.${STD}"
+            echo
+            exit 0 ;;
+
+        *)
+            echo -e "${RED} Scelta non valida.${STD}"; sleep 1; clear ;;
+    esac
+done

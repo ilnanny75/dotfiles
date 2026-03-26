@@ -1,0 +1,29 @@
+#!/bin/bash
+#================================================
+#================================================
+#   O.S.      : Gnu Linux                       =
+#   Author    : Cristian Pozzessere   = ilnanny =
+#   D.A.Page  : http://ilnanny.deviantart.com   =
+#   Github    : https://github.com/ilnanny75    =
+#================================================
+#================================================
+
+[[ $(whoami) == 'root' ]] || exec sudo su -c "$0" root
+
+echo "---------------------------------------------------"
+echo "   Aggiornamento Cache Icone Lila-HD-icon-theme"
+echo "---------------------------------------------------"
+
+ICONS_PATH="/usr/share/icons"
+
+# Cerca tutte le cartelle che iniziano con Lila_HD e aggiorna la cache
+for dir in $ICONS_PATH/Lila_HD*; do
+    if [ -d "$dir" ]; then
+        theme_name=$(basename "$dir")
+        echo "Aggiornamento: $theme_name..."
+        gtk-update-icon-cache -f -q "$dir"
+    fi
+done
+
+echo -e "\nOperazione completata con successo."
+exit 0

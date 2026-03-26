@@ -1,0 +1,23 @@
+#!/bin/bash
+#================================================
+#================================================
+#   O.S.      : Gnu Linux                       =
+#   Author    : Cristian Pozzessere   = ilnanny =
+#   D.A.Page  : http://ilnanny.deviantart.com   =
+#   Github    : https://github.com/ilnanny75    =
+#================================================
+#================================================
+
+echo "--- Configurazione Rapida GIT ---"
+read -p "Nome Utente: " username
+read -p "Email: " email
+read -p "Editor preferito (nano/vim/geany): " editor
+
+git config --global user.name "$username"
+git config --global user.email "$email"
+git config --global core.editor "$editor"
+git config --global init.defaultBranch main
+
+echo -e "\nConfigurazione attuale:"
+git config --list
+exit 0

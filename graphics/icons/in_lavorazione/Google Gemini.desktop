@@ -3,5 +3,5 @@ Version=1.0
 Type=Link
 Name=Google Gemini
 Comment=
-Icon=/home/ilnanny/Immagini/gemini.svg
+Icon=~/Immagini/gemini.svg
 URL=https://gemini.google.com/app

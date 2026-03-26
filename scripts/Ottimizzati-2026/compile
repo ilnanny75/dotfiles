@@ -1,0 +1,11 @@
+#!/bin/bash
+#================================================
+#   O.S.      : Gnu Linux                       =
+#   Author    : Cristian Pozzessere   = ilnanny =
+#   D.A.Page  : http://ilnanny.deviantart.com   =
+#   Github    : https://github.com/ilnanny75    =
+#================================================
+# Compilazione dinamica basata sulla potenza della tua CPU
+CORES=$(nproc)
+./autogen.sh 2>/dev/null || ./autogen
+./configure && make -j"$CORES" && sudo make install

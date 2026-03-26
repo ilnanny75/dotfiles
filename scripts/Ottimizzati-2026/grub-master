@@ -1,0 +1,112 @@
+#!/bin/bash
+#================================================
+#================================================
+#   O.S.      : Gnu Linux                       =
+#   Author    : Cristian Pozzessere   = ilnanny =
+#   D.A.Page  : http://ilnanny.deviantart.com   =
+#   Github    : https://github.com/ilnanny75    =
+#================================================
+#   Project   : Universal GRUB Professional Tool =
+#================================================
+
+# Controllo privilegi Root
+[[ $(whoami) == 'root' ]] || exec sudo su -c "$0" root
+
+# Colori
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+CYAN='\033[0;36m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
+clear
+echo -e "${CYAN}=================================================="
+echo -e "       GRUB PROFESSIONAL MANAGER (Multi-Distro)   "
+echo -e "==================================================${NC}"
+
+# 1. Rilevamento Architettura (UEFI o BIOS)
+if [ -d "/sys/firmware/efi" ]; then
+    MODE="UEFI"
+    echo -e "Sistema rilevato: ${GREEN}UEFI${NC}"
+else
+    MODE="BIOS/Legacy"
+    echo -e "Sistema rilevato: ${YELLOW}BIOS/Legacy${NC}"
+fi
+
+# 2. Menu Principale
+echo -e "\nCosa desideri fare?"
+echo "1) Installa GRUB (Eseguibile su Disco/Partizione)"
+echo "2) Rigenera solo il file di configurazione (grub-mkconfig)"
+echo "3) Installa e Configura (Full)"
+echo "q) Esci"
+read -p "Scelta: " main_opt
+
+[[ "$main_opt" == "q" ]] && exit 0
+
+# 3. Selezione Disco
+echo -e "\n${CYAN}Elenco Dischi Disponibili:${NC}"
+lsblk -p -n -l -o NAME,SIZE,FSTYPE,MOUNTPOINT | grep -E "sd|nvme|vd"
+echo "--------------------------------------------------"
+read -p "Inserisci il device di destinazione (es. /dev/sda o /dev/nvme0n1): " TARGET_DEV
+
+if [ ! -b "$TARGET_DEV" ]; then
+    echo -e "${RED}Errore: Device non valido.${NC}"
+    exit 1
+fi
+
+# 4. Logica di Installazione Specifica
+install_grub() {
+    if [ "$MODE" == "UEFI" ]; then
+        read -p "Inserisci la partizione EFI (es. /dev/sda1): " EFI_PART
+        if [ -b "$EFI_PART" ]; then
+            # Verifica se è montata in /boot/efi
+            if ! mount | grep -q "$EFI_PART"; then
+                echo "Montaggio di $EFI_PART su /boot/efi..."
+                mount "$EFI_PART" /boot/efi 2>/dev/null
+            fi
+            grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
+        else
+            echo -e "${RED}Partizione EFI non valida.${NC}" ; return 1
+        fi
+    else
+        # Modalità BIOS
+        grub-install "$TARGET_DEV"
+    fi
+}
+
+# 5. Configurazione (Multi-Distro)
+update_config() {
+    echo -e "\n${YELLOW}Configurazione per Distribuzione...${NC}"
+
+    # Rilevamento Distro
+    if [ -f /etc/void-release ]; then
+        echo "Rilevata: Void Linux"
+    elif [ -f /etc/gentoo-release ]; then
+        echo "Rilevata: Gentoo"
+        # Gentoo spesso richiede os-prober abilitato esplicitamente
+        echo "Abilitazione os-prober in /etc/default/grub..."
+        grep -q "GRUB_DISABLE_OS_PROBER=false" /etc/default/grub || echo "GRUB_DISABLE_OS_PROBER=false" >> /etc/default/grub
+    elif [ -f /etc/arch-release ]; then
+        echo "Rilevata: Arch Linux"
+    elif [ -f /etc/debian_version ]; then
+        echo "Rilevata: Debian/Ubuntu"
+    fi
+
+    echo "Esecuzione grub-mkconfig..."
+    if command -v update-grub &> /dev/null; then
+        update-grub
+    else
+        grub-mkconfig -o /boot/grub/grub.cfg
+    fi
+}
+
+# Esecuzione in base alla scelta
+case $main_opt in
+    1) install_grub ;;
+    2) update_config ;;
+    3) install_grub && update_config ;;
+    *) echo "Uscita." ;;
+esac
+
+echo -e "\n${GREEN}Operazione completata.${NC}"
+exit 0

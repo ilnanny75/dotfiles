@@ -1,0 +1,17 @@
+#!/bin/bash
+#================================================
+#   O.S.      : Void Linux
+#   Author    : Cristian Pozzessere = ilnanny75
+#   Github    : https://github.com/ilnanny75
+#================================================
+
+TGL=$(date +'%a %d %b')
+JAM=$(date +'%H:%M')
+
+if command -v notify-send >/dev/null; then
+    notify-send "📅 $TGL" "🕒 $JAM"
+else
+    echo -e "Data: $TGL | Ora: $JAM"
+    echo "Premi INVIO per uscire..."
+    read -r
+fi

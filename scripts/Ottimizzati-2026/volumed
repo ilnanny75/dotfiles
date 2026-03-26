@@ -1,0 +1,179 @@
+#!/bin/bash
+#================================================
+#   O.S.      : Gnu Linux                       =
+#   Author    : Cristian Pozzessere   = ilnanny =
+#   Github    : https://github.com/ilnanny75    =
+#================================================
+#   Progetto  : Controllo volume con notifica   =
+#   Dipende   : dunst, amixer o pactl/wpctl     =
+#   Uso       : volumed [+5%|-5%|toggle|get]    =
+#================================================
+
+# ID notifica univoco (deve essere consistente tra le chiamate)
+MSG_ID="991049"
+
+# Icone (nomi standard freedesktop)
+ICONA_MUTO="audio-volume-muted"
+ICONA_BASSO="audio-volume-low"
+ICONA_MEDIO="audio-volume-medium"
+ICONA_ALTO="audio-volume-high"
+
+# ── Funzione: barra di progresso testuale ────────────────────────────
+# Genera una barra tipo: [████████░░] per il volume
+progress_bar() {
+    local valore="$1"   # 0-100
+    local lunghezza=10
+    local riempiti=$(( valore * lunghezza / 100 ))
+    local vuoti=$(( lunghezza - riempiti ))
+    local barra=""
+    for (( i=0; i<riempiti; i++ )); do barra+="█"; done
+    for (( i=0; i<vuoti;    i++ )); do barra+="░"; done
+    echo "[${barra}]"
+}
+
+# ── Rileva backend audio disponibile ────────────────────────────────
+# Priorità: wpctl (PipeWire) > pactl (PulseAudio) > amixer (ALSA)
+if command -v wpctl &>/dev/null; then
+    BACKEND="pipewire"
+elif command -v pactl &>/dev/null; then
+    BACKEND="pulse"
+elif command -v amixer &>/dev/null; then
+    BACKEND="alsa"
+else
+    echo "Errore: nessun backend audio trovato (amixer, pactl, wpctl)." >&2
+    exit 1
+fi
+
+# ── Funzioni per ogni backend ────────────────────────────────────────
+
+cambia_volume_pipewire() {
+    local azione="$1"
+    case "$azione" in
+        toggle) wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle ;;
+        get)    : ;;  # solo lettura
+        *)      wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ "$azione" ;;
+    esac
+}
+
+get_stato_pipewire() {
+    local raw
+    raw=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null)
+    # Output tipo: "Volume: 0.75 [MUTED]" oppure "Volume: 0.75"
+    local vol_float muto=0
+    vol_float=$(echo "$raw" | awk '{print $2}')
+    echo "$raw" | grep -q "MUTED" && muto=1
+    # Converti 0-1 in percentuale
+    local volume
+    volume=$(python3 -c "print(int(${vol_float}*100))" 2>/dev/null || \
+             awk "BEGIN{printf \"%d\", ${vol_float}*100}")
+    echo "$volume $muto"
+}
+
+cambia_volume_pulse() {
+    local azione="$1"
+    local sink
+    sink=$(pactl get-default-sink 2>/dev/null)
+    case "$azione" in
+        toggle) pactl set-sink-mute "$sink" toggle ;;
+        get)    : ;;
+        *)      pactl set-sink-volume "$sink" "$azione" ;;
+    esac
+}
+
+get_stato_pulse() {
+    local sink
+    sink=$(pactl get-default-sink 2>/dev/null)
+    local volume muto
+    volume=$(pactl get-sink-volume "$sink" 2>/dev/null \
+             | grep -oP '\d+(?=%)' | head -1)
+    muto=$(pactl get-sink-mute "$sink" 2>/dev/null \
+           | awk '{print ($2=="yes") ? 1 : 0}')
+    echo "${volume:-0} ${muto:-0}"
+}
+
+cambia_volume_alsa() {
+    local azione="$1"
+    case "$azione" in
+        toggle) amixer -c 0 set Master toggle > /dev/null ;;
+        get)    : ;;
+        *)      amixer -c 0 set Master "$azione" > /dev/null ;;
+    esac
+}
+
+get_stato_alsa() {
+    local volume muto
+    volume=$(amixer -c 0 get Master 2>/dev/null \
+             | tail -1 | awk '{print $4}' | sed 's/[^0-9]//g')
+    muto=$(amixer -c 0 get Master 2>/dev/null \
+           | tail -1 | awk '{print $6}' | sed 's/[^a-z]//g')
+    local muto_flag=0
+    [[ "$muto" == "off" || -z "$volume" || "$volume" == "0" ]] && muto_flag=1
+    echo "${volume:-0} $muto_flag"
+}
+
+# ── Main ─────────────────────────────────────────────────────────────
+
+# Argomento: +5%, -5%, 5%+, toggle, get, o qualsiasi valore amixer/pactl
+AZIONE="${1:-get}"
+
+# Applica la modifica
+case "$BACKEND" in
+    pipewire) cambia_volume_pipewire "$AZIONE" ;;
+    pulse)    cambia_volume_pulse    "$AZIONE" ;;
+    alsa)     cambia_volume_alsa     "$AZIONE" ;;
+esac
+
+# Leggi stato aggiornato
+case "$BACKEND" in
+    pipewire) read -r VOLUME MUTO < <(get_stato_pipewire) ;;
+    pulse)    read -r VOLUME MUTO < <(get_stato_pulse)    ;;
+    alsa)     read -r VOLUME MUTO < <(get_stato_alsa)     ;;
+esac
+
+VOLUME="${VOLUME:-0}"
+MUTO="${MUTO:-0}"
+
+# Scegli icona in base al livello
+if [[ $MUTO -eq 1 || $VOLUME -eq 0 ]]; then
+    ICONA="$ICONA_MUTO"
+elif [[ $VOLUME -lt 30 ]]; then
+    ICONA="$ICONA_BASSO"
+elif [[ $VOLUME -lt 70 ]]; then
+    ICONA="$ICONA_MEDIO"
+else
+    ICONA="$ICONA_ALTO"
+fi
+
+# Genera barra di progresso
+BARRA=$(progress_bar "$VOLUME")
+
+# Invia notifica con dunst (se disponibile)
+if command -v dunstify &>/dev/null; then
+    if [[ $MUTO -eq 1 || $VOLUME -eq 0 ]]; then
+        dunstify -a "volumed" -u low -i "$ICONA" -r "$MSG_ID" "🔇 Volume muto"
+    else
+        dunstify -a "volumed" -u low -i "$ICONA" -r "$MSG_ID" \
+            "🔊 Volume: ${VOLUME}%" "$BARRA"
+    fi
+elif command -v notify-send &>/dev/null; then
+    # Fallback a notify-send se dunst non è disponibile
+    if [[ $MUTO -eq 1 || $VOLUME -eq 0 ]]; then
+        notify-send -i "$ICONA" -t 1500 "Volume muto" ""
+    else
+        notify-send -i "$ICONA" -t 1500 "Volume: ${VOLUME}%" "$BARRA"
+    fi
+fi
+
+# Suono di feedback (se canberra-gtk-play è disponibile)
+if command -v canberra-gtk-play &>/dev/null; then
+    canberra-gtk-play -i audio-volume-change -d "volumed" &>/dev/null &
+fi
+
+# Output per script/barre di stato (es. polybar, i3blocks)
+if [[ $MUTO -eq 1 || $VOLUME -eq 0 ]]; then
+    echo "MUTO"
+else
+    echo "${VOLUME}%"
+fi
+
+exit 0

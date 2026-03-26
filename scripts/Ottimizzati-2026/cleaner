@@ -1,0 +1,17 @@
+#!/bin/bash
+#================================================
+#   O.S.      : Gnu Linux                       =
+#   Author    : Cristian Pozzessere   = ilnanny =
+#   D.A.Page  : http://ilnanny.deviantart.com   =
+#   Github    : https://github.com/ilnanny75    =
+#================================================
+echo "Pulizia sicura in corso..."
+# Meglio non toccare /tmp/ con sudo se non necessario
+rm -rf ~/.cache/* # Svuota i cestini in modo corretto (se installato gio)
+if command -v gio &> /dev/null; then
+    gio trash --empty
+else
+    rm -rf ~/.local/share/Trash/files/*
+fi
+sudo update-desktop-database
+echo "Fatto!"

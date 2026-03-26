@@ -1,0 +1,23 @@
+#!/bin/bash
+#================================================
+#   O.S.      : Gnu Linux                       =
+#   Author    : Cristian Pozzessere < ilnanny > =
+#   D.A.Page  : http://ilnanny.deviantart.com   =
+#   Github    : https://github.com/ilnanny75    =
+#================================================
+
+clear
+echo "--- SCOPRI CHE GIORNO ERA ---"
+read -p "Giorno (GG): " gg
+read -p "Mese (MM): " mm
+read -p "Anno (AAAA): " aaaa
+
+# Calcolo usando il comando date di sistema
+GIORNO_ITA=$(date -d "$aaaa-$mm-$gg" +"%A" 2>/dev/null)
+
+if [ $? -eq 0 ]; then
+    echo -e "\nIl $gg/$mm/$aaaa era un: **$GIORNO_ITA**"
+else
+    echo "Data non valida."
+fi
+exit 0

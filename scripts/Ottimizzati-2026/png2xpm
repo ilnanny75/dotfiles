@@ -1,0 +1,21 @@
+#!/bin/bash
+# Converte icone PNG in XPM per temi finestre (xfwm4/openbox)
+# Dipende da: imagemagick
+
+echo "Conversione icone in corso..."
+
+for f in *.png; do
+    [ -e "$f" ] || continue
+    case "$f" in
+        close-*|hide-*|maximize-*)
+            echo "Convertendo pulsante: $f"
+            convert "$f" -resize 12x12^ -background transparent -gravity center -extent 20x24 "${f%.*}.xpm"
+            ;;
+        title-*|top-*)
+            echo "Convertendo bordo: $f"
+            convert "$f" -background transparent "${f%.*}.xpm"
+            ;;
+    esac
+done
+
+echo "Fatto!"

@@ -1,0 +1,107 @@
+#!/bin/bash
+#================================================
+#   O.S.      : Gnu Linux                       =
+#   Author    : Cristian Pozzessere   = ilnanny =
+#   Github    : https://github.com/ilnanny75    =
+#================================================
+#   Progetto  : Test audio speaker              =
+#   Dipende   : alsa-utils (speaker-test)       =
+#================================================
+
+# Colori
+RED='\033[0;41;30m'
+STD='\033[0;0;39m'
+GREEN='\033[1;32;3m'
+LCYAN="\e[1;36m"
+YELLOW="\e[1;33m"
+PURPLE="\e[1;35m"
+ATTENZIONE="\e[0;31m"
+
+# Controlla dipendenza
+if ! command -v speaker-test &>/dev/null; then
+    echo -e "${RED} 'speaker-test' non trovato. Installa alsa-utils.${STD}"
+    exit 1
+fi
+
+clear
+echo -e "${LCYAN}"
+echo " ╔══════════════════════════════════════╗"
+echo " ║          TEST AUDIO SPEAKER          ║"
+echo " ╚══════════════════════════════════════╝"
+echo -e "${STD}"
+
+# --- DISPOSITIVO ---
+echo -e "${YELLOW} Dispositivi audio disponibili (ALSA):${STD}"
+echo
+# Mostra le schede audio disponibili
+aplay -l 2>/dev/null | grep "^card" | while IFS= read -r riga; do
+    echo "  $riga"
+done || echo "  (impossibile rilevare dispositivi)"
+echo
+echo "  [1] Default (surround51)"
+echo "  [2] Scegli dispositivo manualmente"
+read -r -p " Scelta [1-2, default=1]: " scelta_dev
+if [[ "$scelta_dev" == "2" ]]; then
+    read -r -p " Inserisci dispositivo (es. hw:0,0 o plughw:1,0): " DEVICE
+    DEVICE="${DEVICE:-surround51}"
+else
+    DEVICE="surround51"
+fi
+
+# --- CANALI ---
+echo
+echo -e "${YELLOW} Numero di canali:${STD}"
+echo "  [1] 2 canali (stereo)"
+echo "  [2] 4 canali"
+echo "  [3] 6 canali (5.1 surround)"
+echo "  [4] 8 canali (7.1 surround)"
+read -r -p " Scelta [1-4, default=3]: " scelta_canali
+case $scelta_canali in
+    1) CANALI=2 ;;
+    2) CANALI=4 ;;
+    4) CANALI=8 ;;
+    *) CANALI=6 ;;
+esac
+
+# --- TIPO DI TEST ---
+echo
+echo -e "${YELLOW} Tipo di segnale:${STD}"
+echo "  [1] wav (voce che annuncia ogni canale — default)"
+echo "  [2] sine (tono sinusoidale)"
+echo "  [3] pink (rumore rosa)"
+read -r -p " Scelta [1-3, default=1]: " scelta_tipo
+case $scelta_tipo in
+    2) TIPO="sine" ;;
+    3) TIPO="pink" ;;
+    *) TIPO="wav" ;;
+esac
+
+# Riepilogo
+echo
+echo -e "${PURPLE} ╔══════════════════════════════════════╗"
+echo -e "${PURPLE} ║         RIEPILOGO TEST AUDIO         ║"
+echo -e "${PURPLE} ╠══════════════════════════════════════╣"
+printf  "${PURPLE} ║  %-12s: %-23s║\n${STD}" "Dispositivo" "$DEVICE"
+printf  "${PURPLE} ║  %-12s: %-23s║\n${STD}" "Canali"      "$CANALI"
+printf  "${PURPLE} ║  %-12s: %-23s║\n${STD}" "Segnale"     "$TIPO"
+echo -e "${PURPLE} ╚══════════════════════════════════════╝${STD}"
+echo
+echo -e "${ATTENZIONE} Per INTERROMPERE il test premi Ctrl+C${STD}"
+echo
+read -r -p " Avvia test? [s/N]: " conferma
+if [[ ! "$conferma" =~ ^[sS]$ ]]; then
+    echo -e "${RED} Operazione annullata.${STD}"; exit 0
+fi
+
+echo
+echo -e "${GREEN} Avvio test audio...${STD}"
+echo
+
+# Avvia il test
+speaker-test -t "$TIPO" -c "$CANALI" -D "$DEVICE"
+
+echo
+echo -e "${GREEN} ✔ Test completato.${STD}"
+echo
+
+exit 0

@@ -1,0 +1,25 @@
+#!/bin/bash
+#==========================================================
+# Author    : Cristian Pozzessere (ilnanny)
+# Function  : Cambia i colori HEX in massa nei file SVG (Ricorsivo)
+# Usage     : colorchange VECCHIO NUOVO (senza o con #)
+#==========================================================
+
+# Controllo argomenti
+if [ -z "$1" ] || [ -z "$2" ]; then
+    echo -e "\e[31mUtilizzo:\e[0m colorchange colore_vecchio colore_nuovo"
+    echo -e "\e[33mEsempio:\e[0m colorchange 359bfa C094C0"
+    exit 1
+fi
+
+# Pulizia input: togliamo il # se l'utente lo ha messo, lo rimetteremo noi dopo
+# Questo evita che Bash faccia confusione con i commenti
+OLD="${1#\#}"
+NEW="${2#\#}"
+
+echo -e "\e[32m🚀 Sostituzione di #$OLD con #$NEW in corso...\e[0m"
+
+# Troviamo tutti i file .svg (anche nelle sottocartelle) e cambiamo il colore
+find . -type f -name "*.svg" -exec sed -i "s/#$OLD/#$NEW/gI" {} +
+
+echo -e "\e[32m✅ Fatto!\e[0m Ora puoi aggiornare la cache delle icone."

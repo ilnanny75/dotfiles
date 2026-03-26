@@ -1,0 +1,40 @@
+#!/bin/bash
+#================================================
+#================================================
+#   O.S.      : Gnu Linux                       =
+#   Author    : Cristian Pozzessere   = ilnanny =
+#   D.A.Page  : http://ilnanny.deviantart.com   =
+#   Github    : https://github.com/ilnanny75    =
+#================================================
+#   Dipende  : ntfsprogs                        =
+#================================================
+
+# Controllo e acquisizione privilegi di Root
+set -o errexit
+[[ $(whoami) == 'root' ]] || exec sudo su -c "$0" root
+
+echo "###################################################"
+echo "#         RIPRISTINO E PULIZIA DRIVE NTFS         #"
+echo "###################################################"
+
+# Smontaggio e riparazione partizione (es. sdb1)
+# NOTA: Assicurati che /dev/sdb1 sia il disco corretto prima di procedere
+if mount | grep -q "/dev/sdb1"; then
+    echo "Smontaggio /dev/sdb1..."
+    umount /dev/sdb1
+fi
+
+echo "Esecuzione ntfsfix..."
+ntfsfix /dev/sdb1
+
+echo "Rimontaggio partizioni..."
+mount -a
+
+# Sincronizzazione finale e svuotamento cache
+sync
+echo 3 > /proc/sys/vm/drop_caches
+
+echo "###################################################"
+echo "#             FATTO; CHIUDI IL TERMINALE          #"
+echo "###################################################"
+exit 0

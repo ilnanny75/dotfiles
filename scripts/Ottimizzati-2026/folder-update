@@ -1,0 +1,20 @@
+#!/bin/bash
+#================================================
+#================================================
+#   O.S.      : Gnu Linux                       =
+#   Author    : Cristian Pozzessere   = ilnanny =
+#   D.A.Page  : http://ilnanny.deviantart.com   =
+#   Github    : https://github.com/ilnanny75    =
+#================================================
+#================================================
+
+# Esegue il comando sed per aggiornare i colori (esempio)
+sed -i "s/#e0a55a/#359bfa/g" *.svg 2>/dev/null
+
+# Aggiorna la cache delle icone se ti trovi in una cartella icone
+if [ -f "icon-theme.cache" ]; then
+    sudo gtk-update-icon-cache ./
+fi
+
+echo "Aggiornamento cartelle completato."
+exit 0

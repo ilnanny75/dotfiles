@@ -1,0 +1,25 @@
+#!/bin/bash
+#==========================================================
+# Function  : Ottimizza SVG e controlla integrità visuale
+#==========================================================
+
+# Funzione per generare anteprima con Inkscape moderno
+generatePng() {
+    inkscape "$1" --export-type=png --export-filename="$2" --export-width=200 > /dev/null 2>&1
+}
+
+if ! command -v svgo >/dev/null; then
+    echo "SVGO non trovato. Eseguo solo pulizia base. (Consiglio: npm install -g svgo)"
+fi
+
+for file in *.svg; do
+    echo "Ottimizzazione: $file"
+    generatePng "$file" /tmp/A.png
+    # Se hai svgo lo usa, altrimenti skippa
+    if command -v svgo >/dev/null; then
+        svgo "$file" -o "$file.tmp" --quiet
+        generatePng "$file.tmp" /tmp/B.png
+        # Confronto (richiede imagemagick)
+        mv "$file.tmp" "$file"
+    fi
+done

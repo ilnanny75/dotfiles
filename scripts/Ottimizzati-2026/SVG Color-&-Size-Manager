@@ -1,0 +1,78 @@
+#!/bin/bash
+#================================================
+#   O.S.      : Gnu Linux                       =
+#   Author    : Cristian Pozzessere   = ilnanny =
+#   Github    : https://github.com/ilnanny75    =
+#================================================
+
+# Colori per l'interfaccia
+CYAN='\033[0;36m'
+YELLOW='\033[1;33m'
+RESET='\033[0m'
+
+# Funzione per mostrare un'anteprima colore
+preview_color() {
+    # Crea un quadratino colorato nel terminale usando codici HEX approssimati
+    printf "  \e[48;2;%d;%d;%dm   \e[0m %s\n" "$1" "$2" "$3" "$4"
+}
+
+clear
+echo -e "${CYAN}=================================================="
+echo -e "       SVG STRING CHANGER - INTERACTIVE           "
+echo -e "==================================================${RESET}"
+
+# Controllo file
+count=$(ls -1 *.svg 2>/dev/null | wc -l)
+if [ "$count" -eq 0 ]; then
+    echo -e "${YELLOW}Attenzione: Nessun file .svg trovato qui.${RESET}"
+    exit 1
+fi
+echo -e "File pronti per la modifica: $count\n"
+
+echo -e "Cosa desideri modificare?"
+echo "1) Dimensioni (es. da 64px a 96px)"
+echo "2) Colore Palette (Sostituisci lo standard #e0a55a)"
+echo "3) Evoluzione Colori Specifici (Arancio -> Blu)"
+echo "q) Esci"
+read -p "Scegli un'opzione: " opt
+
+case $opt in
+    1)
+        read -p "Inserisci dimensione attuale (es. 64px): " old_size
+        read -p "Inserisci nuova dimensione (es. 96px): " new_size
+        sed -i "s/$old_size/$new_size/g" *.svg
+        echo "Dimensioni aggiornate!"
+        ;;
+    2)
+        echo -e "\n${YELLOW}Scegli il nuovo colore per sostituire lo standard (#e0a55a):${RESET}"
+        # Anteprime colori (R G B Nome)
+        preview_color 53 155 250 "1) Blue   (#359bfa)"
+        preview_color 46 141 19  "2) Green  (#2e8d13)"
+        preview_color 222 201 147 "3) Kaki   (#dec993)"
+        preview_color 78 85 88   "4) Dark   (#4E5558)"
+        preview_color 192 148 192 "5) Purple (#C094C0)"
+        read -p "Scegli (1-5): " col_opt
+
+        case $col_opt in
+            1) new_col="#359bfa" ;;
+            2) new_col="#2e8d13" ;;
+            3) new_col="#dec993" ;;
+            4) new_col="#4E5558" ;;
+            5) new_col="#C094C0" ;;
+            *) echo "Annullato."; exit 1 ;;
+        esac
+        sed -i "s/#e0a55a/$new_col/g" *.svg
+        echo "Colore aggiornato a $new_col!"
+        ;;
+    3)
+        echo "Eseguo evoluzione colori standard (Arancio -> Blu)..."
+        sed -i "s/#f4ae3f/#3faff4/g" *.svg
+        sed -i "s/#da8c1f/#1f92da/g" *.svg
+        sed -i "s/#8c3d00/#00568c/g" *.svg
+        echo "Evoluzione completata."
+        ;;
+    q) exit 0 ;;
+    *) echo "Opzione non valida." ;;
+esac
+
+exit 0

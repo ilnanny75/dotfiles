@@ -1,0 +1,24 @@
+#!/bin/bash
+#================================================
+#   Author    : Cristian Pozzessere   = ilnanny =
+#   Project   : Screenshot Pro                  =
+#================================================
+
+SAVE_DIR="$HOME/Immagini/Screenshots"
+mkdir -p "$SAVE_DIR"
+
+take_ss() {
+    # -u nasconde il cursore, -d aggiunge un ritardo
+    scrot "$SAVE_DIR/screenshot_%Y-%m-%d_%H%M%S.png" -d 3 -c -u "$1"
+}
+
+notify_user() {
+    notify-send -i camera-photo "Screenshot Catturato" "Salvato in $SAVE_DIR"
+}
+
+case "$1" in
+    -s) # Selezione area con il mouse
+        take_ss "-s" && notify_user ;;
+    *)  # Schermo intero
+        take_ss "" && notify_user ;;
+esac

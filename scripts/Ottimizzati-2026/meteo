@@ -1,0 +1,20 @@
+#!/bin/bash
+#================================================
+#   Author    : Cristian Pozzessere   = ilnanny =
+#   Project   : Meteo Interattivo               =
+#================================================
+
+# Se non passi argomenti, usa la tua posizione attuale, altrimenti usa la città scelta
+CITY=${1:-""}
+
+echo "--- PREVISIONI METEO ---"
+if [ -z "$CITY" ]; then
+    # Meteo basato su IP (automatico)
+    curl -s "wttr.in/?lang=it"
+else
+    # Meteo città specifica
+    curl -s "wttr.in/$CITY?lang=it"
+fi
+
+echo -e "\n------------------------"
+read -p "Premi Invio per uscire..."

@@ -1,0 +1,74 @@
+#!/bin/bash
+#================================================
+#   O.S.      : Gnu Linux                       =
+#   Author    : Cristian Pozzessere   = ilnanny =
+#   Github    : https://github.com/ilnanny75    =
+#================================================
+#   Progetto  : Cerca script bash nel sistema   =
+#   Salva la lista nella home utente            =
+#================================================
+
+# Colori
+STD='\033[0;0;39m'
+GREEN='\033[1;32;3m'
+LCYAN="\e[1;36m"
+YELLOW="\e[1;33m"
+ATTENZIONE="\e[0;31m"
+PURPLE="\e[1;35m"
+
+# File di output nella home dell'utente (anche se lanciato come root)
+# Usa SUDO_USER se disponibile, altrimenti HOME
+UTENTE="${SUDO_USER:-$USER}"
+HOME_UTENTE=$(getent passwd "$UTENTE" | cut -d: -f6)
+OUTPUT_FILE="${HOME_UTENTE}/lista_script.txt"
+
+clear
+echo -e "${LCYAN}"
+echo " ╔══════════════════════════════════════════╗"
+echo " ║   RICERCA SCRIPT BASH NEL SISTEMA        ║"
+echo " ╚══════════════════════════════════════════╝"
+echo -e "${STD}"
+echo -e "${YELLOW} Cerco script bash/sh nelle directory del PATH...${STD}"
+echo
+
+# Azzera il file di output
+: > "$OUTPUT_FILE"
+
+# Contatore
+contatore=0
+
+# Scorre tutte le directory nel PATH
+IFS=':' read -ra DIRS <<< "$PATH"
+for dir in "${DIRS[@]}"; do
+    # Salta directory non esistenti
+    [[ -d "$dir" ]] || continue
+
+    while IFS= read -r -d '' script; do
+        # Verifica che sia un file leggibile
+        [[ -f "$script" && -r "$script" ]] || continue
+
+        # Controlla se ha uno shebang bash o sh (prime 2 righe per sicurezza)
+        if head -2 "$script" | grep -qE '^#!\s*/.*\b(bash|sh)\b'; then
+            echo "$script"
+            echo "$script" >> "$OUTPUT_FILE"
+            (( contatore++ ))
+        fi
+    done < <(find "$dir" -maxdepth 1 -print0 2>/dev/null)
+done
+
+# Rimuovi duplicati dal file
+sort -u "$OUTPUT_FILE" -o "$OUTPUT_FILE"
+contatore=$(wc -l < "$OUTPUT_FILE")
+
+echo
+echo -e "${PURPLE} ╔══════════════════════════════════════════╗"
+printf  "${PURPLE} ║  %-40s║\n${STD}" "Script trovati: ${contatore}"
+printf  "${PURPLE} ║  %-40s║\n${STD}" "Lista salvata: $(basename "$OUTPUT_FILE")"
+printf  "${PURPLE} ║  %-40s║\n${STD}" "Percorso: ${HOME_UTENTE}/"
+echo -e "${PURPLE} ╚══════════════════════════════════════════╝${STD}"
+echo
+echo -e "${GREEN} ✔ Completato!${STD}"
+echo -e "${LCYAN}   Puoi visualizzare la lista con: cat ${OUTPUT_FILE}${STD}"
+echo
+
+exit 0

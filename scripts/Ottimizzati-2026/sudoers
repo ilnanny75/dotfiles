@@ -1,0 +1,109 @@
+#!/bin/bash
+#================================================
+#   O.S.      : Gnu Linux                       =
+#   Author    : Cristian Pozzessere   = ilnanny =
+#   Github    : https://github.com/ilnanny75    =
+#================================================
+#   Progetto  : Abilita richiesta password sudo =
+#================================================
+
+# Colori
+RED='\033[0;41;30m'
+STD='\033[0;0;39m'
+GREEN='\033[1;32;3m'
+LCYAN="\e[1;36m"
+YELLOW="\e[1;33m"
+ATTENZIONE="\e[0;31m"
+
+# Controlla i privilegi di root
+if [[ $EUID -ne 0 ]]; then
+    echo -e "${ATTENZIONE} Questo script richiede i permessi di root.${STD}"
+    exec sudo bash "$0" "$@"
+    exit 1
+fi
+
+clear
+echo -e "${LCYAN}"
+echo " ╔══════════════════════════════════════════╗"
+echo " ║       GESTIONE SUDO - RICHIESTA PASSWORD ║"
+echo " ╚══════════════════════════════════════════╝"
+echo -e "${STD}"
+
+SUDOERS="/etc/sudoers"
+
+# Verifica che il file sudoers esista e sia leggibile
+if [[ ! -f "$SUDOERS" ]]; then
+    echo -e "${RED} File $SUDOERS non trovato!${STD}"
+    exit 1
+fi
+
+# Mostra lo stato attuale della riga %wheel
+echo -e "${YELLOW} Stato attuale in /etc/sudoers:${STD}"
+echo
+grep "wheel" "$SUDOERS" | while IFS= read -r riga; do
+    echo "  $riga"
+done
+echo
+
+# Determina automaticamente se NOPASSWD è attivo o meno
+if grep -qE "^%wheel ALL=\(ALL\) NOPASSWD: ALL" "$SUDOERS"; then
+    STATO_ATTUALE="NOPASSWD attivo (nessuna password richiesta)"
+    AZIONE_DISPONIBILE="Abilitare la richiesta di password (commentare NOPASSWD)"
+    MODALITA="abilita_password"
+elif grep -qE "^#\s*%wheel ALL=\(ALL\) NOPASSWD: ALL" "$SUDOERS"; then
+    STATO_ATTUALE="NOPASSWD commentato (password richiesta)"
+    AZIONE_DISPONIBILE="Disabilitare la richiesta di password (rimuovere commento)"
+    MODALITA="disabilita_password"
+else
+    echo -e "${ATTENZIONE} Riga '%wheel ALL=(ALL) NOPASSWD: ALL' non trovata in sudoers.${STD}"
+    echo -e "${LCYAN} Verifica manualmente il file con: visudo${STD}"
+    exit 1
+fi
+
+echo -e "${YELLOW} Stato attuale  : ${STD}${STATO_ATTUALE}"
+echo -e "${YELLOW} Azione possibile: ${STD}${AZIONE_DISPONIBILE}"
+echo
+read -r -p " Procedere? [s/N]: " conferma
+if [[ ! "$conferma" =~ ^[sS]$ ]]; then
+    echo -e "${RED} Operazione annullata.${STD}"; exit 0
+fi
+
+# Backup preventivo di sudoers
+BACKUP="${SUDOERS}.bak.$(date +%Y%m%d_%H%M%S)"
+cp "$SUDOERS" "$BACKUP"
+echo -e "${LCYAN} Backup creato: ${BACKUP}${STD}"
+
+# Modifica sicura tramite file temporaneo (mai modificare sudoers direttamente con sed -i)
+TMPFILE=$(mktemp)
+trap "rm -f '$TMPFILE'" EXIT
+
+case $MODALITA in
+    abilita_password)
+        # Commenta la riga NOPASSWD: abilita la richiesta di password
+        sed 's/^%wheel ALL=(ALL) NOPASSWD: ALL/# %wheel ALL=(ALL) NOPASSWD: ALL/' "$SUDOERS" > "$TMPFILE"
+        ;;
+    disabilita_password)
+        # Decommenta la riga NOPASSWD: disabilita la richiesta di password
+        sed 's/^#\s*%wheel ALL=(ALL) NOPASSWD: ALL/%wheel ALL=(ALL) NOPASSWD: ALL/' "$SUDOERS" > "$TMPFILE"
+        ;;
+esac
+
+# Valida la sintassi del file temporaneo prima di applicarlo
+if visudo -c -f "$TMPFILE" &>/dev/null; then
+    cp "$TMPFILE" "$SUDOERS"
+    chmod 440 "$SUDOERS"
+    echo
+    echo -e "${GREEN} ✔ /etc/sudoers aggiornato correttamente.${STD}"
+    echo
+    echo -e "${YELLOW} Nuovo stato:${STD}"
+    grep "wheel" "$SUDOERS" | while IFS= read -r riga; do
+        echo "  $riga"
+    done
+else
+    echo -e "${RED} ✘ Errore di sintassi nel file generato. Nessuna modifica applicata.${STD}"
+    echo -e "${LCYAN}   Il backup è disponibile in: ${BACKUP}${STD}"
+    exit 1
+fi
+
+echo
+exit 0

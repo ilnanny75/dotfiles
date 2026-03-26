@@ -1,0 +1,116 @@
+#!/bin/bash
+#================================================
+#   O.S.      : Gnu Linux                       =
+#   Author    : Cristian Pozzessere   = ilnanny =
+#   Github    : https://github.com/ilnanny75    =
+#================================================
+#   Progetto  : Elimina file swap di Vim/Neovim =
+#================================================
+
+# Colori
+RED='\033[0;41;30m'
+STD='\033[0;0;39m'
+GREEN='\033[1;32;3m'
+LCYAN="\e[1;36m"
+YELLOW="\e[1;33m"
+PURPLE="\e[1;35m"
+ATTENZIONE="\e[0;31m"
+
+clear
+echo -e "${LCYAN}"
+echo " ╔══════════════════════════════════════╗"
+echo " ║    PULIZIA FILE SWAP VIM / NEOVIM    ║"
+echo " ╚══════════════════════════════════════╝"
+echo -e "${STD}"
+
+# --- DIRECTORY DI RICERCA ---
+read -r -p " Directory da pulire (Invio = directory corrente): " DIR
+DIR="${DIR:-.}"
+
+if [[ ! -d "$DIR" ]]; then
+    echo -e "${RED} Directory '$DIR' non trovata!${STD}"
+    exit 1
+fi
+
+# --- RICERCA RICORSIVA O NO ---
+echo
+echo -e "${YELLOW} Modalità di ricerca:${STD}"
+echo "  [1] Solo directory corrente (non ricorsiva)"
+echo "  [2] Ricerca ricorsiva nelle sottocartelle"
+read -r -p " Scelta [1-2, default=1]: " modalita
+
+if [[ "$modalita" == "2" ]]; then
+    PROFONDITA=""
+    DESCR="ricorsiva"
+else
+    PROFONDITA="-maxdepth 1"
+    DESCR="non ricorsiva"
+fi
+
+echo
+echo -e "${YELLOW} Cerco file swap (ricerca ${DESCR}) in: ${DIR}${STD}"
+echo
+
+# Raccoglie tutti i file swap di vim in un array
+# Pattern coperti:
+#   *.sw[klmnop]       — swap standard vim
+#   .*.sw[a-p]         — swap nascosti vim
+#   .*.s[a-v][a-z]     — swap neovim (es. .file.saa)
+mapfile -t SWAP_FILES < <(
+    # shellcheck disable=SC2086
+    find "$DIR" $PROFONDITA -type f \( \
+        -name "*.sw[klmnop]"        \
+        -o -name ".*.sw[a-p]"       \
+        -o -name ".*.s[a-v][a-z]"   \
+    \) | sort
+)
+
+if [[ ${#SWAP_FILES[@]} -eq 0 ]]; then
+    echo -e "${GREEN} ✔ Nessun file swap trovato. Directory già pulita!${STD}"
+    echo
+    exit 0
+fi
+
+# Mostra anteprima
+echo -e "${YELLOW} File swap trovati: ${#SWAP_FILES[@]}${STD}"
+echo
+for f in "${SWAP_FILES[@]}"; do
+    # Mostra anche data modifica e dimensione
+    printf "  ${ATTENZIONE}%-60s${STD}  %s\n" \
+        "${f#$DIR/}" \
+        "$(stat --format='%s byte  %y' "$f" 2>/dev/null | cut -d. -f1)"
+done
+
+echo
+read -r -p " Eliminare tutti questi file? [s/N]: " conferma
+if [[ ! "$conferma" =~ ^[sS]$ ]]; then
+    echo -e "${RED} Operazione annullata.${STD}"; exit 0
+fi
+
+# Eliminazione
+echo
+eliminati=0
+errori=0
+for f in "${SWAP_FILES[@]}"; do
+    if rm -f "$f" 2>/dev/null; then
+        printf "  ${GREEN}✔ Eliminato: %s${STD}\n" "${f#$DIR/}"
+        (( eliminati++ ))
+    else
+        printf "  ${RED}✘ Errore su: %s${STD}\n" "${f#$DIR/}"
+        (( errori++ ))
+    fi
+done
+
+# Riepilogo
+echo
+echo -e "${PURPLE} ╔══════════════════════════════════════╗"
+echo -e "${PURPLE} ║         RIEPILOGO PULIZIA            ║"
+echo -e "${PURPLE} ╠══════════════════════════════════════╣"
+printf  "${PURPLE} ║  %-20s: %-15s║\n${STD}" "Eliminati"  "$eliminati"
+printf  "${PURPLE} ║  %-20s: %-15s║\n${STD}" "Errori"     "$errori"
+echo -e "${PURPLE} ╚══════════════════════════════════════╝${STD}"
+echo
+echo -e "${GREEN} ✔ Pulizia completata.${STD}"
+echo
+
+exit 0

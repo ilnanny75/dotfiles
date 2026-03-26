@@ -1,0 +1,202 @@
+#!/bin/bash
+#================================================
+#   O.S.      : Gnu Linux                       =
+#   Author    : Cristian Pozzessere   = ilnanny =
+#   Github    : https://github.com/ilnanny75    =
+#================================================
+#   Progetto  : Elenca dispositivi USB dal sysfs=
+#================================================
+
+# Colori
+STD='\033[0;0;39m'
+GREEN='\033[1;32;3m'
+LCYAN="\e[1;36m"
+YELLOW="\e[1;33m"
+PURPLE="\e[1;35m"
+
+# ── Funzioni helper ──────────────────────────────────────────────────
+
+# Stampa una stringa da un file sysfs (se esiste)
+print_string() {
+    local file="$1"
+    local name="$2"
+    [[ -f "$file" ]] && echo "S:  ${name}=$(< "$file")"
+}
+
+# Decodifica la classe USB in stringa leggibile
+class_decode() {
+    case "$1" in
+        "00") echo ">ifc " ;;
+        "01") echo "audio" ;;
+        "02") echo "commc" ;;
+        "03") echo "HID  " ;;
+        "05") echo "PID  " ;;
+        "06") echo "still" ;;
+        "07") echo "print" ;;
+        "08") echo "stor." ;;
+        "09") echo "hub  " ;;
+        "0a") echo "data " ;;
+        "0b") echo "scard" ;;
+        "0d") echo "c-sec" ;;
+        "0e") echo "video" ;;
+        "0f") echo "perhc" ;;
+        "dc") echo "diagd" ;;
+        "e0") echo "wlcon" ;;
+        "ef") echo "misc " ;;
+        "fe") echo "app. " ;;
+        "ff") echo "vend." ;;
+        *)    echo "unk. " ;;
+    esac
+}
+
+# Stampa informazioni su un endpoint USB
+print_endpoint() {
+    local eppath="$1"
+    local addr maxps_hex maxps
+
+    addr=$(< "$eppath/bEndpointAddress")
+    local attr dir eptype interval
+    attr=$(< "$eppath/bmAttributes")
+    dir=$(< "$eppath/direction")
+    eptype=$(< "$eppath/type")
+    maxps_hex="0x$(< "$eppath/wMaxPacketSize")"
+    # Estrai dimensione MaxPS (bit 0-10) e molteplicità (bit 11-12)
+    maxps=$(printf "%4i*%s" $(( maxps_hex & 0x7ff )) $(( 1 + ((maxps_hex >> 11) & 0x3) )))
+    interval=$(< "$eppath/interval")
+
+    printf "E:  Ad=%s(%s) Atr=%s(%s) MxPS=%s Ivl=%s\n" \
+        "$addr" "$dir" "$attr" "$eptype" "$maxps" "$interval"
+}
+
+# Stampa informazioni su un'interfaccia USB
+print_interface() {
+    local ifpath="$1"
+    local ifnum altset numeps class subclass protocol driver classname
+
+    ifnum=$(< "$ifpath/bInterfaceNumber")
+    altset=$(< "$ifpath/bAlternateSetting")
+    numeps=$(< "$ifpath/bNumEndpoints")
+    class=$(< "$ifpath/bInterfaceClass")
+    subclass=$(< "$ifpath/bInterfaceSubClass")
+    protocol=$(< "$ifpath/bInterfaceProtocol")
+
+    if [[ -L "$ifpath/driver" ]]; then
+        driver=$(basename "$(readlink "$ifpath/driver")")
+    else
+        driver="(nessuno)"
+    fi
+
+    classname=$(class_decode "$class")
+    printf "I:  If#=%2s Alt=%2i #EPs=%2i Cls=%s(%s) Sub=%s Prot=%s Driver=%s\n" \
+        "0x${ifnum#0}" "${altset#0}" "${numeps#0}" "$class" "$classname" \
+        "$subclass" "$protocol" "$driver"
+
+    for endpoint in "$ifpath"/ep_??; do
+        [[ -L "$endpoint" ]] && print_endpoint "$endpoint"
+    done
+}
+
+# Stampa informazioni su un dispositivo USB (ricorsivo per hub)
+print_device() {
+    local devpath="$1"
+    local parent="$2"
+    local level="$3"
+    local count="$4"
+
+    [[ -d "$devpath" ]] || return
+    cd "$devpath" || return
+
+    local busnum devnum port speed maxchild
+    busnum=$(< busnum)
+    devnum=$(< devnum)
+
+    if (( level > 0 )); then
+        port=$(( ${devpath##*[-.]} - 1 ))
+    else
+        port=0
+    fi
+    speed=$(< speed)
+    maxchild=$(< maxchild)
+
+    printf "\nT:  Bus=%02i Lev=%02i Prnt=%02i Port=%02i Cnt=%02i Dev#=%3i Spd=%-3s MxCh=%2i\n" \
+        "$busnum" "$level" "$parent" "$port" "$count" "$devnum" "$speed" "$maxchild"
+
+    local ver devclass devsubclass devprotocol maxps0 numconfigs classname
+    ver=$(< version)
+    devclass=$(< bDeviceClass)
+    devsubclass=$(< bDeviceSubClass)
+    devprotocol=$(< bDeviceProtocol)
+    maxps0=$(< bMaxPacketSize0)
+    numconfigs=$(< bNumConfigurations)
+    classname=$(class_decode "$devclass")
+
+    printf "D:  Ver=%5s Cls=%s(%s) Sub=%s Prot=%s MxPS=%2i #Cfgs=%3i\n" \
+        "$ver" "$devclass" "$classname" "$devsubclass" "$devprotocol" \
+        "$maxps0" "$numconfigs"
+
+    local vendid prodid revmajor revminor
+    vendid=$(< idVendor)
+    prodid=$(< idProduct)
+    revmajor=$(< bcdDevice | cut -c 1-2)
+    revminor=$(< bcdDevice | cut -c 3-4)
+    printf "P:  Vendor=%s ProdID=%s Rev=%s.%s\n" "$vendid" "$prodid" "$revmajor" "$revminor"
+
+    print_string manufacturer "Produttore"
+    print_string product      "Prodotto"
+    print_string serial       "Seriale"
+
+    local numifs cfgnum attr maxpower
+    numifs=$(< bNumInterfaces)
+    cfgnum=$(< bConfigurationValue)
+    attr=$(< bmAttributes)
+    maxpower=$(< bMaxPower)
+    printf "C:  #Ifs=%2i Cfg#=%2i Atr=%s MxPwr=%s\n" \
+        "$numifs" "$cfgnum" "$attr" "$maxpower"
+
+    # Interfacce
+    for interface in "${busnum}"-*:?.*; do
+        print_interface "${devpath}/${interface}"
+    done
+
+    # Dispositivi figli (hub)
+    local devcount=0
+    for subdev in "${busnum}"-*; do
+        echo "$subdev" | grep -Eq "^${busnum}-[0-9]+(\.[0-9]+)*$" || continue
+        (( devcount++ ))
+        [[ -d "${devpath}/${subdev}" ]] && \
+            print_device "${devpath}/${subdev}" "$devnum" $(( level + 1 )) "$devcount"
+    done
+}
+
+# ── Main ─────────────────────────────────────────────────────────────
+
+clear
+echo -e "${LCYAN}"
+echo " ╔══════════════════════════════════════╗"
+echo " ║       DISPOSITIVI USB - SYSFS        ║"
+echo " ╚══════════════════════════════════════╝"
+echo -e "${STD}"
+
+# Verifica che sysfs sia montato
+if [[ ! -d /sys/bus ]]; then
+    echo -e "${YELLOW} Errore: /sys/bus non trovato. sysfs è montato?${STD}" >&2
+    exit 1
+fi
+
+# Scansione dispositivi USB
+for device in /sys/bus/usb/devices/usb*; do
+    print_device "$device" 0 0 0
+done
+
+echo
+echo -e "${PURPLE}───────────────────────────────────────────${STD}"
+echo -e "${LCYAN} Suggerimenti utili:${STD}"
+echo -e "  ${YELLOW}lsusb${STD}             — elenco rapido dispositivi USB"
+echo -e "  ${YELLOW}lsusb -v${STD}          — dettagli completi"
+echo -e "  ${YELLOW}lsusb -t${STD}          — struttura ad albero"
+echo -e "  ${YELLOW}udevadm info /dev/sdX${STD} — info udev su un dispositivo"
+echo -e "${PURPLE}───────────────────────────────────────────${STD}"
+echo
+read -r -p " Premi Invio per uscire..."
+
+exit 0

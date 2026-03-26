@@ -1,0 +1,31 @@
+#================================================
+#   O.S.      : Void Linux
+#   Author    : Cristian Pozzessere = ilnanny75
+#   Progetto  : Alias personalizzati per XBPS
+#================================================
+
+# --- GESTIONE SERVIZI (runit) ---
+alias sv="sudo sv"           # Gestione rapida dei servizi (es. sv restart dbus)
+
+# --- LOGICAL VOLUME MANAGEMENT (LVM) ---
+alias lvs="sudo lvs"
+alias vgs="sudo vgs"
+alias vgdisplay="sudo vgdisplay"
+
+# --- XBPS: COMANDI DI BASE ---
+alias install="sudo xbps-install -S"     # Installa e sincronizza i repo
+alias update="sudo xbps-install -Su"      # Aggiorna l'intero sistema
+alias remove="sudo xbps-remove -R"        # Rimuove pacchetto e dipendenze non usate
+alias search="xbps-query -Rs"             # Cerca pacchetti nei repo (non serve sudo)
+alias query="xbps-query -f"               # Elenca i file contenuti in un pacchetto
+alias reconfigure="sudo xbps-reconfigure" # Riconfigura pacchetti (spesso usato per il kernel)
+
+# --- IDEE AGGIUNTIVE (Manutenzione e Pulizia) ---
+alias ccache="sudo xbps-remove -O"        # Pulisce la cache dei vecchi pacchetti scaricati
+alias orphans="sudo xbps-remove -o"       # Rimuove pacchetti orfani (dipendenze inutilizzate)
+alias pkg-check="sudo xbps-pkgdb -a"      # Controlla la consistenza del database pacchetti
+alias lock="sudo xbps-pkgdb -m hold"      # Blocca un pacchetto (evita aggiornamenti)
+alias unlock="sudo xbps-pkgdb -m unhold"  # Sblocca un pacchetto
+
+# --- UTILITY ---
+alias scritps-exec='chmod +x ~/Scripts/*.sh' # Rendi eseguibili al volo i tuoi script
