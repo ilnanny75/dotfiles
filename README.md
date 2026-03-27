@@ -1,5 +1,3 @@
-# 🛠️ ilnanny Lab - Dotfiles 2026
-
 <p align="left">
   <a href="https://github.com/ilnanny75">
     <img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white" />
@@ -15,40 +13,46 @@
   </a>
 </p>
 
-**Laboratorio personale di icone, script e configurazioni Linux (Debian, Void, Arch).**
+🛠️ ilnanny Lab - Dotfiles 2026
 
----
+Laboratorio personale di icone, script e configurazioni Linux (Debian, Void, Arch).
+🚀 Setup Istantaneo
 
-## 🚀 Setup Istantaneo (ilnanny 2026)
-Se hai appena scaricato i dotfiles o sei su un nuovo sistema, usa il Master Manager per collegare tutto in modo automatico:
+Se sei su un nuovo sistema, usa il Master Manager per collegare tutto in modo automatico:
 
-```bash
 cd ~/dotfiles && chmod +x ilnanny-OS-manager.sh && ./ilnanny-OS-manager.sh
-
 📂 Struttura Modulare 2026
 
-Il laboratorio ora è intelligente e riconosce automaticamente l'OS:
+Il laboratorio ora riconosce automaticamente l'OS su cui ti trovi:
 
     bash/etc_bash/bashrc.d: Moduli Bash Universali (Alias comuni, PS1, Utility).
 
-    Debian / Void / Arch: Configurazioni Specifiche per ogni distribuzione.
+    Debian / Void / Arch: Configurazioni specifiche caricate in base alla distro.
 
-    scripts/bin: Script di automazione (Icone, Git Manager, Fix Hardware).
+    scripts/bin: Il cuore degli script (Icone, Git Manager, Fix Hardware).
 
     config: Sincronizzazione per Geany, Openbox, Thunar e XFCE.
 
-📔 MEMO Rapido
+📔 MEMO Rapido (I tuoi nuovi muscoli)
 
-    pigia: Invia le modifiche su GitHub.
+Ecco i comandi principali che abbiamo configurato nei tuoi alias:
 
-    up: Sincronizza il repo e pulisce i file temporanei.
+    pigia: Salva tutto e spinge le modifiche su GitHub.
 
-    instally: Installa pacchetti (rileva apt/xbps/pacman).
+    up: Sincronizza il repository locale con quello online.
 
-    update: Aggiorna il sistema in base alla distro.
+    instally: Installa pacchetti (rileva apt, xbps o pacman in automatico).
 
-    treed: Visualizza la struttura cartelle (senza lag immagini).
+    update: Aggiorna l'intero sistema.
 
-<p align="left">
-<i>"Il codice è come il caffè: deve essere pulito, forte e senza errori."</i>
-</p>
+    treed: Visualizza l'albero delle cartelle senza lag.
+
+    vedi: Esplora i file saltando i binari pesanti (immagini/PDF).
+
+🛠️ Manutenzione
+
+Per ricaricare le modifiche agli alias dopo aver modificato i file in bashrc.d:
+
+source ~/.bashrc
+
+"Il codice è come il caffè: deve essere pulito, forte e senza errori."

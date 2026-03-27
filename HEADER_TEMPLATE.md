@@ -1,5 +1,3 @@
-# 🛠️ ilnanny Lab - Dotfiles 2026
-
 <p align="left">
   <a href="https://github.com/ilnanny75">
     <img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white" />
@@ -14,13 +12,3 @@
     <img src="https://img.shields.io/badge/OpenClipart-2F2F2F?style=for-the-badge&logo=inkscape&logoColor=white" />
   </a>
 </p>
-
-**Laboratorio personale di icone, script e configurazioni Linux (Debian, Void, Arch).**
-
----
-
-## 🚀 Setup Istantaneo (ilnanny 2026)
-Se hai appena scaricato i dotfiles o sei su un nuovo sistema, usa il Master Manager per collegare tutto (Bash, Alias, Script e Config) in modo automatico:
-
-```bash
-cd ~/dotfiles && chmod +x ilnanny-OS-manager.sh && ./ilnanny-OS-manager.sh
