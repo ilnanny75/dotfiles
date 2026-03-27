@@ -1,0 +1,7 @@
+GUIDA VELOCE ALIAS ILNANNY 2026
+-------------------------------
+PIGIA: Git add, commit e push automatico.
+UP: Git pull e pulizia file temporanei.
+INSTALLY: Rileva il gestore pacchetti e installa.
+UPDATE: Aggiorna la distro corrente.
+TREED: Tree intelligente senza file pesanti.
