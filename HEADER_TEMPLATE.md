@@ -1,4 +1,4 @@
-# 🛠️ [NOME_REPO] - ilnanny Lab 2026
+# 🛠️ ilnanny Lab - Dotfiles 2026
 
 <p align="left">
   <a href="https://github.com/ilnanny75">
@@ -15,15 +15,12 @@
   </a>
 </p>
 
-> **Laboratorio personale di icone, script e configurazioni Linux.**
-> *Parte del progetto ilnanny Dotfiles 2026.*
+**Laboratorio personale di icone, script e configurazioni Linux (Debian, Void, Arch).**
 
 ---
 
-## 📝 Descrizione
-[Inserisci qui una breve descrizione di cosa fa questo repository specifico]
+## 🚀 Setup Istantaneo (ilnanny 2026)
+Se hai appena scaricato i dotfiles o sei su un nuovo sistema, usa il Master Manager per collegare tutto (Bash, Alias, Script e Config) in modo automatico:
 
-## 🚀 Installazione Rapida
 ```bash
-# Esempio di comando per questo repo
-git clone [https://github.com/ilnanny75/](https://github.com/ilnanny75/)[NOME_REPO].git
+cd ~/dotfiles && chmod +x ilnanny-OS-manager.sh && ./ilnanny-OS-manager.sh
