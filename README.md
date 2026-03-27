@@ -18,40 +18,40 @@
 Laboratorio personale di icone, script e configurazioni Linux (Debian, Void, Arch).
 🚀 Setup Istantaneo
 
-Se sei su un nuovo sistema, usa il Master Manager per collegare tutto in modo automatico:
+Se hai appena scaricato i dotfiles o sei su un nuovo sistema, usa il Master Manager per collegare tutto in modo automatico. Lo script rileverà la tua distribuzione e configurerà i link simbolici corretti:
 
 cd ~/dotfiles && chmod +x ilnanny-OS-manager.sh && ./ilnanny-OS-manager.sh
 📂 Struttura Modulare 2026
 
-Il laboratorio ora riconosce automaticamente l'OS su cui ti trovi:
+Il laboratorio è stato riorganizzato per essere intelligente e pulito:
 
-    bash/etc_bash/bashrc.d: Moduli Bash Universali (Alias comuni, PS1, Utility).
+    bash/etc_bash/bashrc.d: Qui risiedono i moduli Bash universali. Vengono caricati automaticamente su ogni sistema per darti sempre i tuoi alias e le tue funzioni preferite.
 
-    Debian / Void / Arch: Configurazioni specifiche caricate in base alla distro.
+    Debian / Void / Arch: Cartelle dedicate alle configurazioni specifiche. Contengono alias per i gestori pacchetti (apt, xbps, pacman) e ottimizzazioni per il sistema operativo in uso.
 
-    scripts/bin: Il cuore degli script (Icone, Git Manager, Fix Hardware).
+    scripts/bin: Il cuore pulsante dell'automazione. Include script per la gestione delle icone, il backup su GitHub, la pulizia del sistema e il fix dell'hardware.
 
-    config: Sincronizzazione per Geany, Openbox, Thunar e XFCE.
+    config: Sincronizzazione automatica delle configurazioni per Geany, Openbox, Thunar e l'ambiente XFCE.
 
 📔 MEMO Rapido (I tuoi nuovi muscoli)
 
-Ecco i comandi principali che abbiamo configurato nei tuoi alias:
+Grazie agli alias intelligenti, puoi gestire tutto con pochi tasti:
 
-    pigia: Salva tutto e spinge le modifiche su GitHub.
+    pigia: Il comando definitivo per Git. Aggiunge i file, crea il commit e spinge tutto sul tuo GitHub (ilnanny75).
 
-    up: Sincronizza il repository locale con quello online.
+    up: Sincronizza il repository locale scaricando le novità dal server e pulisce i file temporanei.
 
-    instally: Installa pacchetti (rileva apt, xbps o pacman in automatico).
+    instally: Non importa su quale distro sei; questo comando userà il gestore pacchetti corretto per installare quello che ti serve.
 
-    update: Aggiorna l'intero sistema.
+    update: Aggiorna l'intero sistema (core e pacchetti) con un solo comando.
 
-    treed: Visualizza l'albero delle cartelle senza lag.
+    treed: Visualizza la struttura delle cartelle in modo grafico ma leggero, saltando i file binari pesanti.
 
-    vedi: Esplora i file saltando i binari pesanti (immagini/PDF).
+    vedi: Esplora velocemente il contenuto delle cartelle ignorando immagini e PDF per non rallentare il terminale.
 
 🛠️ Manutenzione
 
-Per ricaricare le modifiche agli alias dopo aver modificato i file in bashrc.d:
+Se modifichi i file dentro bashrc.d o aggiungi nuovi alias, non serve riavviare il terminale. Basta dare il comando:
 
 source ~/.bashrc
 
