@@ -1,6 +1,6 @@
 # 🛠️ ilnanny Lab - Dotfiles 2026
 
-<p align="center">
+<p align="left">
   <a href="https://github.com/ilnanny75">
     <img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white" />
   </a>
@@ -15,42 +15,12 @@
   </a>
 </p>
 
-<p align="center">
-  <strong>Laboratorio personale di icone, script e configurazioni Linux (Debian/MX).</strong>
-</p>
+**Laboratorio personale di icone, script e configurazioni Linux (Debian, Void, Arch).**
 
 ---
 
-## 🚀 Setup Istantaneo
-Se hai appena scaricato i dotfiles, rendi tutto operativo con un solo comando:
+## 🚀 Setup Istantaneo (ilnanny 2026)
+Se hai appena scaricato i dotfiles o sei su un nuovo sistema, usa il Master Manager per collegare tutto (Bash, Alias, Script e Config) in modo automatico:
 
 ```bash
-cd ~/dotfiles && chmod +x ilnanny-setup.sh && ./ilnanny-setup.sh
-
-**Laboratorio personale di icone, script e configurazioni Linux (Debian/MX).**
-
-## 🚀 Setup Istantaneo
-Se hai appena scaricato i dotfiles, rendi tutto operativo con un solo comando:
-
-```bash
-cd ~/dotfiles && chmod +x ilnanny-setup.sh && ./ilnanny-setup.sh
-
-📂 Struttura del Repository
-
-    /scripts/bin: Utility per icone, GTK e manutenzione sistema.
-
-    /etc/bash/bashrc.d: Moduli Bash e Alias personalizzati.
-
-    /editors: Configurazione estetica per Nano e Vim.
-
-    Guida ai Comandi (Memorandum): La lista completa di cosa fanno i miei script.
-
-⚡ Comandi Rapidi
-
-    pigia : Sincronizza tutto su GitHub (Add + Commit + Push)
-
-    searchscripts : Cerca codice o parole nei tuoi 85+ script
-
-    colorchange : Cambia i colori HEX negli SVG in massa
-
-Creato con passione da Cristian Pozzessere (ilnanny)
+cd ~/dotfiles && chmod +x ilnanny-OS-manager.sh && ./ilnanny-OS-manager.sh

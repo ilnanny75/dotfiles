@@ -1,4 +1,6 @@
-<p align="center">
+# 🛠️ [NOME_REPO] - ilnanny Lab 2026
+
+<p align="left">
   <a href="https://github.com/ilnanny75">
     <img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white" />
   </a>
@@ -13,8 +15,15 @@
   </a>
 </p>
 
-<p align="center">
-  <strong>Laboratorio personale di icone, script e configurazioni Linux (Debian/MX).</strong>
-</p>
+> **Laboratorio personale di icone, script e configurazioni Linux.**
+> *Parte del progetto ilnanny Dotfiles 2026.*
 
 ---
+
+## 📝 Descrizione
+[Inserisci qui una breve descrizione di cosa fa questo repository specifico]
+
+## 🚀 Installazione Rapida
+```bash
+# Esempio di comando per questo repo
+git clone [https://github.com/ilnanny75/](https://github.com/ilnanny75/)[NOME_REPO].git
