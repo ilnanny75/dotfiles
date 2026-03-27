@@ -1,4 +1,5 @@
-# 🞟 ilnf�� Lab - Dotfiles 2026
+
+# 🛠️ ilnanny Lab - Dotfiles
 <p align="left">
   <a href="https://github.com/ilnanny75"><img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white" /></a>
   <a href="http://ilnanny.deviantart.com"><img src="https://img.shields.io/badge/DeviantArt-181717?style=for-the-badge&logo=deviantart&logoColor=white" /></a>
@@ -12,7 +13,7 @@
 
 ---
 
-### 🞟 Setup Istantaneo
+### 🚀 Setup Istantaneo
 Se hai appena scaricato i dotfiles o sei su un nuovo sistema, usa il Master Manager per collegare tutto in modo automatico:
 
 ```bash
@@ -20,8 +21,8 @@ cd ~/dotfiles && chmod +x ilnanny-OS-manager.sh && ./ilnanny-OS-manager.sh
 ```
 ---
 
-### 🕊 Struttura Modulare 2026
-Il laboratorio è intelligente e riconosce automaticamente l'OS:
+### 📂 Struttura Modulare
+Il laboratorio Ã¨ intelligente e riconosce automaticamente l'OS:
 
 * **bash/etc_bash/bashrc.d**: Moduli Bash Universali (Alias comuni, PS1, Utility).
 * **Debian / Void / Arch**: Configurazioni specifiche caricate in base alla distro.
@@ -30,24 +31,23 @@ Il laboratorio è intelligente e riconosce automaticamente l'OS:
 
 ---
 
-### 📓 MEMO Rapido (I tuoi nuovi muscoli)
+### 📔 MEMO Rapido
 * **pigia**: Il comando definitivo per Git. Aggiunge i file, crea il commit e spinge tutto su GitHub.
 * **up**: Sincronizza il repository locale con quello online.
-* **instally**: Non importa su quale distro sei; userà il gestore pacchetti corretto.
+* **instally**: Non importa su quale distro sei; userÃ  il gestore pacchetti corretto.
 * **update**: Aggiorna l'intero sistema (core e pacchetti).
 * **treed**: Visualizza la struttura delle cartelle senza lag di immagini.
 * **vedi**: Esplora i file saltando i binari pesanti (immagini/PDF).
 
 ---
 
-### 🟟 Manutenzione
+### 🛠️ Manutenzione
 Per ricaricare le modifiche agli alias senza reavviare il terminale:
 
 ```bash
 source ~/.bashrc
-```J
 ---
 
 <p align="left">
-  <i>"Il codice è come il caffè: deve essere pulito, forte e senza errori."</i>
+  <i>"Il codice Ã¨ come il caffè¨: deve essere pulito, forte e senza errori."</i>
 </p>
