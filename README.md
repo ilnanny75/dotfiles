@@ -1,5 +1,5 @@
+<h1>🛠️ ilnanny Lab - Dotfiles 2026</h1>
 
-# 🛠️ ilnanny Lab - Dotfiles
 <p align="left">
   <a href="https://github.com/ilnanny75"><img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white" /></a>
   <a href="http://ilnanny.deviantart.com"><img src="https://img.shields.io/badge/DeviantArt-181717?style=for-the-badge&logo=deviantart&logoColor=white" /></a>
@@ -7,47 +7,46 @@
   <a href="https://openclipart.org/artist/ilnanny"><img src="https://img.shields.io/badge/OpenClipart-181717?style=for-the-badge&logo=inkscape&logoColor=white" /></a>
 </p>
 
----
+<hr>
 
-**Laboratorio personale di icone, script e configurazioni Linux (Debian, Void, Arch).**
+<p><strong>Laboratorio personale di icone, script e configurazioni Linux (Debian, Void, Arch).</strong></p>
 
----
+<hr>
 
-### 🚀 Setup Istantaneo
-Se hai appena scaricato i dotfiles o sei su un nuovo sistema, usa il Master Manager per collegare tutto in modo automatico:
+<h3>🚀 Setup Istantaneo</h3>
+<p>Se hai appena scaricato i dotfiles o sei su un nuovo sistema, usa il Master Manager per collegare tutto in modo automatico:</p>
 
-```bash
+<pre><code>
 cd ~/dotfiles && chmod +x ilnanny-OS-manager.sh && ./ilnanny-OS-manager.sh
-```
----
+</code></pre>
 
-### 📂 Struttura Modulare
-Il laboratorio è¨ intelligente e riconosce automaticamente l'OS:
+<hr>
 
-* **bash/etc_bash/bashrc.d**: Moduli Bash Universali (Alias comuni, PS1, Utility).
-* **Debian / Void / Arch**: Configurazioni specifiche caricate in base alla distro.
-* **scripts/bin**: Il cuore degli script (Icone, Git Manager, Fix Hardware).
-* **config**: Sincronizzazione automatica per Geany, Openbox, Thunar e XFCE.
+<h3>📂 Struttura Modulare</h3>
+<p>Il laboratorio è intelligente e riconosce automaticamente l'OS:</p>
+<ul>
+  <li><strong>bash/etc_bash/bashrc.d</strong>: Moduli Bash Universali (Alias comuni, PS1, Utility).</li>
+  <li><strong>Debian / Void / Arch</strong>: Configurazioni specifiche caricate in base alla distro.</li>
+  <li><strong>scripts/bin</strong>: Il cuore degli script (Icone, Git Manager, Fix Hardware).</li>
+  <li><strong>config</strong>: Sincronizzazione automatica per Geany, Openbox, Thunar e XFCE.</li>
+</ul>
 
----
+<hr>
 
-### 📔 MEMO Rapido
-* **pigia**: Il comando definitivo per Git. Aggiunge i file, crea il commit e spinge tutto su GitHub.
-* **up**: Sincronizza il repository locale con quello online.
-* **instally**: Non importa su quale distro sei; userè  il gestore pacchetti corretto.
-* **update**: Aggiorna l'intero sistema (core e pacchetti).
-* **treed**: Visualizza la struttura delle cartelle senza lag di immagini.
-* **vedi**: Esplora i file saltando i binari pesanti (immagini/PDF).
+<h3>📔 MEMO Rapido</h3>
+<ul>
+  <li><strong>pigia</strong>: Il comando definitivo per Git. Gestisce commit e push in un colpo solo.</li>
+  <li><strong>multigit</strong>: Il tuo nuovo "coltellino svizzero" per pulire la cache e bonificare i repo.</li>
+  <li><strong>up</strong>: Sincronizza il repository locale con quello online (git pull).</li>
+  <li><strong>instally</strong>: Installa pacchetti usando il gestore corretto della tua distro.</li>
+  <li><strong>update</strong>: Aggiorna l'intero sistema (core e pacchetti).</li>
+  <li><strong>treed</strong>: Visualizza la struttura delle cartelle senza lag di immagini.</li>
+  <li><strong>vedi</strong>: Esplora i file saltando i binari pesanti (immagini/PDF).</li>
+</ul>
 
----
+<hr>
 
-### 🛠️ Manutenzione
-Per ricaricare le modifiche agli alias senza reavviare il terminale:
-
-```bash
-source ~/.bashrc
----
-
-<p align="left">
-  <i>"Il codice è¨ come il caffè¨: deve essere pulito, forte e senza errori."</i>
-</p>
+<h3>🛠️ Manutenzione e Bonifica</h3>
+<p>Se riscontri problemi con i vecchi riferimenti (email di terzi o vecchi nomi utente), lancia il comando:</p>
+<p><strong>multigit</strong> e seleziona l'opzione <strong>9 (BONIFICA LAB)</strong>.</p>
+<p>Questo imposterà automaticamente l'utente <strong>ilnanny75</strong>, l'email <strong>ilnannyhack@gmail.com</strong> e convertirà i branch da <i>master</i> a <i>main</i>.</p>

@@ -1,26 +1,30 @@
 #!/bin/bash
 #==========================================================
-# ILNANNY ALIAS DEBIAN/MX - Lab 2026
+# 📦 ILNANNY ALIAS DEBIAN - Lab 2026
 #==========================================================
 
-# --- 📦 Gestione Pacchetti (APT) ---
-alias update='sudo apt update && sudo apt upgrade'
-alias instally='sudo apt install -y'
-alias purge='sudo apt purge && sudo apt autoremove'
-alias search='apt search'
-alias show='apt show'
+# --- Gestione Pacchetti (APT) ----------------------------
+alias update='sudo apt update && sudo apt upgrade'       # Aggiorna tutto il magazzino Debian
+alias instally='sudo apt install -y'                     # Installa a colpo sicuro (senza chiedere conferma)
+alias purge='sudo apt purge && sudo apt autoremove'      # Pulizia totale e profonda
+alias search='apt search'                                # Cerca tra migliaia di pacchetti
+alias show='apt show'                                    # Fammi leggere la carta d'identità del pacchetto
 
-# --- 📂 Scorciatoie di Sistema ---
-alias sourcelist='sudo geany /etc/apt/sources.list'
-alias gosource='thunar /etc/apt/sources.list.d/'
+# --- 📂 Navigazione Lab (I nuovi percorsi 2026) ----------
+alias dots='cd ~/dotfiles'                               # Vola nella cartella principale dei dotfiles
+alias gbin='cd ~/dotfiles/scripts/bin'                  # Entra nel cuore degli script
+alias cdd='cd ~/dotfiles/bash/etc_bash/bashrc.d/'       # Vai dove nascono gli alias
+alias docs='cd ~/dotfiles/docs_lab'                     # Leggi i manuali del Lab
 
-# --- 🚀 ILNANNY LAB 2026 (I tuoi nuovi muscoli) ---
-alias dots='cd ~/dotfiles'
-alias gbin='cd ~/dotfiles/scripts/bin'
-alias cdd='cd ~/dotfiles/bash/etc_bash/bashrc.d/'
-alias pigia='~/dotfiles/scripts/bin/git-push.sh'
-alias up='~/dotfiles/scripts/bin/git-up.sh'
-alias check='~/dotfiles/scripts/bin/ilnanny-check.sh'
-alias memo='cat ~/dotfiles/MEMORANDUM.md'
-alias vedi='ls -sh --color=auto -I "*.png" -I "*.jpg"'   # Fix: esclude immagini
-alias treed='tree -h --du -a -C -I "*.png|*.jpg|*.pdf"'  # Fix: albero senza binari
+# --- 🚀 Master Commands (I tuoi nuovi muscoli) ----------
+# Il manager universale per caricare tutto su GitHub
+alias pigia='~/dotfiles/scripts/bin/ilnanny-git-manager.sh'
+# Sincronizza il laboratorio locale con quello online
+alias up='~/dotfiles/scripts/bin/ilnanny-git-manager.sh --pull'
+# Lancia il re del Lab (il manager del sistema)
+alias manager='~/dotfiles/ilnanny-OS-manager.sh'
+
+# --- 📔 Utility e Visualizzazione ------------------------
+alias memo='cat ~/dotfiles/MEMORANDUM.md'               # Leggi i tuoi appunti al volo
+alias vedi='ls -sh --color=auto -I "*.png" -I "*.jpg" -I "*.pdf"' # Guarda i file senza il "rumore" dei binari
+alias treed='tree -h --du -a -C -I "*.png|*.jpg|*.pdf"'  # Albero delle cartelle pulito e veloce

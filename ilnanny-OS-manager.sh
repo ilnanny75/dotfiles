@@ -1,84 +1,96 @@
 #!/usr/bin/env bash
-#==========================================================
-#   ILNANNY MASTER-SCRIPT 2026 - MODULAR SYMLINKER
-#==========================================================
+# ═══════════════════════════════════════════════════════════════════
+#  ilnanny-OS-manager.sh — MASTER SETUP 2026
+#  Gestore universale per Arch, Debian, Void
+# ═══════════════════════════════════════════════════════════════════
 
-# Colori
-CYAN='\033[0;36m'
-GREEN='\033[1;32m'
-YELLOW='\033[1;33m'
-NC='\033[0m'
+# --- COLORI ---
+V="\e[32m"  # Verde
+R="\e[31m"  # Rosso
+C="\e[36m"  # Ciano
+G="\e[33m"  # Giallo
+B="\e[1m"   # Bold
+RESET="\e[0m"
 
-# Rilevamento OS
-if [ -f /etc/os-release ]; then
-    . /etc/os-release
-    OS=$ID
-else
-    OS=$(uname -s)
-fi
+# --- RILEVAMENTO SISTEMA ---
+OS_ID=$(grep -w "ID" /etc/os-release | cut -d= -f2 | tr -d '"')
 
-header() {
-    clear
-    echo -e "${CYAN}╔════════════════════════════════════════════════════╗${NC}"
-    echo -e "║      ILNANNY MASTER DEPLOYER - OS: ${YELLOW}${OS^^}${CYAN}        ║"
-    echo -e "╚════════════════════════════════════════════════════╝${NC}"
-}
+# --- FUNZIONI UTILITY ---
+header() { clear; echo -e "${B}${C}󱓞  ilnanny LAB MANAGER — OS: ${OS_ID^^}${RESET}\n"; }
+ok()     { echo -e "${V}✅ $*${RESET}"; }
+info()   { echo -e "${C}ℹ️  $*${RESET}"; }
 
-deploy_bash() {
-    echo -e "\n${YELLOW}>> Configurazione Bash & Alias...${NC}"
-    DOT_BASH="$HOME/dotfiles/bash/etc_bash"
-    BASH_D="$DOT_BASH/bashrc.d"
+# --- CORE: CONFIGURAZIONE LABORATORIO ---
+configura_lab() {
+    header
+    info "Inizio sincronizzazione dotfiles..."
 
-    # 1. Link del Master Bashrc
-    echo -e "Collego Master Bashrc..."
-    ln -sf "$DOT_BASH/bashrc" "$HOME/.bashrc"
-    ln -sf "$DOT_BASH/bash_logout" "$HOME/.bash_logout"
+    # 1. Creazione directory base
+    mkdir -p ~/.bashrc.d ~/.config ~/.local/share/fonts ~/bin
 
-    # 2. Gestione Alias Specifici per OS
-    # Cancelliamo eventuali vecchi link specifici per non fare caos
-    rm -f "$BASH_D/alias_specifico.sh"
+    # 2. Gestione Nerd Fonts (Sposta quelli trovati nel repo e crea i link)
+    if [ ! -d "$HOME/dotfiles/graphics/fonts" ]; then
+        info "Creazione cartella fonts nel repo..."
+        mkdir -p ~/dotfiles/graphics/fonts
+        mv ~/.local/share/fonts/*Nerd* ~/dotfiles/graphics/fonts/ 2>/dev/null
+    fi
+    ln -sf ~/dotfiles/graphics/fonts/* ~/.local/share/fonts/
+    fc-cache -f > /dev/null
+    ok "Nerd Fonts pronti."
 
-    case $OS in
-        void)
-            # Punta al file alias_void (che creeremo/sposteremo in bashrc.d)
-            ln -sf "$HOME/dotfiles/Void/etc/bash/bashrc.d/alias_void" "$BASH_D/alias_specifico.sh"
-            echo -e "${GREEN}Linkato: Alias VOID (xbps)${NC}"
-            ;;
-        debian|mx)
-            ln -sf "$BASH_D/alias_debian" "$BASH_D/alias_specifico.sh"
-            echo -e "${GREEN}Linkato: Alias DEBIAN (apt)${NC}"
-            ;;
+    # 3. Link Moduli Bash Universali (da bash/etc_bash/bashrc.d)
+    info "Collegamento moduli Bash universali..."
+    ln -sf ~/dotfiles/bash/etc_bash/bashrc.d/*.sh ~/.bashrc.d/
+
+    # 4. Alias Specifici per Distro
+    case "$OS_ID" in
         arch)
-            # Se hai un file alias_arch in futuro
-            ln -sf "$BASH_D/alias_arch" "$BASH_D/alias_specifico.sh"
-            echo -e "${GREEN}Linkato: Alias ARCH (pacman)${NC}"
-            ;;
+            info "Applicazione configurazione Arch..."
+            ln -sf ~/dotfiles/Arch/etc/bash/bashrc.d/alias_arch ~/.bashrc.d/ ;;
+        debian|mx)
+            info "Applicazione configurazione Debian/MX..."
+            ln -sf ~/dotfiles/Debian/etc/bash/bashrc.d/alias_debian ~/.bashrc.d/ ;;
+        void)
+            info "Applicazione configurazione Void..."
+            ln -sf ~/dotfiles/Void/etc/bash/bashrc.d/alias_void ~/.bashrc.d/ ;;
     esac
 
-    echo -e "${CYAN}Ricarico la shell...${NC}"
-    source "$HOME/.bashrc"
-}
+    # 5. Link Script Binari (il cuore dei tuoi comandi)
+    info "Link script in ~/bin..."
+    ln -sf ~/dotfiles/scripts/bin/* ~/bin/
+    chmod +x ~/dotfiles/scripts/bin/*
 
-fix_bin_links() {
-    echo -e "\n${YELLOW}>> Riparazione link in ~/bin...${NC}"
-    mkdir -p "$HOME/bin"
-    find "$HOME/bin" -xtype l -delete
-    # Collega i 5 super script
-    for f in "$HOME/dotfiles/scripts/bin/"*.sh; do
-        ln -sf "$f" "$HOME/bin/$(basename "$f" .sh)"
+    # 6. Configurazione Ambienti Grafici (.config)
+    info "Sincronizzazione cartelle .config..."
+    for folder in geany gtk-3.0 openbox Thunar xfce4; do
+        ln -sfn ~/dotfiles/config/"$folder" ~/.config/"$folder"
     done
-    echo -e "${GREEN}Link in ~/bin ripristinati.${NC}"
+
+    # 7. Bashrc Principale
+    ln -sf ~/dotfiles/bash/etc_bash/bashrc ~/.bashrc
+
+    ok "LABORATORIO CONFIGURATO CON SUCCESSO!"
+    echo -e "${G}Ricarica con: source ~/.bashrc${RESET}"
 }
 
-# --- MENU ---
-header
-echo -e "1) ${CYAN}DEPLOY COMPLETO${NC} (Bash + ~/bin + Config)"
-echo -e "q) Esci"
-read -p "Scegli: " opt
+# --- MENU PRINCIPALE ---
+while true; do
+    header
+    echo -e "  ${V}1)${RESET} 󰑭  SETUP TOTALE (Auto-Detect OS)"
+    echo -e "  ${V}2)${RESET} 󰊢  GIT MULTITOOL (Sincronizza Repo)"
+    echo -e "  ${V}3)${RESET} 󰏫  EDIT README (Geany)"
+    echo -e "  ${V}4)${RESET} 󱘲  CHECK LINK ROTTI"
+    echo -e "  ${R}0)${RESET} 󰈆  ESCI"
+    echo ""
+    read -p "  Scegli opzione: " scelta
 
-if [ "$opt" == "1" ]; then
-    deploy_bash
-    fix_bin_links
-    # Aggiungi qui il link a .config (Geany, ecc) se vuoi
-    echo -e "\n${GREEN}OPERAZIONE COMPLETATA!${NC}"
-fi
+    case $scelta in
+        1) configura_lab ;;
+        2) bash ~/dotfiles/scripts/bin/git-multitool.sh ;;
+        3) geany ~/dotfiles/README.md & ;;
+        4) info "Ricerca link simbolici interrotti:"; find ~ -maxdepth 2 -xtype l ;;
+        0) exit 0 ;;
+        *) echo -e "${R}Opzione non valida!${RESET}" ;;
+    esac
+    echo -e "\n${G}Premi INVIO per tornare al menu...${RESET}"; read
+done
