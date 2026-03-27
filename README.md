@@ -22,7 +22,7 @@ cd ~/dotfiles && chmod +x ilnanny-OS-manager.sh && ./ilnanny-OS-manager.sh
 ---
 
 ### 📂 Struttura Modulare
-Il laboratorio Ã¨ intelligente e riconosce automaticamente l'OS:
+Il laboratorio è¨ intelligente e riconosce automaticamente l'OS:
 
 * **bash/etc_bash/bashrc.d**: Moduli Bash Universali (Alias comuni, PS1, Utility).
 * **Debian / Void / Arch**: Configurazioni specifiche caricate in base alla distro.
@@ -34,7 +34,7 @@ Il laboratorio Ã¨ intelligente e riconosce automaticamente l'OS:
 ### 📔 MEMO Rapido
 * **pigia**: Il comando definitivo per Git. Aggiunge i file, crea il commit e spinge tutto su GitHub.
 * **up**: Sincronizza il repository locale con quello online.
-* **instally**: Non importa su quale distro sei; userÃ  il gestore pacchetti corretto.
+* **instally**: Non importa su quale distro sei; userè  il gestore pacchetti corretto.
 * **update**: Aggiorna l'intero sistema (core e pacchetti).
 * **treed**: Visualizza la struttura delle cartelle senza lag di immagini.
 * **vedi**: Esplora i file saltando i binari pesanti (immagini/PDF).
@@ -49,5 +49,5 @@ source ~/.bashrc
 ---
 
 <p align="left">
-  <i>"Il codice Ã¨ come il caffè¨: deve essere pulito, forte e senza errori."</i>
+  <i>"Il codice è¨ come il caffè¨: deve essere pulito, forte e senza errori."</i>
 </p>
