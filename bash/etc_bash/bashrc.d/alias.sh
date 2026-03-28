@@ -4,6 +4,7 @@
 #==========================================================
 
 # --- 📂 Navigazione e Struttura --------------------------
+alias blkid='lsblk -o NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL,MODEL'
 alias ls='ls --group-directories-first --color=auto'               # Directory per prime
 alias l='ls -la'                                                   # Lista completa
 alias ll='ls -lh'                                                  # Pesi file leggibili
