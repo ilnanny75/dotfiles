@@ -1,47 +1,36 @@
 #!/bin/bash
 
-# Lila HD Icon Theme - Packager V2 (2026)
-# Più pulito, più alto, più intelligente.
+# Lila HD Icon Theme - Packager V3 (Marzo 2026)
+# Con sistema di recupero RPM se il metodo standard fallisce.
 
-info_msg() { zenity --info --text="$1" --width=350; }
-err_msg() { zenity --error --text="$1" --width=350; }
+info_msg() { zenity --info --text="$1" --width=400; }
+err_msg() { zenity --error --text="$1" --width=400; }
 
-# 1. Capisce dove si trova (niente più domande!)
 WORKDIR="$(cd "$(dirname "$0")" && pwd)"
 cd "$WORKDIR"
 
-# 2. Controllo Dipendenze
-check_install() {
-    if ! command -v $1 &> /dev/null; then
-        zenity --question --text="Manca '$1'. Lo installiamo?" --width=300
-        if [ $? -eq 0 ]; then
-            pkexec apt-get update && pkexec apt-get install -y $1 || pkexec pacman -S --noconfirm $1
-        fi
-    fi
-}
-check_install "dpkg-deb"; check_install "tar"; check_install "alien"; check_install "zenity"
-
-# 3. Finestra di Scelta (PIÙ ALTA)
-SCELTA=$(zenity --list --checklist --title="Lila HD Packager V2" \
+# 1. Scelta pacchetti (Finestra Alta)
+SCELTA=$(zenity --list --checklist --title="Lila HD Packager V3" \
     --column="Scegli" --column="Pacchetto da creare" \
     TRUE "DEB (Debian/Ubuntu/MX)" \
     TRUE "TGZ (Universale)" \
     TRUE "RPM (Fedora/SUSE via Alien)" \
-    --width=450 --height=400) # Altezza aumentata significativamente
+    --width=450 --height=450)
 
 if [ -z "$SCELTA" ]; then exit 1; fi
 
-# 4. Preparazione Cartella Export
 EXPORT_DIR="$WORKDIR/EXPORT_PACCHETTI"
 mkdir -p "$EXPORT_DIR"
 LOG_FILE="$EXPORT_DIR/build_log.txt"
+DEB_NAME="lila-hd-icon-theme-2026.deb"
+
 echo "--- Build Log $(date) ---" > "$LOG_FILE"
 
-# --- LOGICA DEB ---
-if [[ $SCELTA == *"DEB"* ]]; then
+# --- 2. CREAZIONE DEB (Base obbligatoria) ---
+if [[ $SCELTA == *"DEB"* ]] || [[ $SCELTA == *"RPM"* ]]; then
+    echo "[1/3] Creazione DEB..."
     mkdir -p build-deb/usr/share/icons build-deb/DEBIAN
     cp -a Lila_HD* build-deb/usr/share/icons/ 2>>"$LOG_FILE"
-    chmod -R 755 build-deb/usr/share/icons/
     cat <<EOF > build-deb/DEBIAN/control
 Package: lila-hd-icon-theme
 Version: 3.0-2026
@@ -52,29 +41,44 @@ Maintainer: ilnanny75
 Description: Lila HD Icon Theme (2026 Edition)
  Includes AI icons: ChatGPT, Gemini, Claude, Mistral, DeepL.
 EOF
-    dpkg-deb --build build-deb "$EXPORT_DIR/lila-hd-icon-theme-2026.deb" >>"$LOG_FILE" 2>&1
+    dpkg-deb --build build-deb "$EXPORT_DIR/$DEB_NAME" >>"$LOG_FILE" 2>&1
     rm -rf build-deb
+    ok_deb=true
 fi
 
-# --- LOGICA TGZ ---
+# --- 3. CREAZIONE TGZ ---
 if [[ $SCELTA == *"TGZ"* ]]; then
+    echo "[2/3] Creazione TGZ..."
     tar --exclude=".git*" -cvzf "$EXPORT_DIR/lila-hd-icon-theme-2026.tar.gz" Lila_HD* >>"$LOG_FILE" 2>&1
 fi
 
-# --- LOGICA RPM ---
+# --- 4. CREAZIONE RPM (PER ULTIMO CON RECOVERY) ---
 if [[ $SCELTA == *"RPM"* ]]; then
-    DEB_FILE="$EXPORT_DIR/lila-hd-icon-theme-2026.deb"
-    if [ -f "$DEB_FILE" ]; then
-        cd "$EXPORT_DIR"
-        pkexec alien -r -c "lila-hd-icon-theme-2026.deb" >>"$LOG_FILE" 2>&1
-        cd "$WORKDIR"
+    echo "[3/3] Tentativo creazione RPM..."
+
+    # Verifica se ALIEN è installato
+    if ! command -v alien &> /dev/null; then
+        err_msg "ERRORE: 'alien' non è installato. Impossibile creare l'RPM.\n\nInstallo con: sudo apt install alien"
+        echo "Fallito: alien non trovato" >> "$LOG_FILE"
     else
-        err_msg "Per creare l'RPM serve prima il DEB. Riprova selezionandoli entrambi."
+        cd "$EXPORT_DIR"
+        # TENTATIVO 1: Comando Standard
+        if ! sudo alien -r -c "$DEB_NAME" >>"$LOG_FILE" 2>&1; then
+            echo "Tentativo 1 fallito. Provo con il comando di emergenza (-g)..." >> "$LOG_FILE"
+
+            # TENTATIVO 2: Comando di emergenza (Generazione directory)
+            if sudo alien -r -c -g "$DEB_NAME" >>"$LOG_FILE" 2>&1; then
+                info_msg "RPM generato tramite modalità emergenza (-g).\nControlla la cartella EXPORT."
+            else
+                err_msg "Anche il tentativo di emergenza RPM è fallito. Controlla il log."
+            fi
+        fi
+        cd "$WORKDIR"
     fi
 fi
 
-# Pulizia finale residui
+# Pulizia finale
 rm -rf build-deb build-rpm rpmbuild 2>/dev/null
 
-info_msg "Lavoro terminato! Trovi tutto nella cartella:\n$EXPORT_DIR"
-zenity --text-info --title="Log di Produzione" --filename="$LOG_FILE" --width=600 --height=400
+info_msg "Processo terminato!\nI file sono in: $EXPORT_DIR"
+zenity --text-info --title="Log Finale" --filename="$LOG_FILE" --width=600 --height=400
