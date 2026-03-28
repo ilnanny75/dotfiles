@@ -1,19 +1,13 @@
 #!/usr/bin/env bash
 # ═══════════════════════════════════════════════════════════════
-#  git-multitool.sh — Coltellino svizzero per Git (Lab 2026)
-#  Autore: ilnanny75
-#  Funzioni: Pulizia, Bonifica Email/User, Switch Master->Main
+#  git-multitool-v2.sh — Coltellino svizzero potenziato (Lab 2026)
+#  Potenziato per la gestione automatica dei conflitti e push forzati.
 # ═══════════════════════════════════════════════════════════════
 
-# ── Colori per i messaggi a schermo ──
-VERDE="\e[32m"
-ROSSO="\e[31m"
-GIALLO="\e[33m"
-CIANO="\e[36m"
-GRASSETTO="\e[1m"
-RESET="\e[0m"
+# ── Colori e Stile ──
+VERDE="\e[32m"; ROSSO="\e[31m"; GIALLO="\e[33m"; CIANO="\e[36m"; GRASSETTO="\e[1m"; RESET="\e[0m"
 
-# ── Funzioni di output (Le tue icone preferite) ──
+# ── Funzioni di Messaggistica ──
 info()    { echo -e "${CIANO}ℹ️  $*${RESET}"; }
 ok()      { echo -e "${VERDE}✅ $*${RESET}"; }
 warn()    { echo -e "${GIALLO}⚠️  $*${RESET}"; }
@@ -21,125 +15,104 @@ errore()  { echo -e "${ROSSO}❌ $*${RESET}"; }
 titolo()  { echo -e "\n${GRASSETTO}${CIANO}🚀 $*${RESET}\n"; }
 linea()   { echo -e "${CIANO}────────────────────────────────────────${RESET}"; }
 
-# ── Controllo che siamo dentro un repo git ──
+# ── Controllo Ambiente ──
 controlla_repo() {
     if ! git rev-parse --is-inside-work-tree &>/dev/null; then
         errore "Questa cartella NON è un repo git."
-        errore "Spostati dentro la cartella del progetto e riprova."
         exit 1
     fi
 }
 
-# ── Opzione 1: Stato del Repo ──
+# ── Funzioni Core Potenziate ──
+
+# 1. Stato approfondito
 stato_repo() {
-    titolo "STATO DEL REPOSITORY"
-    git status -sb
+    titolo "STATO REPOSITORY"
+    git status -s
     linea
-    info "Contatti remoti:"
+    info "Branch remoto:"
     git remote -v
 }
 
-# ── Opzione 2: Svuota Cache ──
-svuota_cache() {
-    titolo "PULIZIA CACHE GIT"
-    warn "Questa operazione rimuove l'indice ma NON i tuoi file fisici."
-    git rm -r --cached .
-    ok "Cache svuotata. Ora puoi rifare il commit per aggiornare l'indice."
-}
-
-# ── Opzione 3: Commit Rapido ──
-commit_rapido() {
-    titolo "COMMIT RAPIDO"
-    read -rp "Inserisci il messaggio del commit: " MSG
-    if [ -z "$MSG" ]; then
-        MSG="Aggiornamento automatico Lab 2026"
-    fi
-    git add .
-    git commit -m "$MSG"
-    ok "Commit effettuato: $MSG"
-}
-
-# ── Opzione 9: BONIFICA TOTALE LAB 2026 (Quella che cercavi!) ──
-bonifica_lab() {
-    titolo "🧹 BONIFICA TOTALE LABORATORIO 2026"
-    warn "Sto per uniformare User, Email e Branch..."
-    echo ""
-
-    # 1. Switch Master -> Main
-    CURRENT_BRANCH=$(git branch --show-current)
-    if [ "$CURRENT_BRANCH" == "master" ]; then
-        info "Rilevato branch 'master'. Conversione in 'main'..."
-        git branch -m master main
-        ok "Branch rinominato in 'main' locale."
+# 2. Sincronizzazione con gestione conflitti (Novità!)
+pull_intelligente() {
+    titolo "PULL & REPAIR"
+    info "Tentativo di sincronizzazione con Rebase..."
+    if ! git pull origin $(git branch --show-current) --rebase; then
+        warn "Rilevato conflitto o divergenza!"
+        echo "1) Forza i MIEI file (Ignora GitHub)"
+        echo "2) Forza i file di GITHUB (Ignora i miei)"
+        echo "3) Annulla e risolvi a mano"
+        read -rp "Scegli opzione: " opt
+        case $opt in
+            1) git rebase --abort; git pull origin $(git branch --show-current) -X ours ;;
+            2) git rebase --abort; git pull origin $(git branch --show-current) -X theirs ;;
+            *) git rebase --abort; info "Operazione annullata." ;;
+        esac
     else
-        info "Branch corrente è già '$CURRENT_BRANCH'. Nessun cambio necessario."
+        ok "Sincronizzazione completata con successo."
     fi
-
-    # 2. Correzione Utente e Email locale
-    info "Configurazione identità: ilnanny75 <ilnannyhack@gmail.com>"
-    git config user.name "ilnanny75"
-    git config user.email "ilnannyhack@gmail.com"
-    ok "Identità Git aggiornata per questo repo."
-
-    # 3. Pulizia Email negli script (Bonifica Erik Dubois / Vecchi residui)
-    info "Scansione file per rimozione vecchie email..."
-    # Questo comando cerca qualsiasi stringa formato email e la sostituisce con la tua corretta
-    # Evita di toccare la cartella .git per non rompere il database di git
-    find . -type f -not -path '*/.*' -exec sed -i 's/[a-zA-Z0-9._%+-]\+@[a-zA-Z0-9.-]\+\.[a-zA-Z]\{2,4\}/ilnannyhack@gmail.com/g' {} +
-
-    ok "Bonifica completata! Tutti i file ora puntano a ilnannyhack@gmail.com"
 }
 
-# ── Altre Funzioni Standard ──
-push_normale()  { titolo "PUSH AL REMOTO"; git push; }
-pull_remoto()   { titolo "PULL DAL REMOTO"; git pull; }
-force_push()    { titolo "FORCE PUSH"; warn "ATTENZIONE: Sovrascrivo il remoto!"; git push -f; }
-mostra_log()    { titolo "ULTIMI COMMIT"; git log --oneline -n 10 --graph; }
-force_rebuild() { titolo "REBUILD GITHUB PAGES"; git commit --allow-empty -m "Forcing rebuild" && git push; }
+# 3. Commit e Push in un colpo solo
+super_push() {
+    titolo "COMMIT & PUSH VELOCE"
+    read -rp "Messaggio del commit: " msg
+    if [ -z "$msg" ]; then msg="Update $(date +'%Y-%m-%d %H:%M')"; fi
+
+    git add .
+    git commit -m "$msg"
+
+    info "Invio dati..."
+    if git push origin $(git branch --show-current); then
+        ok "Caricato correttamente!"
+    else
+        errore "Push rifiutato! GitHub ha modifiche che non hai."
+        warn "Consiglio: Usa l'opzione 5 (Pull) prima di riprovare."
+    fi
+}
+
+# 4. Forza Bruta (Il comando che abbiamo usato oggi)
+force_push_atomico() {
+    warn "ATTENZIONE: Sovrascriverai GitHub con i tuoi file locali!"
+    read -rp "Sei sicuro? (s/n): " confirm
+    if [[ $confirm == [sS] ]]; then
+        git add .
+        git commit -m "Force Update 2026 🚀"
+        git push origin $(git branch --show-current) --force
+        ok "GitHub è stato piallato e aggiornato con la tua versione."
+    fi
+}
 
 # ── MENU INTERATTIVO ──
 main_menu() {
     controlla_repo
     while true; do
-        echo -e "\n${GRASSETTO}${CIANO}🛠️  GIT MULTITOOL — Lab 2026${RESET}"
-        echo -e "  📁 Cartella: ${GIALLO}$(pwd)${RESET}"
-        BRANCH=$(git branch --show-current 2>/dev/null)
-        echo -e "  🌿 Branch:   ${VERDE}${BRANCH}${RESET}"
+        echo -e "\n${GRASSETTO}${CIANO}🛠️  GIT MULTITOOL POWER — 2026${RESET}"
+        echo -e "  📁 Dir:    ${GIALLO}$(pwd)${RESET}"
+        echo -e "  🌿 Branch: ${VERDE}$(git branch --show-current)${RESET}"
         linea
-        echo "  1) 📋  Stato repo (Check veloce)"
-        echo "  2) 🧹  Svuota cache git"
-        echo "  3) 📝  Commit rapido"
-        echo "  4) 🚀  Push al remoto"
-        echo "  5) ⬇️   Pull dal remoto"
-        echo "  6) 💪  Force push (Usa con cautela!)"
-        echo "  7) 📜  Mostra ultimi 10 commit"
-        echo "  8) 🔄  Forza rebuild GitHub Pages"
-        echo -e "  ${ROSSO}9) ☣️   BONIFICA LAB (Master->Main, User, Email)${RESET}"
-        echo "  0) 🚪  Esci"
+        echo "  1) 📋 Stato rapido"
+        echo "  2) 📝 Super Push (Add + Commit + Push)"
+        echo "  3) ⬇️  Sincronizza e Ripara (Pull + Conflict Solver)"
+        echo "  4) 💪 FORCE PUSH (Usa se GitHub ti rifiuta)"
+        echo "  5) 📜 Log ultimi 5 commit"
+        echo "  6) 🧹 Pulizia Cache Git"
+        echo "  0) 🚪 Esci"
         echo ""
         read -rp "  Scegli un'opzione: " SCELTA
-        echo ""
 
         case "$SCELTA" in
             1) stato_repo ;;
-            2) svuota_cache ;;
-            3) commit_rapido ;;
-            4) push_normale ;;
-            5) pull_remoto ;;
-            6) force_push ;;
-            7) mostra_log ;;
-            8) force_rebuild ;;
-            9) bonifica_lab ;;
-            0) echo -e "\n  ${VERDE}Arrivederci ilnanny! 👋${RESET}\n"; exit 0 ;;
-            *) warn "Opzione non valida, riprova..." ;;
+            2) super_push ;;
+            3) pull_intelligente ;;
+            4) force_push_atomico ;;
+            5) git log -n 5 --oneline ; linea ;;
+            6) git rm -r --cached . && git add . && ok "Cache pulita. Fai un commit ora." ;;
+            0) ok "Alla prossima!"; exit 0 ;;
+            *) errore "Opzione non valida." ;;
         esac
-        echo -e "\n${CIANO}Premi INVIO per tornare al menu...${RESET}"
-        read -r
-        clear
     done
 }
 
-# Lancio del menu
-clear
 main_menu
-
