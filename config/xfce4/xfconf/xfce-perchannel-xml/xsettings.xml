@@ -2,8 +2,8 @@
 
 <channel name="xsettings" version="1.0">
   <property name="Net" type="empty">
-    <property name="ThemeName" type="string" value="mx-comfort-dark"/>
-    <property name="IconThemeName" type="string" value="Lila_HD_Purple"/>
+    <property name="ThemeName" type="string" value="Nordic"/>
+    <property name="IconThemeName" type="string" value="Lila_HD_Blue"/>
     <property name="DoubleClickTime" type="empty"/>
     <property name="DoubleClickDistance" type="empty"/>
     <property name="DndDragThreshold" type="empty"/>
@@ -23,8 +23,8 @@
   <property name="Gtk" type="empty">
     <property name="CanChangeAccels" type="bool" value="false"/>
     <property name="ColorPalette" type="empty"/>
-    <property name="FontName" type="string" value="Monospace 12"/>
-    <property name="MonospaceFontName" type="string" value="Monospace 11"/>
+    <property name="FontName" type="string" value="FiraCode Nerd Font weight=450 13"/>
+    <property name="MonospaceFontName" type="string" value="FiraCode Nerd Font Propo weight=450 12"/>
     <property name="IconSizes" type="empty"/>
     <property name="KeyThemeName" type="empty"/>
     <property name="MenuImages" type="empty"/>
@@ -40,5 +40,8 @@
   </property>
   <property name="Gdk" type="empty">
     <property name="WindowScalingFactor" type="int" value="1"/>
+  </property>
+  <property name="Xfce" type="empty">
+    <property name="SyncThemes" type="bool" value="true"/>
   </property>
 </channel>
