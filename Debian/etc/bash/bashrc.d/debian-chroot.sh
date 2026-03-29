@@ -1,6 +1,6 @@
 #!/bin/bash
 #==========================================================
-# DEBIAN CHROOT SETUP - Lab 2026 (Senza Menu)
+# DEBIAN CHROOT SETUP - Lab 2026 
 #==========================================================
 
 # Impedisce l'esecuzione se la shell non è interattiva

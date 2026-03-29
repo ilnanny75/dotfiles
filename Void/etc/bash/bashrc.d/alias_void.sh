@@ -1,3 +1,4 @@
+#!/bin/bash
 #================================================
 #    O.S.      : Void Linux
 #    Author    : Cristian Pozzessere = ilnanny75

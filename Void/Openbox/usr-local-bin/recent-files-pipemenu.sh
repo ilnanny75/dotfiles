@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
+#==========================================================
+# # Utilizzo: aggiungere
+# <menu id="recent" label="File recenti" execute="/path/to/recent-files-pipemenu" />
+# al file .config/openbox/menu.xml, oppure utilizzarlo con places-pipemenu (vedere i commenti presenti lì)
+#==========================================================
 
-# Usage: add
-# <menu id="recent" label="Recent Files" execute="/path/to/recent-files-pipemenu" />
-# to your .config/openbox/menu.xml, or use with places-pipemenu (see comments there)
 
 maximum_entries=15
 
-#######################################################################
+#==========================================================
 
 # look for recently-used.xbel
 if [ "$XDG_DATA_HOME" ] && [ -r "${XDG_DATA_HOME}/recently-used.xbel" ]; then

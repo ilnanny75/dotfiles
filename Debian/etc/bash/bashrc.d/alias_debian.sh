@@ -21,13 +21,13 @@ alias docs='cd ~/dotfiles/docs_lab'                     # Leggi i manuali del La
 
 # --- 🚀 Master Commands (I tuoi nuovi muscoli) ----------
 # Il manager universale per caricare tutto su GitHub
-alias pigia='~/dotfiles/scripts/bin/ilnanny-git-manager.sh' [cite: 3, 4]
+alias pigia='~/dotfiles/scripts/bin/ilnanny-git-manager.sh' # [cite: 3, 4]
 # Sincronizza il laboratorio locale con quello online
-alias up='~/dotfiles/scripts/bin/ilnanny-git-manager.sh --pull' [cite: 4]
+alias up='~/dotfiles/scripts/bin/ilnanny-git-manager.sh --pull' # 
 # Lancia il re del Lab (il manager del sistema)
-alias manager='~/dotfiles/ilnanny-OS-manager.sh' [cite: 4]
+alias manager='~/dotfiles/ilnanny-OS-manager.sh' # 
 
 # --- 📔 Utility e Visualizzazione ------------------------
-alias memo='cat ~/dotfiles/MEMORANDUM.md'               # Leggi i tuoi appunti al volo [cite: 4]
-alias vedi='ls -sh --color=auto -I "*.png" -I "*.jpg" -I "*.pdf"' # Guarda i file senza il "rumore" dei binari [cite: 4]
-alias treed='tree -h --du -a -C -I "*.png|*.jpg|*.pdf"'  # Albero delle cartelle pulito e veloce [cite: 4]
+alias memo='cat ~/dotfiles/MEMORANDUM.md'               # Leggi i tuoi appunti al volo 
+alias vedi='ls -sh --color=auto -I "*.png" -I "*.jpg" -I "*.pdf"' # Guarda i file senza il "rumore" dei binari 
+alias treed='tree -h --du -a -C -I "*.png|*.jpg|*.pdf"'  # Albero delle cartelle pulito e veloce
