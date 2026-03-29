@@ -34,18 +34,38 @@ bonifica_files() {
 
 # Crea un symlink in modo sicuro:
 # - se la destinazione è già un symlink, lo rimuove e lo ricrea
-# - se è una directory reale, la lascia stare e avvisa
+# - se è un file/cartella reale, lo rinomina in .bak_TIMESTAMP poi crea il link
 safe_link() {
     local src="$1"
     local dst="$2"
     if [ -L "$dst" ]; then
         rm "$dst"
-    elif [ -d "$dst" ]; then
-        warn "SKIP: $dst è una cartella reale (non symlink) — non la tocco."
-        return
+    elif [ -e "$dst" ]; then
+        warn "Backup: $dst → ${dst}.bak_$(date +%Y%m%d_%H%M%S)"
+        mv "$dst" "${dst}.bak_$(date +%Y%m%d_%H%M%S)"
     fi
     ln -sf "$src" "$dst"
     ok "Link: $dst → $src"
+}
+
+# Symlink dinamico di tutto $DOTFILES/config/ → ~/.config/
+# Qualsiasi file/cartella aggiunta al repo viene linkata automaticamente.
+# Le modifiche fatte in ~/.config/ finiscono direttamente nel repo.
+# Se esiste già qualcosa in destinazione → backup .bak_TIMESTAMP
+deploy_config() {
+    local src_root="$DOTFILES/config"
+    local dst_root="$HOME/.config"
+
+    info "Symlink config: $src_root → $dst_root"
+
+    for src in "$src_root"/*; do
+        [ -e "$src" ] || continue
+        local name
+        name=$(basename "$src")
+        safe_link "$src" "$dst_root/$name"
+    done
+
+    ok "Deploy config completato."
 }
 
 configura_lab() {
@@ -83,51 +103,18 @@ configura_lab() {
     safe_link "$DOTFILES/bash/etc_bash/bashrc" ~/.bashrc
 
     # ─────────────────────────────────────────────────────────────────
-    # 5. Configurazione Grafica — logica per cartella
+    # 5. Configurazione Grafica — symlink dinamico
     #
     # REGOLA:
-    #   - Cartelle "sicure" (geany, gtk-3.0, openbox, Thunar):
-    #     link diretto ~/.config/NOME → dotfiles/config/NOME
-    #     perché il repo contiene TUTTA la config di quella app.
-    #
-    #   - xfce4: NON si linka la cartella intera perché XFCE ci
-    #     scrive dentro file vivi (panel/, terminal/, desktop/, ecc.)
-    #     che non sono nel repo. Si linkano solo le sottocartelle
-    #     gestite, lasciando il resto intatto.
+    #   Tutto il primo livello di dotfiles/config/ viene linkato
+    #   automaticamente in ~/.config/. Non serve più elencare le
+    #   cartelle a mano: basta aggiungere una nuova cartella/file
+    #   nel repo e al prossimo setup viene linkata.
+    #   Le modifiche fatte localmente in ~/.config/ finiscono
+    #   direttamente nel repo (dotfiles) — pronti per il push.
+    #   Se esiste già qualcosa in destinazione → backup .bak_TIMESTAMP
     # ─────────────────────────────────────────────────────────────────
-
-    info "Link cartelle config dirette (geany, gtk-3.0, openbox, Thunar)..."
-    for folder in geany gtk-3.0 openbox Thunar; do
-        if [ -d "$DOTFILES/config/$folder" ]; then
-            safe_link "$DOTFILES/config/$folder" ~/.config/"$folder"
-        fi
-    done
-
-    # gtk-2.0 (file singolo, non cartella)
-    if [ -f "$DOTFILES/config/.gtkrc-2.0" ]; then
-        safe_link "$DOTFILES/config/.gtkrc-2.0" ~/.gtkrc-2.0
-    fi
-
-    # ── xfce4: link granulare ──────────────────────────────────────
-    info "Link granulare xfce4 (solo xfconf/xfce-perchannel-xml)..."
-    mkdir -p ~/.config/xfce4/xfconf
-
-    XFCONF_SRC="$DOTFILES/config/xfce4/xfconf/xfce-perchannel-xml"
-    XFCONF_DST=~/.config/xfce4/xfconf/xfce-perchannel-xml
-
-    if [ -d "$XFCONF_SRC" ]; then
-        # Rimuovi il link se già esiste, poi ricrea
-        if [ -L "$XFCONF_DST" ]; then
-            rm "$XFCONF_DST"
-        elif [ -d "$XFCONF_DST" ]; then
-            warn "xfce-perchannel-xml esiste come cartella reale — faccio backup e rimpiazzo."
-            mv "$XFCONF_DST" "${XFCONF_DST}.bak_$(date +%Y%m%d_%H%M%S)"
-        fi
-        ln -sf "$XFCONF_SRC" "$XFCONF_DST"
-        ok "Link: ~/.config/xfce4/xfconf/xfce-perchannel-xml → repo"
-    else
-        warn "xfce-perchannel-xml non trovato nel repo, skip."
-    fi
+    deploy_config
 
     ok "LABORATORIO CONFIGURATO CON SUCCESSO!"
     echo -e "${G}Ricarica con: source ~/.bashrc${RESET}"
