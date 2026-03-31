@@ -15,17 +15,15 @@
         <value type="int" value="16"/>
         <value type="int" value="2"/>
         <value type="int" value="21"/>
-        <value type="int" value="4"/>
-        <value type="int" value="1"/>
-        <value type="int" value="5"/>
         <value type="int" value="41"/>
+        <value type="int" value="4"/>
+        <value type="int" value="8"/>
+        <value type="int" value="1"/>
         <value type="int" value="18"/>
         <value type="int" value="22"/>
         <value type="int" value="17"/>
         <value type="int" value="38"/>
-        <value type="int" value="10"/>
-        <value type="int" value="11"/>
-        <value type="int" value="8"/>
+        <value type="int" value="5"/>
         <value type="int" value="13"/>
         <value type="int" value="44"/>
         <value type="int" value="7"/>
@@ -119,6 +117,8 @@
     <property name="plugin-6" type="string" value="power-manager-plugin"/>
     <property name="plugin-7" type="string" value="systray">
       <property name="known-legacy-items" type="array">
+        <value type="string" value="connessione wi-fi «tim-47375923» attiva: tim-47375923 (73%)"/>
+        <value type="string" value="connessione wi-fi «tim-47375923» attiva: tim-47375923 (60%)"/>
         <value type="string" value="connessione wi-fi «tim-47375923» attiva: tim-47375923 (77%)"/>
         <value type="string" value="connessione wi-fi «tim-47375923» attiva: tim-47375923 (78%)"/>
         <value type="string" value="connessione wi-fi «tim-47375923» attiva: tim-47375923 (69%)"/>
@@ -161,6 +161,7 @@
       <property name="flat-buttons" type="bool" value="true"/>
       <property name="sort-order" type="uint" value="4"/>
       <property name="middle-click" type="uint" value="1"/>
+      <property name="show-handle" type="bool" value="false"/>
     </property>
     <property name="plugin-4" type="string" value="launcher">
       <property name="items" type="array">
@@ -172,11 +173,6 @@
         <value type="string" value="17742141961.desktop"/>
       </property>
     </property>
-    <property name="plugin-8" type="string" value="launcher">
-      <property name="items" type="array">
-        <value type="string" value="17747716572.desktop"/>
-      </property>
-    </property>
     <property name="plugin-10" type="string" value="launcher">
       <property name="items" type="array">
         <value type="string" value="17747709591.desktop"/>
@@ -184,6 +180,10 @@
     </property>
     <property name="plugin-11" type="string" value="separator">
       <property name="style" type="uint" value="0"/>
+    </property>
+    <property name="plugin-8" type="string" value="launcher">
+      <property name="items" type="array">
+      </property>
     </property>
   </property>
 </channel>
