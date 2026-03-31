@@ -32,8 +32,10 @@
       </property>
       <property name="monitoreDP-1" type="empty">
         <property name="workspace0" type="empty">
-          <property name="last-image" type="string" value="/home/ilnanny/Pictures/cpdark.jpg"/>
+          <property name="last-image" type="string" value="/home/ilnanny/Immagini/patu_by_ilnanny_dd6q3by.png"/>
           <property name="image-style" type="int" value="4"/>
+          <property name="backdrop-cycle-enable" type="bool" value="false"/>
+          <property name="color-style" type="int" value="3"/>
         </property>
       </property>
     </property>

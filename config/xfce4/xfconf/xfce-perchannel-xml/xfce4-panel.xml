@@ -111,11 +111,12 @@
     </property>
     <property name="plugin-3" type="string" value="pulseaudio">
       <property name="enable-keyboard-shortcuts" type="bool" value="true"/>
-      <property name="known-players" type="string" value="firefox"/>
+      <property name="known-players" type="string" value="Firefox;firefox"/>
     </property>
     <property name="plugin-6" type="string" value="power-manager-plugin"/>
     <property name="plugin-7" type="string" value="systray">
       <property name="known-legacy-items" type="array">
+        <value type="string" value="connessione wi-fi «tim-47375923» attiva: tim-47375923 (71%)"/>
         <value type="string" value="connessione wi-fi «tim-47375923» attiva: tim-47375923 (73%)"/>
         <value type="string" value="connessione wi-fi «tim-47375923» attiva: tim-47375923 (60%)"/>
         <value type="string" value="connessione wi-fi «tim-47375923» attiva: tim-47375923 (77%)"/>
