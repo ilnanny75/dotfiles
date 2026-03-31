@@ -32,3 +32,4 @@ export PATH="$HOME/dotfiles/scripts/bin:$HOME/bin:$PATH"
 
 # 5. Impostazioni Prompt
 PS1='┌─[✔]───[\u@\h]───[\w]───[\s]\n└───▶ '
+eval "$(starship init bash)"

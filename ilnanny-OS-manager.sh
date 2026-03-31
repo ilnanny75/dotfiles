@@ -24,6 +24,30 @@ ok()     { echo -e "${V}✅ $*${RESET}"; }
 info()   { echo -e "${C}ℹ️  $*${RESET}"; }
 warn()   { echo -e "${G}⚠️  $*${RESET}"; }
 
+# --- NUOVA FUNZIONE: INSTALLAZIONE AUTOMATICA DIPENDENZE ---
+install_essentials() {
+    info "Rilevamento OS: ${OS_ID^^}..."
+    case "$OS_ID" in
+        void)
+            info "Installazione tool su Void Linux (xbps)..."
+            sudo xbps-install -Sy curl wget github-cli xdg-user-dirs
+            ;;
+        arch)
+            info "Installazione tool su Arch Linux (pacman)..."
+            sudo pacman -Sy --needed curl wget github-cli xdg-user-dirs
+            ;;
+        debian|mx|ubuntu)
+            info "Installazione tool su Debian-based (apt)..."
+            sudo apt update && sudo apt install -y curl wget gh xdg-user-dirs
+            ;;
+        *)
+            warn "Distribuzione non supportata per l'installazione automatica."
+            return
+            ;;
+    esac
+    ok "Dipendenze installate correttamente."
+}
+
 bonifica_files() {
     info "Pulizia automatica dei file (rimozione numeri di riga)..."
     find "$DOTFILES" -type f \( -name "*.sh" -o -name "*.md" -o -name "bashrc" -o -name "alias*" \) \
@@ -32,9 +56,6 @@ bonifica_files() {
     ok "Tutti i file nel repository sono stati bonificati."
 }
 
-# Crea un symlink in modo sicuro:
-# - se la destinazione è già un symlink, lo rimuove e lo ricrea
-# - se è un file/cartella reale, lo rinomina in .bak_TIMESTAMP poi crea il link
 safe_link() {
     local src="$1"
     local dst="$2"
@@ -48,34 +69,29 @@ safe_link() {
     ok "Link: $dst → $src"
 }
 
-# Symlink dinamico di tutto $DOTFILES/config/ → ~/.config/
-# Qualsiasi file/cartella aggiunta al repo viene linkata automaticamente.
-# Le modifiche fatte in ~/.config/ finiscono direttamente nel repo.
-# Se esiste già qualcosa in destinazione → backup .bak_TIMESTAMP
 deploy_config() {
     local src_root="$DOTFILES/config"
     local dst_root="$HOME/.config"
-
     info "Symlink config: $src_root → $dst_root"
-
     for src in "$src_root"/*; do
         [ -e "$src" ] || continue
         local name
         name=$(basename "$src")
         safe_link "$src" "$dst_root/$name"
     done
-
     ok "Deploy config completato."
 }
 
 configura_lab() {
     header
+    # Prima installa i pacchetti necessari (curl, wget, xdg, gh)
+    install_essentials
+    
     bonifica_files
     info "Sincronizzazione dotfiles per ${OS_ID^^}..."
 
     # 1. Cartelle base
     mkdir -p ~/.bashrc.d ~/.config ~/.local/share/fonts ~/bin
-    # rm con glob non rimuove symlink rotti — find -delete li prende tutti
     find ~/.bashrc.d/ -maxdepth 1 \( -type f -o -type l \) -delete 2>/dev/null || true
 
     # 2. Link Moduli Universali bash
@@ -97,23 +113,17 @@ configura_lab() {
                 ln -sf "$DOTFILES"/Void/etc/bash/bashrc.d/* ~/.bashrc.d/ ;;
     esac
 
+    # --- FIX CARTELLE ITALIANE (Universale) ---
+    # Funziona su qualsiasi OS dopo l'installazione di xdg-user-dirs
+    info "Sincronizzazione nomi cartelle utente (Italiano)..."
+    xdg-user-dirs-update --force
+
     # 4. Link Eseguibili e Bashrc
     ln -sf "$DOTFILES"/scripts/bin/* ~/bin/
     chmod +x "$DOTFILES"/scripts/bin/*
     safe_link "$DOTFILES/bash/etc_bash/bashrc" ~/.bashrc
 
-    # ─────────────────────────────────────────────────────────────────
-    # 5. Configurazione Grafica — symlink dinamico
-    #
-    # REGOLA:
-    #   Tutto il primo livello di dotfiles/config/ viene linkato
-    #   automaticamente in ~/.config/. Non serve più elencare le
-    #   cartelle a mano: basta aggiungere una nuova cartella/file
-    #   nel repo e al prossimo setup viene linkata.
-    #   Le modifiche fatte localmente in ~/.config/ finiscono
-    #   direttamente nel repo (dotfiles) — pronti per il push.
-    #   Se esiste già qualcosa in destinazione → backup .bak_TIMESTAMP
-    # ─────────────────────────────────────────────────────────────────
+    # 5. Configurazione Grafica
     deploy_config
 
     ok "LABORATORIO CONFIGURATO CON SUCCESSO!"
