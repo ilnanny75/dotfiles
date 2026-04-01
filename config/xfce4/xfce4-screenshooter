@@ -1,8 +1,8 @@
-app=pdfarranger
+app=firefox
 last_user=
 last_extension=png
 screenshot_dir=file:/home/ilnanny/Immagini
-action=1
+action=2
 delay=0
 region=3
 show_mouse=1

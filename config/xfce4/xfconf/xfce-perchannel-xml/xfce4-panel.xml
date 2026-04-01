@@ -15,16 +15,14 @@
         <value type="int" value="16"/>
         <value type="int" value="2"/>
         <value type="int" value="21"/>
+        <value type="int" value="41"/>
         <value type="int" value="4"/>
         <value type="int" value="1"/>
-        <value type="int" value="5"/>
-        <value type="int" value="41"/>
         <value type="int" value="18"/>
         <value type="int" value="22"/>
         <value type="int" value="17"/>
         <value type="int" value="38"/>
-        <value type="int" value="10"/>
-        <value type="int" value="11"/>
+        <value type="int" value="5"/>
         <value type="int" value="13"/>
         <value type="int" value="44"/>
         <value type="int" value="7"/>
@@ -89,7 +87,7 @@
       <property name="position-commands-alternate" type="bool" value="true"/>
       <property name="menu-height" type="int" value="633"/>
       <property name="menu-width" type="int" value="536"/>
-      <property name="button-icon" type="string" value="xfce4-logo"/>
+      <property name="button-icon" type="string" value="start-here-void"/>
       <property name="default-category" type="int" value="0"/>
       <property name="hover-switch-category" type="bool" value="true"/>
       <property name="recent-items-max" type="int" value="0"/>
@@ -113,12 +111,14 @@
     </property>
     <property name="plugin-3" type="string" value="pulseaudio">
       <property name="enable-keyboard-shortcuts" type="bool" value="true"/>
-      <property name="known-players" type="string" value="firefox"/>
+      <property name="known-players" type="string" value="Firefox;firefox"/>
     </property>
     <property name="plugin-6" type="string" value="power-manager-plugin"/>
     <property name="plugin-7" type="string" value="systray">
       <property name="known-legacy-items" type="array">
-        <value type="string" value="connessione wi-fi «tim-47375923» attiva: tim-47375923 (57%)"/>
+        <value type="string" value="connessione wi-fi «tim-47375923» attiva: tim-47375923 (71%)"/>
+        <value type="string" value="connessione wi-fi «tim-47375923» attiva: tim-47375923 (73%)"/>
+        <value type="string" value="connessione wi-fi «tim-47375923» attiva: tim-47375923 (60%)"/>
         <value type="string" value="connessione wi-fi «tim-47375923» attiva: tim-47375923 (77%)"/>
         <value type="string" value="connessione wi-fi «tim-47375923» attiva: tim-47375923 (78%)"/>
         <value type="string" value="connessione wi-fi «tim-47375923» attiva: tim-47375923 (69%)"/>
@@ -161,6 +161,7 @@
       <property name="flat-buttons" type="bool" value="true"/>
       <property name="sort-order" type="uint" value="4"/>
       <property name="middle-click" type="uint" value="1"/>
+      <property name="show-handle" type="bool" value="false"/>
     </property>
     <property name="plugin-4" type="string" value="launcher">
       <property name="items" type="array">
