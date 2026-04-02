@@ -12,11 +12,24 @@ case $- in
 esac
 
 # 2. Caricamento Profili di Sistema
+# append_path è definita qui per compatibilità multi-distro:
+# su shell non-login (XFCE terminal, ecc.) /etc/profile non viene
+# caricato, quindi i profile.d che la usano (es. perlbin.sh su Arch)
+# andrebbero in errore. La definiamo noi prima di caricarli.
+append_path() {
+    case ":${PATH}:" in
+        *:"$1":*) ;;
+        *) export PATH="${PATH:+$PATH:}$1" ;;
+    esac
+}
+
 if [ -d /etc/profile.d ]; then
     for SH in /etc/profile.d/*.sh; do
         [ -r "$SH" ] && . "$SH"
     done
 fi
+
+unset -f append_path
 
 # 3. IL CUORE DEI DOTFILES (Dinamico)
 MY_BASH_DIR="$HOME/.bashrc.d"
@@ -32,4 +45,3 @@ export PATH="$HOME/dotfiles/scripts/bin:$HOME/bin:$PATH"
 
 # 5. Impostazioni Prompt
 PS1='┌─[✔]───[\u@\h]───[\w]───[\s]\n└───▶ '
-eval "$(starship init bash)"
