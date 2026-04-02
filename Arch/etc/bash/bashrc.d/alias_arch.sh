@@ -11,6 +11,8 @@ alias remove='sudo pacman -Rs'               # Rimuove il pacchetto e le sue dip
 alias search='pacman -Ss'                    # Cerca nel magazzino di Arch
 alias pacchetti='pacman -Ql'                 # Fammi vedere cosa ha installato questo pacchetto
 alias scc='sudo pacman -Scc'                 # Pulizia drastica della cache (usa con testa!)
+alias qdt='pacman -Qdt'                      # Elenca i pacchetti orfani
+alias qdtr='sudo pacman -Rs $(pacman -Qdtq)' # Rimuovili tutti i pacchetti orfani
 
 # --- Manutenzione e Sicurezza ----------------------------
 # Trova i 10 mirror più veloci e aggiorna la lista

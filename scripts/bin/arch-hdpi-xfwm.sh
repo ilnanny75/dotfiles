@@ -21,7 +21,7 @@ curl -L https://github.com/loichu/arc-theme-xfwm4-hidpi/archive/refs/heads/maste
 
 # 3. Configurazione e Compilazione
 # Usiamo il prefisso ~/.local per installarlo solo per il tuo utente senza sporcare il sistema
-echo -e "${C} Compilazione del tema (DPI 192)...${RESET}"
+echo -e "${C} Compilazione del tema (DPI 172)...${RESET}"
 ./autogen.sh --prefix="$HOME/.local" \
              --disable-cinnamon \
              --disable-gnome-shell \

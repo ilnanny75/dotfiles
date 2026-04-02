@@ -24,6 +24,9 @@ alias lscripts='ls ~/dotfiles/scripts/bin/'              # Legge tutti gli scrip
 alias pigia='~/dotfiles/scripts/bin/ilnanny-git-manager.sh'
 
 # 🔴 IL TUO NUOVO STRUMENTO (Salvataggio Cache e Fix)
+alias multigit='bash ~/dotfiles/scripts/bin/git-multitool.sh' # Multitools Github
+alias gitup='git pull'                                        # Tira giù le modifiche
+alias gsync='git pull --no-rebase && git add -A && git commit -m "Sync locale-remoto $(date +%d-%m-%Y_%H:%M)" && git push' # Sincronizza git con repo locale
 alias multigit='bash ~/dotfiles/scripts/bin/git-multitool.sh'  # Multitools Github
 alias up='git pull'                                            # Tira giù le modifiche
 
