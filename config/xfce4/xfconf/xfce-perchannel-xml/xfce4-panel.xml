@@ -87,7 +87,7 @@
       <property name="position-commands-alternate" type="bool" value="true"/>
       <property name="menu-height" type="int" value="633"/>
       <property name="menu-width" type="int" value="536"/>
-      <property name="button-icon" type="string" value="start-here-void"/>
+      <property name="button-icon" type="string" value="mxfcelogo-rounded-original"/>
       <property name="default-category" type="int" value="0"/>
       <property name="hover-switch-category" type="bool" value="true"/>
       <property name="recent-items-max" type="int" value="0"/>

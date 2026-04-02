@@ -17,15 +17,15 @@ alias ds8='dust -d 1'                                              # Dust limita
 alias dots='cd ~/dotfiles'                               # Cartella Repo
 alias gbin='cd ~/dotfiles/scripts/bin'                   # Cartella Bin
 alias cdd='cd ~/dotfiles/bash/etc_bash/bashrc.d/'        # Moduli Shell
-alias memo='cat ~/dotfiles/MEMORANDUM.md'                # Legge memorandum
+alias lscripts='ls ~/dotfiles/scripts/bin/'              # Legge tutti gli scripts 
 
 # --- 🛠️ Git & GitHub (I tuoi nuovi muscoli) --------------
 # Il tuo comando storico aggiornato al nuovo manager
 alias pigia='~/dotfiles/scripts/bin/ilnanny-git-manager.sh'
 
 # 🔴 IL TUO NUOVO STRUMENTO (Salvataggio Cache e Fix)
-alias multigit='bash ~/dotfiles/scripts/bin/git-multitool.sh' # Multitools Github
-alias up='git pull'                                         # Tira giù le modifiche
+alias multigit='bash ~/dotfiles/scripts/bin/git-multitool.sh'  # Multitools Github
+alias up='git pull'                                            # Tira giù le modifiche
 
 # --- 📝 Sistema (XFCE4-Terminal) -------------------------
 alias gy='geany'                                         # Apri Geany

@@ -10,4 +10,6 @@
       <property name="RefreshRate" type="double" value="60.030000000000001"/>
     </property>
   </property>
+  <property name="Notify" type="int" value="1"/>
+  <property name="AutoEnableProfiles" type="int" value="3"/>
 </channel>
