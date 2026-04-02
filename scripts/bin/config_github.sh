@@ -1,79 +1,84 @@
 #!/bin/bash
 # ═══════════════════════════════════════════════════════════
-#  ilnanny75 Github Configurazione
+#  ilnanny75 — GitHub Configurazione Rapida
+#  Autenticazione via browser + 2FA (app)
 # ═══════════════════════════════════════════════════════════
 
-#!/bin/bash
+set -euo pipefail
 
-# --- CONFIGURAZIONE IDENTITÀ ---
-EMAIL="cristianpozzessere@gmail.com"
-USERNAME="ilnanny75"
+# ── Identità ────────────────────────────────────────────────
+readonly GIT_NAME="ilnanny75"
+readonly GIT_EMAIL="cristianpozzessere@gmail.com"
 
-echo "-------------------------------------------------------"
-echo "   🚀 GitHub Setup via CLI per Cristian (ilnanny75)   "
-echo "-------------------------------------------------------"
+# ── Colori ──────────────────────────────────────────────────
+RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'
+CYAN='\033[0;36m'; BOLD='\033[1m'; RESET='\033[0m'
 
-# 1. Rilevamento e Installazione di github-cli (gh)
-if command -v xbps-install &>/dev/null; then
-    OS="Void Linux"
-    INSTALL_CMD="sudo xbps-install -S github-cli"
-elif command -v pacman &>/dev/null; then
-    OS="Arch Linux"
-    INSTALL_CMD="sudo pacman -S --noconfirm github-cli"
-elif command -v apt &>/dev/null; then
-    OS="Debian/Ubuntu"
-    INSTALL_CMD="sudo apt update && sudo apt install -y gh"
+msg()  { echo -e "${CYAN}${BOLD}→${RESET} $*"; }
+ok()   { echo -e "${GREEN}${BOLD}✔${RESET} $*"; }
+err()  { echo -e "${RED}${BOLD}✘${RESET} $*"; exit 1; }
+warn() { echo -e "${YELLOW}${BOLD}!${RESET} $*"; }
+
+# ── Banner ──────────────────────────────────────────────────
+echo -e "\n${BOLD}${CYAN}══════════════════════════════════════${RESET}"
+echo -e "${BOLD}   🐙 GitHub Setup — ilnanny75${RESET}"
+echo -e "${BOLD}${CYAN}══════════════════════════════════════${RESET}\n"
+
+# ── Rilevamento OS e installazione gh ───────────────────────
+if command -v gh &>/dev/null; then
+    ok "github-cli già installato: $(gh --version | head -1)"
 else
-    echo "❌ Sistema non riconosciuto. Installa 'gh' manualmente prima di continuare."
-    exit 1
+    msg "Installazione github-cli..."
+
+    if command -v xbps-install &>/dev/null; then
+        sudo xbps-install -Sy github-cli
+    elif command -v pacman &>/dev/null; then
+        sudo pacman -S --noconfirm github-cli
+    elif command -v apt &>/dev/null; then
+        sudo apt-get update -qq && sudo apt-get install -y gh
+    else
+        err "Gestore pacchetti non riconosciuto. Installa 'gh' manualmente."
+    fi
+
+    ok "github-cli installato."
 fi
 
-echo "📦 Sistema rilevato: $OS"
-
-read -p "Vuoi installare/aggiornare github-cli e autenticarti? (s/n): " scelta
-if [[ ! "$scelta" =~ ^[Ss]$ ]]; then
-    echo "Operazione annullata."
-    exit 0
-fi
-
-# Esecuzione installazione
-$INSTALL_CMD
-
-if [ $? -ne 0 ]; then
-    echo "❌ Errore durante l'installazione. Controlla i permessi sudo."
-    exit 1
-fi
-
-echo ""
-echo "-------------------------------------------------------"
-echo "🔐 AVVIO AUTENTICAZIONE (Segui le istruzioni)"
-echo "1. Scegli 'GitHub.com'"
-echo "2. Scegli 'HTTPS'"
-echo "3. Scegli 'Yes' per configurare Git con le tue credenziali"
-echo "4. Scegli 'Login with a web browser'"
-echo "5. COPIA il codice che apparirà qui sotto"
-echo "6. Incollalo nel browser e conferma con l'APP (2FA)"
-echo "-------------------------------------------------------"
-read -p "Premi [INVIO] per generare il codice di accesso..."
-
-# Avvio login interattivo
-gh auth login
-
-# Se il login ha successo, configura Git in modo che usi 'gh' come gestore credenziali
+# ── Controllo login esistente ────────────────────────────────
 if gh auth status &>/dev/null; then
-    echo "⚙️ Configurazione Git in corso..."
-    git config --global user.name "$USERNAME"
-    git config --global user.email "$EMAIL"
-    
-    # Questo comando è fondamentale: dice a Git di usare il token di 'gh' per HTTPS
-    gh auth setup-git
-    
+    warn "Sei già autenticato su GitHub:"
+    gh auth status
     echo ""
-    echo "-------------------------------------------------------"
-    echo "✅ OPERAZIONE CONCLUSA CON SUCCESSO!"
-    echo "👤 Utente: $USERNAME"
-    echo "🚀 Ora puoi fare push/pull via HTTPS senza password."
-    echo "-------------------------------------------------------"
+    read -rp "$(echo -e "${YELLOW}Vuoi ri-autenticarti? (s/N): ${RESET}")" risposta
+    [[ "$risposta" =~ ^[Ss]$ ]] || { ok "Nessuna modifica. Uscita."; exit 0; }
+fi
+
+# ── Autenticazione via browser + 2FA ────────────────────────
+echo ""
+msg "Avvio autenticazione GitHub via browser..."
+echo -e "  ${YELLOW}→ Si aprirà una pagina web: inserisci il codice mostrato${RESET}"
+echo -e "  ${YELLOW}→ Conferma con la tua app 2FA${RESET}\n"
+
+# Passa le opzioni direttamente: HTTPS + browser, niente domande interattive
+gh auth login \
+    --hostname github.com \
+    --git-protocol https \
+    --web
+
+# ── Verifica e configurazione Git ───────────────────────────
+if gh auth status &>/dev/null; then
+    msg "Configurazione Git globale..."
+    git config --global user.name  "$GIT_NAME"
+    git config --global user.email "$GIT_EMAIL"
+    gh auth setup-git
+
+    echo ""
+    echo -e "${BOLD}${GREEN}══════════════════════════════════════${RESET}"
+    ok "Autenticazione completata!"
+    echo -e "  ${BOLD}Utente :${RESET} $GIT_NAME"
+    echo -e "  ${BOLD}Email  :${RESET} $GIT_EMAIL"
+    echo -e "  ${BOLD}Protoc.:${RESET} HTTPS (token gestito da gh)"
+    echo -e "${BOLD}${GREEN}══════════════════════════════════════${RESET}\n"
+    ok "Push e pull HTTPS funzionano senza password."
 else
-    echo "❌ L'autenticazione non è stata completata."
+    err "Autenticazione non completata. Riprova."
 fi
