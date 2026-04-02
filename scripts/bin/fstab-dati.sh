@@ -1,47 +1,73 @@
 #!/bin/bash
 
-# Identificativi della partizione
+# --- CONFIGURAZIONE ---
 UUID_DATI="40175288-0055-44da-9612-c080122d04c8"
-# Mount point di sistema (standard per dischi interni)
-MOUNT_POINT="/mnt/Dati"
+MOUNT_POINT="/media/Dati"
 
-echo "--- Configurazione Partizione Dati (Sistema) ---"
+clear
+echo "===================================================="
+echo "   CONFIGURAZIONE INTERATTIVA PARTIZIONE DATI"
+echo "===================================================="
 
-# 1. Creazione cartella di mount in /mnt
+# 1. Verifica se il disco è connesso
+echo "[*] Verifica presenza disco con UUID: $UUID_DATI..."
+if ! blkid | grep -q "$UUID_DATI"; then
+    echo " [!] ERRORE: Disco non trovato! Controlla l'UUID."
+    exit 1
+fi
+echo " [OK] Disco trovato."
+
+# 2. Gestione Punto di Mount
 if [ ! -d "$MOUNT_POINT" ]; then
-    echo "[*] Creazione cartella $MOUNT_POINT..."
-    sudo mkdir -p "$MOUNT_POINT"
+    echo "[*] Il punto di mount $MOUNT_POINT non esiste. Lo creo?"
+    read -p "    Procedere? (s/n): " confirm
+    if [[ $confirm == [sS] ]]; then
+        sudo mkdir -p "$MOUNT_POINT"
+        echo " [OK] Cartella creata."
+    else
+        echo " [!] Operazione annullata."
+        exit 1
+    fi
 else
-    echo "[!] La cartella $MOUNT_POINT esiste già."
+    echo " [!] Il punto di mount $MOUNT_POINT esiste già."
 fi
 
-# 2. Backup di fstab
+# 3. Backup di fstab
 echo "[*] Creazione backup di /etc/fstab..."
 sudo cp /etc/fstab /etc/fstab.bak
 
-# 3. Controllo se l'UUID è già presente in fstab
-if grep -q "$UUID_DATI" /etc/fstab; then
-    echo "[!] L'UUID è già presente. Rimuovo la vecchia riga per aggiornarla..."
-    sudo sed -i "/$UUID_DATI/d" /etc/fstab
-fi
+# 4. Scrittura in fstab (Pulizia vecchie voci + Nuova configurazione)
+echo "[*] Aggiornamento /etc/fstab con opzione visibilità..."
+sudo sed -i "\| $MOUNT_POINT |d" /etc/fstab
+sudo sed -i "/$UUID_DATI/d" /etc/fstab
 
-# 4. Scrittura in fstab
-# Usiamo 'defaults' che include 'exec', e 'noatime' per le prestazioni.
-# Rimosso 'user' per evitare il blocco noexec automatico.
-echo "[*] Aggiunta della partizione a /etc/fstab..."
-LINEA_FSTAB="UUID=$UUID_DATI  $MOUNT_POINT  ext4  defaults,noatime  0  2"
+# defaults: rw, suid, dev, exec, auto, nouser, async
+# x-gvfs-show: forza la visibilità nella barra laterale di Thunar
+LINEA_FSTAB="UUID=$UUID_DATI  $MOUNT_POINT  ext4  defaults,noatime,x-gvfs-show  0  2"
+
 echo "$LINEA_FSTAB" | sudo tee -a /etc/fstab > /dev/null
+echo " [OK] Configurazione fstab aggiornata."
 
 # 5. Montaggio
-echo "[*] Montaggio della partizione..."
-sudo mount -a
+echo "[*] Tentativo di montaggio..."
+sudo umount "$MOUNT_POINT" 2>/dev/null
+if sudo mount -a; then
+    echo " [OK] Partizione montata con successo."
+else
+    echo " [!] Errore nel montaggio. Controlla fstab."
+    exit 1
+fi
 
-# 6. Fix dei permessi
-# Dato che è ext4, dobbiamo dire al file system che tu sei il proprietario
-echo "[*] Impostazione permessi per l'utente $(whoami)..."
-sudo chown -R $(id -u):$(id -g) "$MOUNT_POINT"
+# 6. Fix Permessi Ricorsivo (Sicuro per 55GB)
+echo "[*] Vuoi diventare proprietario di tutti i file in $MOUNT_POINT?"
+read -p "    Procedere? (s/n): " confirm_perm
+if [[ $confirm_perm == [sS] ]]; then
+    echo "[*] Applicazione permessi in corso..."
+    sudo chown -R $(id -u):$(id -g) "$MOUNT_POINT"
+    echo " [OK] Permessi impostati: ora puoi leggere e scrivere liberamente."
+fi
 
-echo "--- Configurazione completata! ---"
-echo "La partizione è montata in: $MOUNT_POINT"
-echo "Puoi creare un collegamento veloce nella tua home con:"
-echo "ln -s $MOUNT_POINT ~/Dati"
+echo "===================================================="
+echo "   CONFIGURAZIONE COMPLETATA!"
+echo "   Controlla Thunar: la partizione 'Dati' è pronta."
+echo "===================================================="
