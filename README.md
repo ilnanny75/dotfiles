@@ -38,7 +38,7 @@ cd ~/dotfiles && chmod +x ilnanny-OS-manager.sh && ./ilnanny-OS-manager.sh
   <li><strong>pigia</strong>: Il comando definitivo per Git. Gestisce commit e push in un colpo solo.</li>
   <li><strong>multigit</strong>: Il tuo nuovo "coltellino svizzero" per pulire la cache e bonificare i repo.</li>
   <li><strong>up</strong>: Sincronizza il repository locale con quello online (git pull).</li>
-  <li><strong>instally</strong>: Installa pacchetti usando il gestore corretto della tua distro.</li>
+  <li><strong>install</strong>: Installa pacchetti usando il gestore corretto della tua distro.</li>
   <li><strong>update</strong>: Aggiorna l'intero sistema (core e pacchetti).</li>
   <li><strong>treed</strong>: Visualizza la struttura delle cartelle senza lag di immagini.</li>
   <li><strong>vedi</strong>: Esplora i file saltando i binari pesanti (immagini/PDF).</li>
