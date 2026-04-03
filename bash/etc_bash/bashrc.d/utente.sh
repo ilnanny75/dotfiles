@@ -18,6 +18,7 @@ export TERM="xterm-256color"                 # Supporto colore 256 tonalità
 export EDITOR="geany"                        # Editor predefinito
 export BROWSER="firefox"                     # Browser predefinito
 export FILEMANAGER="thunar"                  # Gestore file predefinito
+export QT_QPA_PLATFORMTHEME=qt5ct            # Tema Qt gestito da qt5ct
 
 # --- 📂 Gestione Percorsi (PATH) -------------------------
 export PATH="$HOME/dotfiles/scripts/bin:$HOME/bin:$PATH" # Priorità ai tuoi script
