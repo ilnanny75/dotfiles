@@ -1,7 +1,13 @@
 #!/bin/bash
-#==========================================================
-# ILNANNY ALIAS UNIFICATI - Lab 2026 (Anti-Lag Version)
-#==========================================================
+# ═══════════════════════════════════════════════════════════════════
+# Nota: Lab 2026 Unified Aliases. Core delle scorciatoie universali: 
+# navigazione, gestione Git (multigit/gsync) e utility multimediali 
+# (300dpi, youtube-mp3). Versione ottimizzata anti-lag.
+#
+# Autore: ilnanny 2026
+# Mail: ilnannyhack@gmail.com
+# GitHub: https://github.com/ilnanny75
+# ═══════════════════════════════════════════════════════════════════
 
 # --- 📂 Navigazione e Struttura --------------------------
 alias blkid='lsblk -o NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL,MODEL'

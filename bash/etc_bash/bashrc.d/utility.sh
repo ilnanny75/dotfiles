@@ -1,7 +1,13 @@
 #!/bin/bash
-#==========================================================
-# UTILITY ILNANNY 2026 - Estrattore e Info
-#==========================================================
+# ═══════════════════════════════════════════════════════════════════
+# Nota: Universal Utility Toolkit. Include l'estrattore universale 
+# (extract) compatibile con tutti i formati compressi e il modulo 
+# informativo rapido (ii) per la diagnostica hardware/kernel.
+#
+# Autore: ilnanny 2026
+# Mail: ilnannyhack@gmail.com
+# GitHub: https://github.com/ilnanny75
+# ═══════════════════════════════════════════════════════════════════
 
 # --- 📦 Estrattore Universale ----------------------------
 extract() {                                             # Gestione archivi

@@ -1,4 +1,12 @@
 #!/usr/bin/env bash
+# ═══════════════════════════════════════════════════════════════════
+# Nota: Manager semplificato per il push dei dotfiles. 
+# Automatizza l'aggiunta di file e l'invio al repository GitHub.
+#
+# Autore: ilnanny 2026
+# Mail: ilnannyhack@gmail.com
+# GitHub: https://github.com/ilnanny75
+# ═══════════════════════════════════════════════════════════════════
 
 # Colori per un output leggibile
 V="\e[32m"

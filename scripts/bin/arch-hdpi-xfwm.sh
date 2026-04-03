@@ -1,4 +1,12 @@
 #!/usr/bin/env bash
+# ═══════════════════════════════════════════════════════════════════
+# Nota: Installazione e compilazione del tema Arc-Theme HiDPI con 
+# bottoni grandi (DPI 172). Gestisce dipendenze su Void Linux.
+#
+# Autore: ilnanny 2026
+# Mail: ilnannyhack@gmail.com
+# GitHub: https://github.com/ilnanny75
+# ═══════════════════════════════════════════════════════════════════
 
 # Colori per i messaggi
 V="\e[32m"

@@ -1,8 +1,12 @@
 #!/bin/bash
-#==========================================================
-#  ILNANNY HARDWARE MANAGER - 2026
-#  Monitor, Network, Sound & Recording
-#==========================================================
+# ═══════════════════════════════════════════════════════════════════
+# Nota: Hardware Manager. Gestione display (xrandr), registrazione 
+# schermo (ffmpeg), test audio e riavvio interfacce di rete.
+#
+# Autore: ilnanny 2026
+# Mail: ilnannyhack@gmail.com
+# GitHub: https://github.com/ilnanny75
+# ═══════════════════════════════════════════════════════════════════
 
 VERDE='\033[0;32m'
 GIALLO='\033[1;33m'

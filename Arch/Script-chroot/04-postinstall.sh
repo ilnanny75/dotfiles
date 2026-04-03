@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
-# =============================================================================
-# 04-postinstall.sh — Software aggiuntivo interattivo post-installazione
-# Arch Linux | Utente: ilnanny | AUR: yay
-# VLC, GIMP, Inkscape, LibreOffice, browser, sviluppo, multimedia e altro
-# =============================================================================
+# ═══════════════════════════════════════════════════════════════════
+# Nota: Arch Installation - Fase 4. Script interattivo per software 
+# extra (VLC, GIMP, Office) e configurazione alias finali.
+#
+# Autore: ilnanny 2026
+# Mail: ilnannyhack@gmail.com
+# GitHub: https://github.com/ilnanny75
+# ═══════════════════════════════════════════════════════════════════
 
 set -euo pipefail
 IFS=$'\n\t'

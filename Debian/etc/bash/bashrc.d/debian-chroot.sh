@@ -1,7 +1,13 @@
 #!/bin/bash
-#==========================================================
-# DEBIAN CHROOT SETUP - Lab 2026 
-#==========================================================
+# ═══════════════════════════════════════════════════════════════════
+# Nota: Debian Chroot Environment Setup. Configura l'ambiente di 
+# shell all'interno del chroot, gestisce il prompt colorato e 
+# imposta correttamente il titolo della finestra del terminale.
+#
+# Autore: ilnanny 2026
+# Mail: ilnannyhack@gmail.com
+# GitHub: https://github.com/ilnanny75
+# ═══════════════════════════════════════════════════════════════════
 
 # Impedisce l'esecuzione se la shell non è interattiva
 case $- in

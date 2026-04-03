@@ -1,7 +1,13 @@
 #!/bin/bash
-#==========================================================
-# PS1 ILNANNY 2026 - Versione Simmetrica
-#==========================================================
+# ═══════════════════════════════════════════════════════════════════
+# Nota: Custom Shell Prompt (PS1). Versione simmetrica 2026. 
+# Visualizza dinamicamente: stato ultimo comando (✔/✘), 
+# info utente/host, percorso attuale e statistiche cartella (# file/peso).
+#
+# Autore: ilnanny 2026
+# Mail: ilnannyhack@gmail.com
+# GitHub: https://github.com/ilnanny75
+# ═══════════════════════════════════════════════════════════════════
 
 # --- Funzione Info: File e Peso --------------------------
 prompt_dir_info() {

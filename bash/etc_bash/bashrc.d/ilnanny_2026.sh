@@ -1,7 +1,13 @@
 #!/bin/bash
-#==========================================================
-# TOOLBOX ILNANNY 2026 - Modulo Nuove Funzioni
-#==========================================================
+# ═══════════════════════════════════════════════════════════════════
+# Nota: Toolbox ilnanny 2026. Modulo funzioni avanzate: 
+# manipolazione SVG (svg2png), automazione temi icone e 
+# integrazione con il Master Manager del Lab.
+#
+# Autore: ilnanny 2026
+# Mail: ilnannyhack@gmail.com
+# GitHub: https://github.com/ilnanny75
+# ═══════════════════════════════════════════════════════════════════
 
 # --- 🖼️ Manipolazione Immagini ---------------------------
 svg2png() {                                                    # Convertitore SVG

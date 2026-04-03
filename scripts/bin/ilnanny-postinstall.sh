@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
-# ==============================================================================
-#  postinstall.sh — Script di Post-Installazione e Verifica Software
-#  Autore  : ilnanny / Cristian
-#  Versione: 2.1 (Aggiornata con Glow e Geany-Plugins)
-#  Distro  : Arch Linux | Debian/Ubuntu | Void Linux
-#  Lingua  : Italiano
-# ==============================================================================
+# ═══════════════════════════════════════════════════════════════════
+# Nota: Master script di post-installazione per Arch, Debian e Void. 
+# Installa suite software, temi, font e ottimizza il sistema.
+#
+# Autore: ilnanny 2026
+# Mail: ilnannyhack@gmail.com
+# GitHub: https://github.com/ilnanny75
+# ═══════════════════════════════════════════════════════════════════
 
 set -euo pipefail
 

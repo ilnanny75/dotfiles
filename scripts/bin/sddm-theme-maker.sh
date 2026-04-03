@@ -1,8 +1,13 @@
 #!/bin/bash
-#==========================================================
-#  ILNANNY SDDM Theme Maker - 2026
-#  Target: Void Archlinux Debian
-#==========================================================
+# ═══════════════════════════════════════════════════════════════════
+# Nota: SDDM Universal Maker. Genera temi personalizzati per il login 
+# manager. Gestisce il ridimensionamento immagini (ImageMagick), 
+# la creazione di metadati e l'anteprima in test-mode.
+#
+# Autore: ilnanny 2026
+# Mail: ilnannyhack@gmail.com
+# GitHub: https://github.com/ilnanny75
+# ═══════════════════════════════════════════════════════════════════
 
 # --- 1. RILEVAMENTO SISTEMA OPERATIVO ---
 if [ -f /etc/arch-release ]; then

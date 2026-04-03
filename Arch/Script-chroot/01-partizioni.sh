@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
-# =============================================================================
-# 01-partizioni.sh — Rilevamento dischi, mount EFI e preparazione chroot
-# Arch Linux su Huawei Matebook D | Intel i5-10210U | SSD esterno /dev/sda
-# Layout: sda1=EFI  sda2=MX Linux  sda3=Arch  sda4=Void
-# Utente: ilnanny | github.com/ilnanny75
-# =============================================================================
+# ═══════════════════════════════════════════════════════════════════
+# Nota: Arch Installation - Fase 1. Rilevamento dischi, gestione 
+# partizioni EFI/Root e preparazione dei punti di mount per il chroot.
+#
+# Autore: ilnanny 2026
+# Mail: ilnannyhack@gmail.com
+# GitHub: https://github.com/ilnanny75
+# ═══════════════════════════════════════════════════════════════════
 
 set -euo pipefail
 IFS=$'\n\t'

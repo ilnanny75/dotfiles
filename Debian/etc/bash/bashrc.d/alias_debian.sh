@@ -1,7 +1,13 @@
 #!/bin/bash
-#==========================================================
-# 📦 ILNANNY ALIAS DEBIAN - Lab 2026
-#==========================================================
+# ═══════════════════════════════════════════════════════════════════
+# Nota: Lab Alias Manager. Collezione di scorciatoie per APT, 
+# navigazione rapida nelle cartelle del Lab e comandi master 
+# per la sincronizzazione GitHub (pigia/up).
+#
+# Autore: ilnanny 2026
+# Mail: ilnannyhack@gmail.com
+# GitHub: https://github.com/ilnanny75
+# ═══════════════════════════════════════════════════════════════════
 
 # --- Gestione Pacchetti (APT) ----------------------------
 alias update='sudo apt update && sudo apt upgrade'       # Aggiorna tutto il magazzino Debian 

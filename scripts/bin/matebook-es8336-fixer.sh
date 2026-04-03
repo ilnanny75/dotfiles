@@ -1,8 +1,13 @@
 #!/bin/bash
-#==========================================================
-#  ILNANNY MATEBOOK & SYSTEM MANAGER - 2026 (MULTI-DISTRO)
-#  Supporto: Debian/Ubuntu, Arch Linux, Void Linux
-#==========================================================
+# ═══════════════════════════════════════════════════════════════════
+# Nota: MateBook & System Manager. Fix specifico per l'audio ES8336, 
+# gestione moduli kernel e pulizia profonda del sistema (cache/RAM).
+# Supporta Arch, Debian e Void Linux.
+#
+# Autore: ilnanny 2026
+# Mail: ilnannyhack@gmail.com
+# GitHub: https://github.com/ilnanny75
+# ═══════════════════════════════════════════════════════════════════
 
 # Colori
 VERDE='\033[0;32m'

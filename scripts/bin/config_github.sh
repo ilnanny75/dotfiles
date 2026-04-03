@@ -1,8 +1,12 @@
 #!/bin/bash
-# ═══════════════════════════════════════════════════════════
-#  ilnanny75 — GitHub Configurazione Rapida
-#  Autenticazione via browser + 2FA (app)
-# ═══════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════════
+# Nota: Configurazione rapida GitHub. Gestisce autenticazione via 
+# browser, 2FA e settaggio globale di user.name e user.email.
+#
+# Autore: ilnanny 2026
+# Mail: ilnannyhack@gmail.com
+# GitHub: https://github.com/ilnanny75
+# ═══════════════════════════════════════════════════════════════════
 
 set -euo pipefail
 

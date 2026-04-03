@@ -1,7 +1,13 @@
 #!/usr/bin/env bash
 # ═══════════════════════════════════════════════════════════════════
-#  ilnanny-OS-manager.sh — MASTER SETUP 2026
-#  Rileva automaticamente i dotfiles dal mount point della partizione
+# Nota: Script MASTER SETUP per la gestione e automazione del Lab. 
+# Si occupa di rilevare i dotfiles, installare dipendenze su diverse distro 
+# (Void, Arch, Debian/MX), configurare link simbolici, compilare il tema 
+# Arc-Dark HiDPI e ricaricare l'ambiente XFCE.
+#
+# Autore: ilnanny 2026
+# Mail: ilnannyhack@gmail.com
+# GitHub: https://github.com/ilnanny75
 # ═══════════════════════════════════════════════════════════════════
 
 # ── Colori ──────────────────────────────────────────────────────────
@@ -43,27 +49,20 @@ if [[ -z "$DOTFILES" ]]; then
 fi
 
 # ── Symlink ~/dotfiles → sorgente reale (solo se esterna alla home) ──
-# Se i dotfiles sono già in ~/dotfiles non serve nessun link.
-# Su macchine senza partizione esterna funziona uguale: DOTFILES=~/dotfiles.
 _crea_link_home_dotfiles() {
     local target="$HOME/dotfiles"
     local real_dotfiles
     real_dotfiles="$(readlink -f "$DOTFILES")"
-    local real_target="$HOME/dotfiles"   # non segue symlink, è il path letterale
+    local real_target="$HOME/dotfiles"
 
-    # Se DOTFILES è già ~/dotfiles (o vi punta) → niente da fare
     [[ "$real_dotfiles" == "$(readlink -f "$real_target" 2>/dev/null)" ]] && return 0
     [[ "$real_dotfiles" == "$HOME/dotfiles" ]] && return 0
 
-    # Sorgente esterna: crea/aggiorna il symlink in home
     if [[ -L "$target" ]]; then
-        # Symlink esistente ma punta altrove → aggiorna
         [[ "$(readlink -f "$target")" != "$real_dotfiles" ]] && rm "$target" && ln -sf "$DOTFILES" "$target"
     elif [[ ! -e "$target" ]]; then
-        # Non esiste → crea
         ln -sf "$DOTFILES" "$target"
     fi
-    # Se esiste una dir reale ~/dotfiles (non symlink) → non toccare mai
 }
 _crea_link_home_dotfiles
 
@@ -109,7 +108,6 @@ header() {
 install_deps() {
     step "Verifica e installazione software"
 
-    # Pacchetti per distro
     declare -A PKGS
     PKGS[void]="curl wget github-cli xdg-user-dirs autoconf automake pkg-config gtk+3-devel git inkscape"
     PKGS[arch]="curl wget github-cli xdg-user-dirs autoconf automake pkgconf gtk3 git inkscape"
@@ -122,14 +120,12 @@ install_deps() {
         return
     fi
 
-    # Controlla quali sono già installati
     local da_installare=()
     for pkg in $pkg_list; do
-        # Normalizza: github-cli → gh su arch/void
         local cmd="$pkg"
         [[ "$pkg" == "github-cli" ]] && cmd="gh"
         [[ "$pkg" == "pkg-config" || "$pkg" == "pkgconf" ]] && cmd="pkg-config"
-        [[ "$pkg" == "gtk+3-devel" || "$pkg" == "gtk3" || "$pkg" == "libgtk-3-dev" ]] && cmd="gtk3-demo" # approssimativo
+        [[ "$pkg" == "gtk+3-devel" || "$pkg" == "gtk3" || "$pkg" == "libgtk-3-dev" ]] && cmd="gtk3-demo"
         [[ "$pkg" == "xdg-user-dirs" ]] && cmd="xdg-user-dirs-update"
 
         if command -v "$cmd" &>/dev/null; then
@@ -205,14 +201,12 @@ deploy_bashrc() {
     step "Configurazione Bash"
     mkdir -p ~/.bashrc.d
 
-    # bashrc principale
     if [ -f "$DOTFILES/bash/etc_bash/bashrc" ]; then
         safe_link "$DOTFILES/bash/etc_bash/bashrc" ~/.bashrc
     else
         warn "bashrc non trovato in $DOTFILES/bash/etc_bash/bashrc"
     fi
 
-    # bashrc.d comuni
     if [ -d "$DOTFILES/bash/etc_bash/bashrc.d" ]; then
         for f in "$DOTFILES"/bash/etc_bash/bashrc.d/*; do
             [ -f "$f" ] || continue
@@ -220,7 +214,6 @@ deploy_bashrc() {
         done
     fi
 
-    # bashrc.d specifici per distro
     local distro_dir=""
     case "$OS_ID" in
         void) distro_dir="$DOTFILES/Void/etc/bash/bashrc.d" ;;
@@ -251,7 +244,7 @@ deploy_bin() {
 }
 
 # ────────────────────────────────────────────────────────────────────
-# 4. DEPLOY .config (link O copia, a scelta)
+# 4. DEPLOY .config (copia ricorsiva)
 # ────────────────────────────────────────────────────────────────────
 deploy_config() {
     step "Deploy ~/.config"
@@ -277,11 +270,9 @@ deploy_config() {
             mv "$dst" "$bak"
             info "Backup cartella: $nome → $(basename "$bak")"
         fi
-        # Copia ricorsiva → sovrascrive tutto con i tuoi file
         cp -r "$src" "$dst" && ok "Config copiata: $nome" || err "Errore copia: $nome"
     done
 
-    # File singoli in config/ (non cartelle)
     for src in "$src_root"/*; do
         [ -f "$src" ] || continue
         local nome
@@ -296,7 +287,6 @@ deploy_config() {
 reload_xfce() {
     step "Ricarica ambiente XFCE"
 
-    # Ricarica configurazione xfsettingsd (tema, font, icone, ecc.)
     if command -v xfsettingsd &>/dev/null; then
         pkill -x xfsettingsd 2>/dev/null
         sleep 0.5
@@ -304,36 +294,30 @@ reload_xfce() {
         ok "xfsettingsd riavviato"
     fi
 
-    # Ricarica pannello XFCE
     if command -v xfce4-panel &>/dev/null; then
         xfce4-panel --restart 2>/dev/null
         ok "xfce4-panel riavviato"
     fi
 
-    # Ricarica gestore finestre Xfwm4
     if command -v xfwm4 &>/dev/null; then
         pkill -x xfwm4 2>/dev/null; sleep 0.3
         xfwm4 --replace --daemon 2>/dev/null
         ok "xfwm4 riavviato"
     fi
 
-    # Ricarica desktop (xfdesktop)
     if command -v xfdesktop &>/dev/null; then
         xfdesktop --reload 2>/dev/null
         ok "xfdesktop ricaricato"
     fi
 
-    # Thunar — daemon (per mount automatici e apertura rapida)
     if command -v thunar &>/dev/null; then
         pkill -x thunar 2>/dev/null; sleep 0.2
         thunar --daemon 2>/dev/null &
         ok "Thunar daemon riavviato"
     fi
 
-    # Terminale: xfce4-terminal legge da ~/.config/xfce4/terminal/ già aggiornato
     ok "xfce4-terminal leggerà la nuova config al prossimo avvio"
 
-    # Notifica visiva se disponibile
     if command -v notify-send &>/dev/null; then
         notify-send -i dialog-information "ilnanny LAB" "XFCE ricaricato con successo! 🎉"
     fi
@@ -341,7 +325,6 @@ reload_xfce() {
 
 reload_bash() {
     step "Ricarica Bash"
-    # Source non funziona in subshell, stampiamo il comando
     echo -e "${G}${B}"
     echo "  ┌─────────────────────────────────────────────────┐"
     echo "  │  Per ricaricare bash nel terminale corrente:    │"
@@ -354,7 +337,7 @@ reload_bash() {
 }
 
 # ────────────────────────────────────────────────────────────────────
-# 6. BONIFICA FILE (rimuove numeri di riga spurii)
+# 6. BONIFICA FILE
 # ────────────────────────────────────────────────────────────────────
 bonifica_files() {
     step "Bonifica file dotfiles"
@@ -383,7 +366,6 @@ configura_lab() {
     fi
 
     ERRORI=0
-
     install_deps
     sep
     install_arc_hidpi
@@ -424,7 +406,7 @@ configura_lab() {
 }
 
 # ────────────────────────────────────────────────────────────────────
-# SOLO CONFIG (senza software)
+# SOLO CONFIG
 # ────────────────────────────────────────────────────────────────────
 solo_config() {
     header

@@ -1,11 +1,14 @@
 #!/bin/bash
 
-###############################################################################
-#  NOME SCRIPT: nordtheme-install
-#  AUTORE: ilnanny
-#  Github: https://github.com/ilnanny75
-#  DESCRIZIONE: Automazione post-installazione tema Nord (Aurora Palette)
-###############################################################################
+# ═══════════════════════════════════════════════════════════════════
+# Nota: Nord Theme Installer. Automazione per il setup della palette 
+# Aurora (Nordic GTK e icone Papirus-Nord). Crea le directory locali 
+# e configura l'estetica coerente del desktop.
+#
+# Autore: ilnanny 2026
+# Mail: ilnannyhack@gmail.com
+# GitHub: https://github.com/ilnanny75
+# ═══════════════════════════════════════════════════════════════════
 
 # --- Colori Nord ---
 N8="#88C0D0" # Frost

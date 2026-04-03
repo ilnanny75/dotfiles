@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
-# ═══════════════════════════════════════════════════════════════
-#  git-multitool.sh — Coltellino svizzero Git per ilnanny75
-#  Gestione automatica conflitti, fix SSH→HTTPS, diagnostica
-# ═══════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════════
+# Nota: Coltellino svizzero Git. Menu avanzato per commit, push, 
+# pull intelligente, diagnostica e fix da SSH a HTTPS.
+#
+# Autore: ilnanny 2026
+# Mail: ilnannyhack@gmail.com
+# GitHub: https://github.com/ilnanny75
+# ═══════════════════════════════════════════════════════════════════
 
 set -uo pipefail
 

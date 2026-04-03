@@ -1,4 +1,12 @@
 #!/bin/bash
+# ═══════════════════════════════════════════════════════════════════
+# Nota: Setup interattivo della partizione Dati. Verifica l'UUID, 
+# crea il mount point e aggiorna /etc/fstab con backup di sicurezza.
+#
+# Autore: ilnanny 2026
+# Mail: ilnannyhack@gmail.com
+# GitHub: https://github.com/ilnanny75
+# ═══════════════════════════════════════════════════════════════════
 
 # --- CONFIGURAZIONE ---
 # Assicurati che questo UUID sia corretto (da lsblk -dno UUID /dev/sda5)

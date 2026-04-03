@@ -1,8 +1,12 @@
 #!/bin/bash
-#==========================================================
-#  ILNANNY GRAPHIC STUDIO - 2026
-#  The Ultimate Icon & Theme Toolset
-#==========================================================
+# ═══════════════════════════════════════════════════════════════════
+# Nota: Graphic Studio Tool. Automazione per la creazione di temi 
+# icone, modifica colori SVG massiva e ottimizzazione file.
+#
+# Autore: ilnanny 2026
+# Mail: ilnannyhack@gmail.com
+# GitHub: https://github.com/ilnanny75
+# ═══════════════════════════════════════════════════════════════════
 
 VERDE='\033[0;32m'
 GIALLO='\033[1;33m'

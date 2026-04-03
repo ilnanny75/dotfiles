@@ -1,8 +1,12 @@
 #!/bin/bash
-#==========================================================
-#  ILNANNY ADMIN & DEV TOOL - 2026
-#  Gestione Avanzata: Boot, Dev, Multimedia & Utils
-#==========================================================
+# ═══════════════════════════════════════════════════════════════════
+# Nota: Tool di amministrazione e sviluppo. Gestione boot (Grub), 
+# controllo versioni GTK, compilazione C e utility varie.
+#
+# Autore: ilnanny 2026
+# Mail: ilnannyhack@gmail.com
+# GitHub: https://github.com/ilnanny75
+# ═══════════════════════════════════════════════════════════════════
 
 VERDE='\033[0;32m'
 GIALLO='\033[1;33m'

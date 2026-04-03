@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
 # ═══════════════════════════════════════════════════════════════════
-#  void-chroot-install.sh — Installazione Void Linux via chroot
-#  Autore : ilnanny — 2026
-#  Uso    : Da MX Linux (o qualsiasi distro Linux funzionante)
-#           con SSD esterno già partizionato
+# Nota: Void Linux Chroot Installer. Automatizza l'installazione di 
+# Void da un'altra distro. Gestisce il mounting, il bootstrap di XBPS, 
+# la configurazione di fstab, user, kernel e i servizi Runit.
+#
+# Autore: ilnanny 2026
+# Mail: ilnannyhack@gmail.com
+# GitHub: https://github.com/ilnanny75
 # ═══════════════════════════════════════════════════════════════════
 #
 #  SCHEMA PARTIZIONI (adatta ai tuoi UUID):

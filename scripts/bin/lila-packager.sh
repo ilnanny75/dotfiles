@@ -1,7 +1,12 @@
 #!/bin/bash
-
-# Lila HD Icon Theme - Packager V3 (Marzo 2026)
-# Con sistema di recupero RPM se il metodo standard fallisce.
+# ═══════════════════════════════════════════════════════════════════
+# Nota: Packager per Lila HD Icon Theme. Crea pacchetti DEB, RPM 
+# (via Alien) e TGZ con interfaccia grafica Zenity.
+#
+# Autore: ilnanny 2026
+# Mail: ilnannyhack@gmail.com
+# GitHub: https://github.com/ilnanny75
+# ═══════════════════════════════════════════════════════════════════
 
 info_msg() { zenity --info --text="$1" --width=400; }
 err_msg() { zenity --error --text="$1" --width=400; }

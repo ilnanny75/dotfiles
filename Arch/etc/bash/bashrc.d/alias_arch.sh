@@ -1,7 +1,13 @@
 #!/bin/bash
-#==========================================================
-# 📦 ILNANNY ALIAS ARCHLINUX - Lab 2026
-#==========================================================
+# ═══════════════════════════════════════════════════════════════════
+# Nota: Arch Lab Alias Manager. Scorciatoie ottimizzate per pacman, 
+# gestione mirror con reflector, pulizia orfani e comandi rapidi 
+# per la manutenzione del sistema Arch Linux.
+#
+# Autore: ilnanny 2026
+# Mail: ilnannyhack@gmail.com
+# GitHub: https://github.com/ilnanny75
+# ═══════════════════════════════════════════════════════════════════
 
 # --- Gestione Pacchetti (Pacman) -------------------------
 alias pacman='sudo pacman --color auto'      # Colora l'output per non diventare matti

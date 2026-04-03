@@ -1,7 +1,13 @@
 #!/bin/bash
-#==========================================================
-# CONFIGURAZIONE AMBIENTE UTENTE ILNANNY 2026
-#==========================================================
+# ═══════════════════════════════════════════════════════════════════
+# Nota: Environment Config. Definisce le variabili d'ambiente globali: 
+# localizzazione (IT), editor (Geany), temi Qt (qt5ct) e 
+# personalizzazione profonda della cronologia e delle pagine MAN.
+#
+# Autore: ilnanny 2026
+# Mail: ilnannyhack@gmail.com
+# GitHub: https://github.com/ilnanny75
+# ═══════════════════════════════════════════════════════════════════
 
 # --- 🎨 Colori ANSI (Variabili testo) --------------------
 red='\[\e[0;31m\]'                           # Rosso: Errori o avvisi
