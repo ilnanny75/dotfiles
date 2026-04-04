@@ -15,7 +15,7 @@ esac
 # append_path è definita qui per compatibilità multi-distro:
 # su shell non-login (XFCE terminal, ecc.) /etc/profile non viene
 # caricato, quindi i profile.d che la usano (es. perlbin.sh su Arch)
-# andrebbero in errore. La definiamo noi prima di caricarli.
+# andrebbero in errore. La definisco  prima di caricarli.
 append_path() {
     case ":${PATH}:" in
         *:"$1":*) ;;

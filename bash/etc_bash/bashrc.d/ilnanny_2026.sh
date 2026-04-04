@@ -27,8 +27,7 @@ alias ottimizza-svg='~/dotfiles/scripts/bin/ilnanny-optimize.sh' # Ottimizza ico
 
 # --- 🌿 Git Avanzato -------------------------------------
 
-# NOTA: Il vecchio alias 'pigia' manuale è stato disattivato.
-# Ora usa il Master Manager che gestisce meglio i commit.
+# NOTA: 
 # alias pigia='cd ~/dotfiles && git add . && read -p "Commit: " msg && git commit -m "$msg" && git push origin main && cd -'
 
 # 🔴 NUOVO STRUMENTO (Salvataggio Cache e Fix)
