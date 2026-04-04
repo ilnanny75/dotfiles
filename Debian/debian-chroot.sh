@@ -66,10 +66,11 @@ mount "$TARGET_ROOT" "$MOUNT_DIR"
 mkdir -p "$MOUNT_DIR/boot/efi"
 mount "$TARGET_EFI" "$MOUNT_DIR/boot/efi"
 
-# Installazione debootstrap sull'host se manca
-if ! command -v debootstrap &> /dev/null; then
-    if command -v pacman &> /dev/null; then pacman -Sy --noconfirm debootstrap arch-install-scripts
-    elif command -v apt &> /dev/null; then apt update && apt install -y debootstrap arch-install-scripts; fi
+# Installazione dipendenze e KEYRING sull'host per evitare Warning GPG
+if command -v pacman &> /dev/null; then
+    pacman -Sy --noconfirm debootstrap arch-install-scripts debian-archive-keyring
+elif command -v apt &> /dev/null; then
+    apt update && apt install -y debootstrap arch-install-scripts debian-archive-keyring
 fi
 
 debootstrap --arch amd64 bookworm "$MOUNT_DIR" http://deb.debian.org/debian/
@@ -95,7 +96,6 @@ if [ "$IS_MATEBOOK" = true ]; then
     echo "options snd-intel-dspcfg dsp_driver=3" > /etc/modprobe.d/matebook.conf
     echo "options snd-sof-pci tplg_filename=sof-tgl-es8336-ssp0.tplg" >> /etc/modprobe.d/matebook.conf
     
-    # Script per auto-unmute al boot
     cat <<EOM > /usr/local/bin/unlock-audio
 #!/bin/bash
 amixer -c 0 sset 'Master' 100% unmute 2>/dev/null
@@ -120,6 +120,9 @@ useradd -m -G sudo,audio,video,bluetooth,lp,scanner -s /bin/bash $NEW_USER
 echo "$NEW_USER:$USER_PASS" | chpasswd
 echo "root:$ROOT_PASS" | chpasswd
 
+# Forza il salvataggio degli utenti sul disco
+sync
+
 # Configurazione GRUB
 echo "GRUB_DISABLE_OS_PROBER=false" >> /etc/default/grub
 grub-install --target=x86_64-efi --efi-directory=/boot/efi --removable --recheck
@@ -130,20 +133,24 @@ systemctl enable bluetooth 2>/dev/null || true
 exit
 EOF
 
-# 7. ESECUZIONE CHROOT
+# 7. ESECUZIONE CHROOT (Sincronizzazione corretta dei volumi)
 chmod +x "$MOUNT_DIR/setup.sh"
-for d in /dev /dev/pts /proc /sys /run; do mount --bind \$d "$MOUNT_DIR\$d"; done
+for d in dev dev/pts proc sys run; do 
+    mkdir -p "$MOUNT_DIR/$d"
+    mount --bind "/$d" "$MOUNT_DIR/$d" 
+done
 chroot "$MOUNT_DIR" /bin/bash -c "export IS_MATEBOOK=$IS_MATEBOOK; /setup.sh"
 
-# 8. INTEGRAZIONE DOTFILES (Chiesto alla fine)
+# 8. INTEGRAZIONE DOTFILES
 clear
 echo -e "${B}${G}--- SISTEMA BASE PRONTO ---${RESET}"
 read -p "Vuoi integrare i tuoi dotfiles (github.com/ilnanny75/dotfiles) adesso? (s/n): " DOT_ANS
 if [[ "$DOT_ANS" =~ ^[Ss]$ ]]; then
-    echo -e "${V}Clonazione e configurazione dotfiles...${RESET}"
-    chroot "$MOUNT_DIR" sudo -u "$NEW_USER" -H sh -c "git clone https://github.com/ilnanny75/dotfiles /home/$NEW_USER/dotfiles"
+    echo -e "${V}Clonazione dotfiles per l'utente $NEW_USER...${RESET}"
+    # Clonazione come root e cambio proprietario per evitare errori "unknown user"
+    chroot "$MOUNT_DIR" /bin/bash -c "cd /home/$NEW_USER && git clone https://github.com/ilnanny75/dotfiles dotfiles && chown -R $NEW_USER:$NEW_USER dotfiles"
     if [ -f "$MOUNT_DIR/home/$NEW_USER/dotfiles/install.sh" ]; then
-        chroot "$MOUNT_DIR" sudo -u "$NEW_USER" -H sh -c "cd /home/$NEW_USER/dotfiles && chmod +x install.sh && ./install.sh"
+        chroot "$MOUNT_DIR" /bin/bash -c "cd /home/$NEW_USER/dotfiles && chmod +x install.sh && sudo -u $NEW_USER ./install.sh"
     fi
 fi
 
@@ -161,5 +168,5 @@ read -p "Vuoi riavviare il PC ora? (s/n): " REBOOT_NOW
 if [[ "$REBOOT_NOW" =~ ^[Ss]$ ]]; then
     reboot
 else
-    echo -e "${G}Uscita. Ricorda di smontare manualmente se necessario.${RESET}"
+    echo -e "${G}Uscita.${RESET}"
 fi
