@@ -15,6 +15,7 @@ set -euo pipefail
 # ─────────────────────────────────────────────────────────────────────────────
 RESET="\033[0m"
 BOLD="\033[1m"
+DIM="\033[2m"
 RED="\033[31m"
 GREEN="\033[32m"
 YELLOW="\033[33m"
@@ -36,6 +37,12 @@ pausa() {
     read -n 1 -s -r
 }
 
+chiedi() {
+    echo -en "${CYAN}Installare $1? (s/n): ${RESET}"
+    read -r risposta
+    [[ "$risposta" =~ ^[Ss]$ ]]
+}
+
 rileva_distro() {
     if [ -f /etc/os-release ]; then
         . /etc/os-release
@@ -45,10 +52,17 @@ rileva_distro() {
             void) DISTRO="void" ;;
             *) error "Distribuzione non supportata ($ID)."; exit 1 ;;
         esac
-        info "Rilevata distribuzione: ${BOLD}$ID${RESET}"
-    else
-        error "Impossibile rilevare la distribuzione."; exit 1
+        info "Distribuzione rilevata: ${BOLD}$ID${RESET}"
     fi
+}
+
+installa_pkg() {
+    local p_arch=$1 p_deb=$2 p_void=$3
+    case $DISTRO in
+        arch)   [ -n "$p_arch" ] && sudo pacman -S --noconfirm $p_arch ;;
+        debian) [ -n "$p_deb" ]  && sudo apt install -y $p_deb ;;
+        void)   [ -n "$p_void" ] && sudo xbps-install -Sy $p_void ;;
+    esac
 }
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -65,85 +79,94 @@ aggiorna_sistema() {
 }
 
 installa_sistema() {
-    titolo "Installazione Strumenti di Sistema"
-    case $DISTRO in
-        arch)   sudo pacman -S --noconfirm base-devel git wget curl ufw glow ;;
-        debian) sudo apt install -y build-essential git wget curl ufw glow ;;
-        void)   sudo xbps-install -Sy base-devel git wget curl ufw glow ;;
-    esac
-    info "Strumenti di sistema e Glow installati."
+    titolo "Strumenti di Sistema"
+    chiedi "Git, Wget e Curl" && installa_pkg "git wget curl" "git wget curl" "git wget curl"
+    chiedi "UFW (Firewall)" && installa_pkg "ufw" "ufw" "ufw"
+    chiedi "Glow (Markdown)" && installa_pkg "glow" "glow" "glow"
+    chiedi "Unzip e Fontconfig" && installa_pkg "unzip fontconfig" "unzip fontconfig" "unzip fontconfig"
 }
 
 installa_dev() {
     titolo "Sviluppo ed Editor"
-    case $DISTRO in
-        arch)   sudo pacman -S --noconfirm geany geany-plugins visual-studio-code-bin ;;
-        debian) sudo apt install -y geany geany-plugin-markdown ;;
-        void)   sudo xbps-install -Sy geany geany-plugins ;;
-    esac
-    info "Geany e plugin Markdown installati."
-}
-
-installa_desktop() {
-    titolo "Ambienti Desktop / WM"
-    info "Installazione DE predefinita (esempio: XFCE/Mate)..."
-    # Aggiungi qui i tuoi pacchetti specifici se necessario
+    chiedi "Geany (+ plugin)" && installa_pkg "geany geany-plugins" "geany geany-plugins" "geany geany-plugins"
+    
+    chiedi "Visual Studio Code" && {
+        case $DISTRO in
+            arch) installa_pkg "code" "" "" ;;
+            debian)
+                # Installazione dipendenze per repository esterni
+                sudo apt update
+                sudo apt install -y curl gpg apt-transport-https
+                # Configurazione repository Microsoft
+                curl -sSL https://packages.microsoft.com/keys/microsoft.asc | sudo gpg --dearmor -o /usr/share/keyrings/ms-vscode.gpg
+                echo "deb [arch=amd64 signed-by=/usr/share/keyrings/ms-vscode.gpg] https://packages.microsoft.com/repos/code stable main" | sudo tee /etc/apt/sources.list.d/vscode.list
+                sudo apt update
+                sudo apt install -y code
+                ;;
+            void) installa_pkg "" "" "vscode" ;;
+        esac
+    }
 }
 
 installa_grafica() {
-    titolo "Grafica"
-    case $DISTRO in
-        arch)   sudo pacman -S --noconfirm gimp inkscape vlc ;;
-        debian) sudo apt install -y gimp inkscape vlc ;;
-        void)   sudo xbps-install -Sy gimp inkscape vlc ;;
-    esac
-}
-
-installa_office() {
-    titolo "Office"
-    case $DISTRO in
-        arch)   sudo pacman -S --noconfirm libreoffice-fresh ;;
-        debian) sudo apt install -y libreoffice ;;
-        void)   sudo xbps-install -Sy libreoffice ;;
-    esac
-}
-
-installa_temi() {
-    titolo "Temi e Aspetto"
-    # Personalizza in base alle tue preferenze
-    info "Installazione temi completata."
+    titolo "Grafica e Video"
+    chiedi "GIMP" && installa_pkg "gimp" "gimp" "gimp"
+    chiedi "VLC" && installa_pkg "vlc" "vlc" "vlc"
+    chiedi "Inkscape" && installa_pkg "inkscape" "inkscape" "inkscape"
 }
 
 installa_browser() {
     titolo "Browser Web"
-    case $DISTRO in
-        arch)   sudo pacman -S --noconfirm firefox chromium ;;
-        debian) sudo apt install -y firefox-esr chromium ;;
-        void)   sudo xbps-install -Sy firefox chromium ;;
-    esac
+    chiedi "Firefox" && {
+        if [ "$DISTRO" == "debian" ]; then installa_pkg "" "firefox-esr" ""; else installa_pkg "firefox" "" "firefox"; fi
+    }
+    chiedi "Chromium" && installa_pkg "chromium" "chromium" "chromium"
 }
 
-personalizza_terminale() {
-    titolo "Personalizzazione Terminale"
-    info "Configurazione Bash/Zsh e Alias..."
-    # Aggiunta alias per Glow
-    echo "alias markdown='glow'" >> ~/.bashrc
+installa_temi_icone() {
+    titolo "Temi e Icone"
+    mkdir -p ~/.icons ~/.themes
+    TEMP_THEMES=$(mktemp -d)
+
+    if chiedi "Icon Theme Lila-HD"; then
+        git clone --depth 1 https://github.com/ilnanny75/Lila-HD-Icon-Theme-Official "$TEMP_THEMES/Lila-HD"
+        cp -r "$TEMP_THEMES/Lila-HD" ~/.icons/
+    fi
+
+    if chiedi "Tema GTK Nordic"; then
+        git clone --depth 1 https://github.com/EliverLara/Nordic "$TEMP_THEMES/Nordic"
+        cp -r "$TEMP_THEMES/Nordic" ~/.themes/
+    fi
+
+    rm -rf "$TEMP_THEMES"
 }
 
 installa_nerd_fonts() {
-    titolo "Nerd Fonts"
-    info "Installazione font per il terminale..."
+    titolo "Nerd Fonts - Selezione Retina"
+    
+    if chiedi "JetBrainsMono Nerd Font (Retina/Regular)"; then
+        FONT_DIR="$HOME/.local/share/fonts/JetBrainsMonoNerd"
+        mkdir -p "$FONT_DIR"
+        TEMP_DIR=$(mktemp -d)
+        
+        if wget -q --show-progress -P "$TEMP_DIR" https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.tar.xz; then
+            tar -xf "$TEMP_DIR/JetBrainsMono.tar.xz" -C "$TEMP_DIR"
+            find "$TEMP_DIR" -name "*Retina*" -exec cp {} "$FONT_DIR/" \;
+            find "$TEMP_DIR" -name "*Regular*" -exec cp {} "$FONT_DIR/" \;
+            
+            fc-cache -f -v > /dev/null
+            info "Installazione completata."
+        fi
+        rm -rf "$TEMP_DIR"
+    fi
 }
 
-verifica_software() {
-    titolo "Verifica Software Installato"
-    for sw in git curl glow geany; do
-        if command -v $sw &> /dev/null; then
-            echo -e "${GREEN}[INSTAL]${RESET} $sw"
-        else
-            echo -e "${RED}[MANCAN]${RESET} $sw"
-        fi
-    done
+installa_flatpak() {
+    titolo "Gestione Flatpak"
+    if chiedi "Flatpak e Flathub"; then
+        installa_pkg "flatpak" "flatpak" "flatpak"
+        sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+    fi
 }
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -152,51 +175,35 @@ verifica_software() {
 menu_principale() {
     while true; do
         clear
-        echo -e "${CYAN}${BOLD}POST-INSTALL MANAGER — ilnanny v2.1${RESET}"
+        echo -e "${CYAN}${BOLD}POST-INSTALL MANAGER — ilnanny v2.6${RESET}"
         echo -e "${DIM}----------------------------------------${RESET}"
-        echo -e " 1) Ambienti Grafici / WM"
-        echo -e " 2) Applicazioni Grafiche"
-        echo -e " 3) Suite Office"
-        echo -e " 4) Strumenti di Sistema (Glow, UFW...)"
+        echo -e " 1) Applicazioni Grafiche"
+        echo -e " 2) Strumenti di Sistema"
+        echo -e " 3) Browser Web"
+        echo -e " 4) Sviluppo (Geany, VSCode)"
         echo -e " 5) Temi e Icone"
-        echo -e " 6) Browser Web"
-        echo -e " 7) Sviluppo (Geany + Markdown)"
-        echo -e " 8) Personalizzazione Terminale"
-        echo -e " 9) Nerd Fonts"
-        echo -e " v) Verifica Software"
+        echo -e " 6) Flatpak + Flathub"
+        echo -e " 7) Nerd Fonts (LEGGERO)"
         echo -e " a) Aggiorna Sistema"
-        echo -e " t) INSTALLAZIONE TOTALE"
         echo -e " q) Esci"
-        echo -en "\nScegli un'opzione: "
+        echo -en "\nScelta opzione: "
         read -r opt
 
         case $opt in
-            1) installa_desktop ; pausa ;;
-            2) installa_grafica ; pausa ;;
-            3) installa_office  ; pausa ;;
-            4) installa_sistema ; pausa ;;
-            5) installa_temi    ; pausa ;;
-            6) installa_browser ; pausa ;;
-            7) installa_dev     ; pausa ;;
-            8) personalizza_terminale ; pausa ;;
-            9) installa_nerd_fonts ; pausa ;;
-            v|V) verifica_software ; pausa ;;
+            1) installa_grafica ; pausa ;;
+            2) installa_sistema ; pausa ;;
+            3) installa_browser ; pausa ;;
+            4) installa_dev     ; pausa ;;
+            5) installa_temi_icone ; pausa ;;
+            6) installa_flatpak ; pausa ;;
+            7) installa_nerd_fonts ; pausa ;;
             a|A) aggiorna_sistema ; pausa ;;
-            t|T)
-                aggiorna_sistema
-                installa_sistema
-                installa_dev
-                verifica_software
-                pausa ;;
             q|Q) exit 0 ;;
             *) warn "Opzione non valida." ; sleep 1 ;;
         esac
     done
 }
 
-# ─────────────────────────────────────────────────────────────────────────────
-#  ENTRY POINT
-# ─────────────────────────────────────────────────────────────────────────────
 main() {
     rileva_distro
     menu_principale
