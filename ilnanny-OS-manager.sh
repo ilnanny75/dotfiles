@@ -2,37 +2,34 @@
 # ═══════════════════════════════════════════════════════════════════
 # Nota: Script MASTER SETUP per la gestione e automazione del Lab. 
 # Si occupa di rilevare i dotfiles, installare dipendenze su diverse distro 
-# (Void, Arch, Debian/MX), configurare link simbolici, compilare il tema 
-# Arc-Dark HiDPI e ricaricare l'ambiente XFCE.
+# (Void, Arch, Debian/MX), configurare link simbolici e ricaricare XFCE.
 #
 # Autore: ilnanny 2026
 # Mail: ilnannyhack@gmail.com
 # GitHub: https://github.com/ilnanny75
 # ═══════════════════════════════════════════════════════════════════
 
+# Permette ai cicli for di ignorare pattern vuoti (Risolve errore riga 178)
+shopt -s nullglob
+
 # ── Colori ──────────────────────────────────────────────────────────
 V="\e[32m"; R="\e[31m"; C="\e[36m"; G="\e[33m"; B="\e[1m"; RESET="\e[0m"
 DIM="\e[2m"; UL="\e[4m"
 
 # ── Rilevamento automatico DOTFILES ─────────────────────────────────
-# Ordine di ricerca: variabile env → accanto allo script → mount points noti
 _trova_dotfiles() {
     local candidati=(
-        "${DOTFILES}"                        # variabile d'ambiente (se impostata)
-        "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"          # stessa dir dello script
-        "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"       # un livello su
+        "${DOTFILES}"
+        "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+        "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
         /media/Dati/dotfiles
         /mnt/Dati/dotfiles
         /media/"$USER"/Dati/dotfiles
-        /mnt/dati/dotfiles
-        /media/dati/dotfiles
         "$HOME/dotfiles"
     )
     for p in "${candidati[@]}"; do
         [[ -z "$p" ]] && continue
-        # Valido se contiene almeno una sottodirectory tipica dei dotfiles
-        if [[ -d "$p" ]] && \
-           { [[ -d "$p/config" ]] || [[ -d "$p/bash" ]] || [[ -d "$p/scripts" ]]; }; then
+        if [[ -d "$p" ]] && { [[ -d "$p/config" ]] || [[ -d "$p/bash" ]]; }; then
             echo "$p"
             return 0
         fi
@@ -42,29 +39,9 @@ _trova_dotfiles() {
 
 DOTFILES="$(_trova_dotfiles)"
 if [[ -z "$DOTFILES" ]]; then
-    echo -e "\e[31m\n  ✖  ERRORE CRITICO: dotfiles non trovati!\e[0m"
-    echo -e "\e[33m  Controlla che la partizione dati-linux sia montata.\e[0m"
-    echo -e "\e[33m  Puoi anche impostare: DOTFILES=/percorso/dotfiles ./ilnanny-OS-manager.sh\e[0m\n"
+    echo -e "${R}\n  ✖  ERRORE CRITICO: dotfiles non trovati!${RESET}"
     exit 1
 fi
-
-# ── Symlink ~/dotfiles → sorgente reale (solo se esterna alla home) ──
-_crea_link_home_dotfiles() {
-    local target="$HOME/dotfiles"
-    local real_dotfiles
-    real_dotfiles="$(readlink -f "$DOTFILES")"
-    local real_target="$HOME/dotfiles"
-
-    [[ "$real_dotfiles" == "$(readlink -f "$real_target" 2>/dev/null)" ]] && return 0
-    [[ "$real_dotfiles" == "$HOME/dotfiles" ]] && return 0
-
-    if [[ -L "$target" ]]; then
-        [[ "$(readlink -f "$target")" != "$real_dotfiles" ]] && rm "$target" && ln -sf "$DOTFILES" "$target"
-    elif [[ ! -e "$target" ]]; then
-        ln -sf "$DOTFILES" "$target"
-    fi
-}
-_crea_link_home_dotfiles
 
 OS_ID=$(grep -w "^ID" /etc/os-release 2>/dev/null | cut -d= -f2 | tr -d '"')
 OS_ID="${OS_ID:-unknown}"
@@ -80,395 +57,138 @@ step()   { echo -e "\n${B}${C}  ▶  $*${RESET}\n"; }
 sep()    { echo -e "${DIM}${C}  ─────────────────────────────────────────${RESET}"; }
 
 confirm() {
-    local msg="$1"
-    echo -en "${G}  ❓  ${msg} [s/N] ${RESET}"
+    echo -en "${G}  ❓  $1 [s/N] ${RESET}"
     read -r risposta
     [[ "$risposta" =~ ^[sS]$ ]]
 }
 
-attendi() {
-    echo -e "\n${DIM}  Premi INVIO per continuare...${RESET}"
-    read -r
-}
-
 header() {
     clear
-    echo -e "${B}${C}"
-    echo "  ╔═══════════════════════════════════════════════════╗"
-    echo "  ║    󱓞  ilnanny LAB MANAGER — MASTER SETUP 2026    ║"
-    printf "  ║    OS: %-42s║\n" "${OS_ID^^}"
-    printf "  ║    DOTFILES: %-38s║\n" "$DOTFILES"
-    echo "  ╚═══════════════════════════════════════════════════╝"
-    echo -e "${RESET}"
+    echo -e "${C}┌──────────────────────────────────────────────────┐${RESET}"
+    echo -e "${C}│${B}    󱓞  ilnanny LAB MANAGER — MASTER 2026         ${RESET}${C}│${RESET}"
+    printf "${C}│${RESET}    OS: %-42s ${C}│${RESET}\n" "${OS_ID^^}"
+    printf "${C}│${RESET}    DOTFILES: %-38s ${C}│${RESET}\n" "$DOTFILES"
+    echo -e "${C}└──────────────────────────────────────────────────┘${RESET}"
 }
 
-# ────────────────────────────────────────────────────────────────────
-# 1. INSTALLA DIPENDENZE (skip se già presenti)
-# ────────────────────────────────────────────────────────────────────
+# ── Installazione Dipendenze ────────────────────────────────────────
 install_deps() {
-    step "Verifica e installazione software"
-
+    step "Verifica software di sistema"
     declare -A PKGS
-    PKGS[void]="curl wget github-cli xdg-user-dirs autoconf automake pkg-config gtk+3-devel git inkscape"
-    PKGS[arch]="curl wget github-cli xdg-user-dirs autoconf automake pkgconf gtk3 git inkscape"
-    PKGS[debian]="curl wget gh xdg-user-dirs autoconf automake pkg-config libgtk-3-dev git inkscape"
+    PKGS[void]="curl wget github-cli xdg-user-dirs git"
+    PKGS[arch]="curl wget github-cli xdg-user-dirs git"
+    PKGS[debian]="curl wget gh xdg-user-dirs git"
     PKGS[mx]="${PKGS[debian]}"
 
     local pkg_list="${PKGS[$OS_ID]}"
-    if [[ -z "$pkg_list" ]]; then
-        warn "Distro '$OS_ID' non riconosciuta, skip installazione pacchetti."
-        return
-    fi
+    [[ -z "$pkg_list" ]] && return
 
     local da_installare=()
     for pkg in $pkg_list; do
-        local cmd="$pkg"
-        [[ "$pkg" == "github-cli" ]] && cmd="gh"
-        [[ "$pkg" == "pkg-config" || "$pkg" == "pkgconf" ]] && cmd="pkg-config"
-        [[ "$pkg" == "gtk+3-devel" || "$pkg" == "gtk3" || "$pkg" == "libgtk-3-dev" ]] && cmd="gtk3-demo"
-        [[ "$pkg" == "xdg-user-dirs" ]] && cmd="xdg-user-dirs-update"
-
-        if command -v "$cmd" &>/dev/null; then
-            info "$(printf '%-22s' "$pkg") già installato — skip"
-        else
-            da_installare+=("$pkg")
-        fi
+        local cmd="$pkg"; [[ "$pkg" == "github-cli" ]] && cmd="gh"
+        command -v "$cmd" &>/dev/null || da_installare+=("$pkg")
     done
 
-    if [[ ${#da_installare[@]} -eq 0 ]]; then
-        ok "Tutti i pacchetti già presenti."
-        return
+    if [[ ${#da_installare[@]} -gt 0 ]]; then
+        if confirm "Installare componenti mancanti?"; then
+            case "$OS_ID" in
+                void)      sudo xbps-install -Sy "${da_installare[@]}" ;;
+                arch)      sudo pacman -Sy --needed --noconfirm "${da_installare[@]}" ;;
+                debian|mx) sudo apt-get update && sudo apt-get install -y "${da_installare[@]}" ;;
+            esac
+        fi
+    else
+        ok "Sistema aggiornato."
     fi
-
-    info "Da installare: ${da_installare[*]}"
-    if ! confirm "Installare i pacchetti mancanti?"; then
-        warn "Installazione pacchetti saltata."
-        return
-    fi
-
-    case "$OS_ID" in
-        void)    sudo xbps-install -Sy "${da_installare[@]}" ;;
-        arch)    sudo pacman -Sy --needed --noconfirm "${da_installare[@]}" ;;
-        debian|mx) sudo apt-get update -qq && sudo apt-get install -y "${da_installare[@]}" ;;
-    esac && ok "Pacchetti installati." || err "Errore installazione pacchetti."
 }
 
-# ────────────────────────────────────────────────────────────────────
-# 2. TEMA ARC HiDPI
-# ────────────────────────────────────────────────────────────────────
-install_arc_hidpi() {
-    step "Tema Arc-Dark HiDPI"
-    if [ -d "$HOME/.local/share/themes/Arc-Dark" ]; then
-        ok "Tema Arc HiDPI già installato — skip."
-        return
-    fi
-    info "Compilazione Arc-Dark HiDPI (192 DPI)..."
-    local build_dir
-    build_dir=$(mktemp -d)
-    trap 'rm -rf "$build_dir"' RETURN
-
-    curl -sL https://github.com/loichu/arc-theme-xfwm4-hidpi/archive/refs/heads/master.tar.gz \
-        | tar xz -C "$build_dir" --strip-components=1 || { err "Download tema fallito."; return; }
-
-    cd "$build_dir" || return
-    ./autogen.sh --prefix="$HOME/.local" \
-        --disable-cinnamon --disable-gnome-shell \
-        --disable-metacity --disable-unity \
-        --with-gnome=3.22 >> "$LOG_FILE" 2>&1 \
-    && make install >> "$LOG_FILE" 2>&1 \
-    && ok "Tema Arc HiDPI installato in ~/.local/share/themes/" \
-    || err "Compilazione tema fallita. Vedi $LOG_FILE"
-    cd - > /dev/null
-}
-
-# ────────────────────────────────────────────────────────────────────
-# 3. SYMLINK BASH + BIN
-# ────────────────────────────────────────────────────────────────────
+# ── Gestione Link Simbolici ─────────────────────────────────────────
 safe_link() {
     local src="$1" dst="$2"
-    if [ -L "$dst" ]; then
+    [[ ! -e "$src" ]] && return
+    
+    if [ -L "$dst" ]; then 
         rm "$dst"
     elif [ -e "$dst" ]; then
-        local bak="${dst}.bak_$(date +%Y%m%d_%H%M%S)"
-        mv "$dst" "$bak"
-        info "Backup: $(basename "$dst") → $(basename "$bak")"
+        mv "$dst" "${dst}.bak_$(date +%H%M%S)"
+        info "Backup esistente: $(basename "$dst")"
     fi
-    ln -sf "$src" "$dst" && ok "Link: ${dst/$HOME/~} → ${src/$HOME/~}" \
-                         || err "Impossibile linkare $dst"
+    ln -sf "$src" "$dst" && ok "Link: ${dst/$HOME/~} -> Dotfiles"
 }
 
 deploy_bashrc() {
     step "Configurazione Bash"
     mkdir -p ~/.bashrc.d
-
-    if [ -f "$DOTFILES/bash/etc_bash/bashrc" ]; then
-        safe_link "$DOTFILES/bash/etc_bash/bashrc" ~/.bashrc
-    else
-        warn "bashrc non trovato in $DOTFILES/bash/etc_bash/bashrc"
-    fi
-
-    if [ -d "$DOTFILES/bash/etc_bash/bashrc.d" ]; then
-        for f in "$DOTFILES"/bash/etc_bash/bashrc.d/*; do
-            [ -f "$f" ] || continue
-            safe_link "$f" ~/.bashrc.d/"$(basename "$f")"
-        done
-    fi
-
-    local distro_dir=""
-    case "$OS_ID" in
-        void) distro_dir="$DOTFILES/Void/etc/bash/bashrc.d" ;;
-        arch) distro_dir="$DOTFILES/Arch/etc/bash/bashrc.d" ;;
-        debian|mx) distro_dir="$DOTFILES/Debian/etc/bash/bashrc.d" ;;
-    esac
-    if [ -d "$distro_dir" ]; then
-        info "Aggiungo bashrc.d per $OS_ID..."
-        for f in "$distro_dir"/*; do
-            [ -f "$f" ] || continue
-            safe_link "$f" ~/.bashrc.d/"$(basename "$f")"
-        done
-    fi
+    safe_link "$DOTFILES/bash/etc_bash/bashrc" ~/.bashrc
+    for f in "$DOTFILES"/bash/etc_bash/bashrc.d/*; do
+        safe_link "$f" ~/.bashrc.d/"$(basename "$f")"
+    done
 }
 
 deploy_bin() {
     step "Script ~/bin"
     mkdir -p ~/bin
-    if [ -d "$DOTFILES/scripts/bin" ]; then
-        for f in "$DOTFILES"/scripts/bin/*; do
-            [ -f "$f" ] || continue
-            chmod +x "$f"
-            safe_link "$f" ~/bin/"$(basename "$f")"
-        done
-    else
-        warn "Directory $DOTFILES/scripts/bin non trovata — skip."
-    fi
+    for f in "$DOTFILES"/scripts/bin/*; do
+        chmod +x "$f"
+        safe_link "$f" ~/bin/"$(basename "$f")"
+    done
 }
 
-# ────────────────────────────────────────────────────────────────────
-# 4. DEPLOY .config (copia ricorsiva)
-# ────────────────────────────────────────────────────────────────────
 deploy_config() {
-    step "Deploy ~/.config"
+    step "Deploy ~/.config (Link Diretti)"
     local src_root="$DOTFILES/config"
     local dst_root="$HOME/.config"
     mkdir -p "$dst_root"
 
-    if [ ! -d "$src_root" ]; then
-        warn "Directory $src_root non trovata — skip .config."
-        return
-    fi
-
-    for src in "$src_root"/*/; do
-        [ -d "$src" ] || continue
-        local nome
-        nome="$(basename "$src")"
-        local dst="$dst_root/$nome"
-
-        if [ -L "$dst" ]; then
-            rm "$dst"
-        elif [ -d "$dst" ]; then
-            local bak="${dst}.bak_$(date +%Y%m%d_%H%M%S)"
-            mv "$dst" "$bak"
-            info "Backup cartella: $nome → $(basename "$bak")"
-        fi
-        cp -r "$src" "$dst" && ok "Config copiata: $nome" || err "Errore copia: $nome"
-    done
-
     for src in "$src_root"/*; do
-        [ -f "$src" ] || continue
-        local nome
-        nome="$(basename "$src")"
-        safe_link "$src" "$dst_root/$nome"
+        local nome=$(basename "$src")
+        local dst="$dst_root/$nome"
+        
+        # Rimuove file/cartelle di sistema per forzare l'uso dei tuoi dotfiles
+        if [ -e "$dst" ] || [ -L "$dst" ]; then
+            if [ -d "$dst" ] && [ ! -L "$dst" ]; then
+                mv "$dst" "${dst}.bak_$(date +%H%M%S)"
+            else
+                rm -rf "$dst"
+            fi
+        fi
+        ln -sf "$src" "$dst" && ok "Config: $nome linkata"
     done
 }
 
-# ────────────────────────────────────────────────────────────────────
-# 5. RELOAD XFCE COMPLETO
-# ────────────────────────────────────────────────────────────────────
+# ── Reload Ambiente ─────────────────────────────────────────────────
 reload_xfce() {
     step "Ricarica ambiente XFCE"
-
-    if command -v xfsettingsd &>/dev/null; then
-        pkill -x xfsettingsd 2>/dev/null
-        sleep 0.5
-        xfsettingsd --daemon 2>/dev/null
-        ok "xfsettingsd riavviato"
-    fi
-
-    if command -v xfce4-panel &>/dev/null; then
-        xfce4-panel --restart 2>/dev/null
-        ok "xfce4-panel riavviato"
-    fi
-
-    if command -v xfwm4 &>/dev/null; then
-        pkill -x xfwm4 2>/dev/null; sleep 0.3
-        xfwm4 --replace --daemon 2>/dev/null
-        ok "xfwm4 riavviato"
-    fi
-
-    if command -v xfdesktop &>/dev/null; then
-        xfdesktop --reload 2>/dev/null
-        ok "xfdesktop ricaricato"
-    fi
-
-    if command -v thunar &>/dev/null; then
-        pkill -x thunar 2>/dev/null; sleep 0.2
-        thunar --daemon 2>/dev/null &
-        ok "Thunar daemon riavviato"
-    fi
-
-    ok "xfce4-terminal leggerà la nuova config al prossimo avvio"
-
-    if command -v notify-send &>/dev/null; then
-        notify-send -i dialog-information "ilnanny LAB" "XFCE ricaricato con successo! 🎉"
-    fi
+    local comps=(xfsettingsd xfce4-panel xfwm4 xfdesktop)
+    for c in "${comps[@]}"; do
+        if command -v "$c" &>/dev/null; then
+            pkill -x "$c" 2>/dev/null
+            sleep 0.2
+            [[ "$c" == "xfce4-panel" ]] && xfce4-panel --restart 2>/dev/null || "$c" --daemon 2>/dev/null
+            ok "$c riavviato"
+        fi
+    done
 }
 
-reload_bash() {
-    step "Ricarica Bash"
-    echo -e "${G}${B}"
-    echo "  ┌─────────────────────────────────────────────────┐"
-    echo "  │  Per ricaricare bash nel terminale corrente:    │"
-    echo "  │                                                 │"
-    echo "  │    source ~/.bashrc                             │"
-    echo "  │                                                 │"
-    echo "  └─────────────────────────────────────────────────┘"
-    echo -e "${RESET}"
-    ok "Bash verrà ricaricata alla prossima apertura del terminale."
-}
-
-# ────────────────────────────────────────────────────────────────────
-# 6. BONIFICA FILE
-# ────────────────────────────────────────────────────────────────────
-bonifica_files() {
-    step "Bonifica file dotfiles"
-    if ! confirm "Rimuovere numeri di riga spurii dai file?"; then
-        info "Bonifica saltata."
-        return
-    fi
-    find "$DOTFILES" -type f \( -name "*.sh" -o -name "*.md" -o -name "bashrc" -o -name "alias*" \) \
-        -not -path '*/.git/*' \
-        -exec sed -i 's/^[[:space:]]*[0-9]\+[[:space:]]\+//' {} + \
-    && ok "File bonificati." || err "Errore durante bonifica."
-}
-
-# ────────────────────────────────────────────────────────────────────
-# SETUP TOTALE
-# ────────────────────────────────────────────────────────────────────
-configura_lab() {
-    header
-    echo -e "${C}  DOTFILES rilevati in: ${B}$DOTFILES${RESET}"
-    echo -e "${C}  LOG sessione:          ${B}$LOG_FILE${RESET}\n"
-    sep
-
-    if ! confirm "Avviare il SETUP TOTALE?"; then
-        warn "Setup annullato."
-        attendi; return
-    fi
-
-    ERRORI=0
-    install_deps
-    sep
-    install_arc_hidpi
-    sep
-
-    step "Cartelle Home (struttura XDG)"
-    xdg-user-dirs-update --force 2>/dev/null && ok "Cartelle XDG aggiornate."
-    mkdir -p ~/.bashrc.d ~/.config ~/.local/share/fonts ~/bin
-    ok "Directory base create."
-    sep
-
-    deploy_bashrc
-    sep
-    deploy_bin
-    sep
-    deploy_config
-    sep
-    bonifica_files
-    sep
-    reload_xfce
-    sep
-    reload_bash
-    sep
-
-    echo -e "\n${B}"
-    if [[ $ERRORI -eq 0 ]]; then
-        echo -e "  ${V}╔══════════════════════════════════════════╗"
-        echo    "  ║   ✅  SETUP COMPLETATO SENZA ERRORI!    ║"
-        echo -e "  ╚══════════════════════════════════════════╝${RESET}"
-    else
-        echo -e "  ${G}╔══════════════════════════════════════════════════╗"
-        printf  "  ║  ⚠️  SETUP COMPLETATO CON %d ERRORI/AVVISI     ║\n" "$ERRORI"
-        echo -e "  ║  Vedi: %-42s║\n" "$LOG_FILE"
-        echo -e "  ╚══════════════════════════════════════════════════╝${RESET}"
-    fi
-
-    attendi
-}
-
-# ────────────────────────────────────────────────────────────────────
-# SOLO CONFIG
-# ────────────────────────────────────────────────────────────────────
-solo_config() {
-    header
-    ERRORI=0
-    deploy_bashrc; sep
-    deploy_bin;    sep
-    deploy_config; sep
-    reload_xfce;   sep
-    reload_bash
-    [[ $ERRORI -eq 0 ]] && ok "Config ridistribuita." || warn "$ERRORI errori. Vedi $LOG_FILE"
-    attendi
-}
-
-# ────────────────────────────────────────────────────────────────────
-# GIT PUSH
-# ────────────────────────────────────────────────────────────────────
-git_push() {
-    header
-    local git_mgr="$DOTFILES/scripts/bin/ilnanny-git-manager.sh"
-    if [ -x "$git_mgr" ]; then
-        bash "$git_mgr"
-    else
-        step "Git rapido"
-        cd "$DOTFILES" || return
-        git status
-        sep
-        echo -en "${C}  Messaggio commit: ${RESET}"
-        read -r msg
-        [[ -z "$msg" ]] && msg="update: $(date '+%Y-%m-%d %H:%M')"
-        git add -A && git commit -m "$msg" && git push \
-            && ok "Push completato." || err "Errore git push."
-        cd - > /dev/null
-    fi
-    attendi
-}
-
-# ────────────────────────────────────────────────────────────────────
-# MENU PRINCIPALE
-# ────────────────────────────────────────────────────────────────────
+# ── Menu ────────────────────────────────────────────────────────────
 while true; do
     header
-    echo -e "  ${B}OPERAZIONI DISPONIBILI${RESET}\n"
-    echo -e "  ${V}1)${RESET}  󰑭   SETUP TOTALE          ${DIM}(software + config + XFCE reload)${RESET}"
-    echo -e "  ${V}2)${RESET}  󰒓   SOLO CONFIG           ${DIM}(symlink + .config + reload, no software)${RESET}"
-    echo -e "  ${V}3)${RESET}  󰊢   GIT PUSH              ${DIM}(commit & push dotfiles)${RESET}"
-    echo -e "  ${V}4)${RESET}  󰃢   BONIFICA FILE         ${DIM}(pulizia numeri di riga)${RESET}"
-    echo -e "  ${V}5)${RESET}  󰏔   INSTALLA TEMA ARC     ${DIM}(compila Arc-Dark HiDPI)${RESET}"
-    echo -e "  ${V}6)${RESET}  󰑓   RELOAD XFCE           ${DIM}(riavvia panel/wm/thunar/terminale)${RESET}"
+    echo -e "  ${V}1)${RESET}  󰑭   SETUP TOTALE          ${DIM}(Soft + Config + Reload)${RESET}"
+    echo -e "  ${V}2)${RESET}  󰒓   SOLO CONFIG           ${DIM}(Forza Link Simbolici)${RESET}"
+    echo -e "  ${V}3)${RESET}  󰊢   GIT PUSH              ${DIM}(Sincronizza Lab)${RESET}"
+    echo -e "  ${V}4)${RESET}  󰑓   RELOAD XFCE           ${DIM}(WM & Panel)${RESET}"
     echo -e ""
     echo -e "  ${R}0)${RESET}  󰈆   ESCI"
     echo ""
     sep
-    echo -en "  ${B}${C}Scegli: ${RESET}"
+    echo -en "  ${B}${C}Scegli operazione: ${RESET}"
     read -r scelta
 
     case $scelta in
-        1) configura_lab ;;
-        2) solo_config ;;
-        3) git_push ;;
-        4) header; bonifica_files; attendi ;;
-        5) header; install_arc_hidpi; attendi ;;
-        6) header; reload_xfce; attendi ;;
+        1) install_deps; deploy_bashrc; deploy_bin; deploy_config; reload_xfce; echo -e "\nPremi INVIO..."; read ;;
+        2) deploy_bashrc; deploy_bin; deploy_config; reload_xfce; echo -e "\nPremi INVIO..."; read ;;
+        3) cd "$DOTFILES" && git status && confirm "Eseguire Push?" && git add -A && git commit -m "update $(date)" && git push; read ;;
+        4) reload_xfce; sleep 2 ;;
         0) clear; echo -e "${C}  Ciao Cristian! 👋${RESET}\n"; exit 0 ;;
         *) warn "Scelta non valida." ; sleep 1 ;;
     esac

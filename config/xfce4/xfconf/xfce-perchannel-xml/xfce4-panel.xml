@@ -10,7 +10,7 @@
       <property name="position" type="string" value="p=8;x=190;y=1061"/>
       <property name="length" type="uint" value="100"/>
       <property name="position-locked" type="bool" value="true"/>
-      <property name="size" type="uint" value="42"/>
+      <property name="size" type="uint" value="40"/>
       <property name="plugin-ids" type="array">
         <value type="int" value="16"/>
         <value type="int" value="2"/>
@@ -63,7 +63,12 @@
       <property name="style" type="uint" value="0"/>
       <property name="expand" type="bool" value="false"/>
     </property>
-    <property name="plugin-27" type="string" value="clock"/>
+    <property name="plugin-27" type="string" value="clock">
+      <property name="digital-date-font" type="string" value="JetBrainsMonoNL Nerd Font Propo 10"/>
+      <property name="tooltip-format" type="string" value="%x"/>
+      <property name="digital-date-format" type="string" value="%d/%m/%Y"/>
+      <property name="digital-time-font" type="string" value="JetBrainsMonoNL Nerd Font Propo 10"/>
+    </property>
     <property name="plugin-38" type="string" value="separator">
       <property name="style" type="uint" value="0"/>
     </property>
@@ -85,9 +90,9 @@
       <property name="position-categories-horizontal" type="bool" value="false"/>
       <property name="position-categories-alternate" type="bool" value="true"/>
       <property name="position-commands-alternate" type="bool" value="true"/>
-      <property name="menu-height" type="int" value="633"/>
-      <property name="menu-width" type="int" value="536"/>
-      <property name="button-icon" type="string" value="mxfcelogo-rounded-original"/>
+      <property name="menu-height" type="int" value="570"/>
+      <property name="menu-width" type="int" value="502"/>
+      <property name="button-icon" type="string" value="menu-light"/>
       <property name="default-category" type="int" value="0"/>
       <property name="hover-switch-category" type="bool" value="true"/>
       <property name="recent-items-max" type="int" value="0"/>

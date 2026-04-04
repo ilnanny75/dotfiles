@@ -1,32 +1,24 @@
 #!/bin/bash
 # ═══════════════════════════════════════════════════════════════════
-# Nota: Setup interattivo della partizione Dati. Verifica l'UUID, 
-# crea il mount point e aggiorna /etc/fstab con backup di sicurezza.
-#
-# Autore: ilnanny 2026
-# Mail: ilnannyhack@gmail.com
-# GitHub: https://github.com/ilnanny75
+# Setup interattivo della partizione Dati (sda5).
+# Allineato con la configurazione fstab per Void, Arch e Debian.
 # ═══════════════════════════════════════════════════════════════════
 
-# Definiamo il punto di mount e l'UUID
+# --- CONFIGURAZIONE ---
+UUID_DATI="40175288-0055-44da-9612-c080122d04c8"
 MOUNT_POINT="/media/ilnanny/dati-linux"
-UUID="40175288-0055-44da-9612-c080122d04c8"
 
-echo "Controllo se la cartella esiste..."
-if [ ! -d "$MOUNT_POINT" ]; then
-    echo "Creazione cartella $MOUNT_POINT in corso..."
-    sudo mkdir -p "$MOUNT_POINT"
-fi
+clear
+echo "===================================================="
+echo "   CONFIGURAZIONE SINCRONIZZATA PARTIZIONE DATI"
+echo "===================================================="
 
-echo "Tentativo di montaggio della partizione dati..."
-sudo mount -U "$UUID" "$MOUNT_POINT"
-
-if [ $? -eq 0 ]; then
-    echo "Successo! Disco montato in $MOUNT_POINT"
-    # Opzionale: sistema i permessi al volo
-    sudo chown -R $USER:$USER "$MOUNT_POINT"
-else
-    echo "Errore: Assicurati che l'SSD sia collegato."
+# 1. Verifica se il disco è connesso
+echo "[*] Verifica presenza disco con UUID: $UUID_DATI..."
+if ! lsblk -no UUID | grep -q "$UUID_DATI"; then
+    echo " [!] ERRORE: Disco non trovato!"
+    echo "     L'UUID $UUID_DATI non risulta collegato."
+   exit 1
 fi
 echo " [OK] Disco trovato correttamente."
 
@@ -47,35 +39,40 @@ fi
 echo "[*] Creazione backup di /etc/fstab..."
 sudo cp /etc/fstab /etc/fstab.bak
 
-# 4. Scrittura in fstab (Pulizia e Nuova riga)
+# 4. Scrittura in fstab (Pulizia e Nuova riga con NOFAIL)
 echo "[*] Aggiornamento /etc/fstab..."
-# Rimuove righe che contengono il mount point o l'UUID per evitare duplicati
+# Rimuove vecchie righe dello script o dell'UUID per evitare conflitti
 sudo sed -i "\| $MOUNT_POINT |d" /etc/fstab
 sudo sed -i "/$UUID_DATI/d" /etc/fstab
 
-LINEA_FSTAB="UUID=$UUID_DATI  $MOUNT_POINT  ext4  defaults,noatime,x-gvfs-show  0  2"
+# RIGA DEFINITIVA: Aggiunto 'nofail' per sicurezza al boot
+LINEA_FSTAB="UUID=$UUID_DATI  $MOUNT_POINT  ext4  noatime,rw,nofail,x-gvfs-show  0  2"
 
 echo "$LINEA_FSTAB" | sudo tee -a /etc/fstab > /dev/null
-echo " [OK] Configurazione fstab scritta."
+echo " [OK] Configurazione fstab aggiornata."
 
-# 5. Montaggio
+# 5. Ricaricamento Systemd (se presente) e Montaggio
+if command -v systemctl >/dev/null; then
+    sudo systemctl daemon-reload
+fi
+
 echo "[*] Tentativo di montaggio..."
 sudo umount "$MOUNT_POINT" 2>/dev/null
 if sudo mount -a; then
-    echo " [OK] Partizione montata con successo."
+    echo " [OK] Partizione montata con successo in $MOUNT_POINT"
 else
-    echo " [!] Errore nel montaggio. Verifica il file /etc/fstab."
+    echo " [!] Errore nel montaggio. Controlla /etc/fstab."
     exit 1
 fi
 
 # 6. Fix Permessi Ricorsivo
-echo "[*] Vuoi diventare proprietario di tutti i file in $MOUNT_POINT?"
+echo "[*] Vuoi impostare $USER come proprietario di $MOUNT_POINT?"
 read -p "    Procedere? (s/n): " confirm_perm
 if [[ $confirm_perm == [sS] ]]; then
     sudo chown -R $(id -u):$(id -g) "$MOUNT_POINT"
-    echo " [OK] Permessi impostati correttamente."
+    echo " [OK] Permessi impostati."
 fi
 
 echo "===================================================="
-echo "   CONFIGURAZIONE COMPLETATA!"
+echo "   SISTEMA ALLINEATO E SICURO!"
 echo "===================================================="

@@ -1,40 +1,15 @@
-# /etc/fstab: static file system information.
-#
+# /etc/fstab: CONFIGURAZIONE VOID LINUX (SSD ESTERNO)
 # <file system>             <mount point>  <type>  <options>                               <dump> <pass>
 
-#---------------------------------------------------------------------------------------------
-# 1. PARTIZIONE EFI (Solo se il tuo PC è moderno/UEFI)
-# Sostituisci l'UUID con quello della tua partizione VFAT (es. 5FCE-81A1)
-#---------------------------------------------------------------------------------------------
-UUID=XXXX-XXXX              /boot/efi      vfat    noatime,dmask=0002,fmask=0113           0      0
+# 1. PARTIZIONE EFI (SSD Esterno)
+UUID=CD12-E650              /boot/efi      vfat    defaults                                        0      2 
 
-#---------------------------------------------------------------------------------------------
-# 2. PARTIZIONE ROOT (Sistema Operativo)
-# L'opzione 'noatime' è fondamentale per la velocità e la salute degli SSD.
-#---------------------------------------------------------------------------------------------
-UUID=il-tuo-uuid-root       /              ext4    noatime,rw                              0      1
+# 2. PARTIZIONE ROOT (Void sda4)
+UUID=2e730cdf-127e-4a69-b69b-81c920d986ff /        ext4    noatime,rw                              0      1 
 
-#---------------------------------------------------------------------------------------------
-# 3. SWAP (Scegli A o B a seconda di cosa hai creato)
-#---------------------------------------------------------------------------------------------
-# A: Se hai una PARTIZIONE swap dedicata:
-# UUID=il-tuo-uuid-swap     none           swap    sw                                      0      0
-#
-# B: Se hai un FILE di swap (come su MX Linux):
-/swap/swap                  swap           swap    defaults                                0      0
+# 4. PARTIZIONI DATI EXTRA
+# Partizione DATI Linux (sda5) - Montaggio Automatico
 
-#---------------------------------------------------------------------------------------------
-# 4. PARTIZIONI DATI EXTRA (Opzionale)
-#---------------------------------------------------------------------------------------------
-# Partizione DATI Linux (ext4):
-# UUID=uuid-dati            /mnt/Dati      ext4    noatime,rw                              0      2
-#
-# Partizione DATI Windows (NTFS):
-# UUID=uuid-ntfs            /mnt/Win       ntfs-3g defaults,uid=1000,gid=1000,windows_names 0      0
-
-#---------------------------------------------------------------------------------------------
-# 5. FILESYSTEM VIRTUALE (RAMDISK)
-# Velocizza il sistema spostando i file temporanei in RAM invece che sul disco.
-#---------------------------------------------------------------------------------------------
-tmpfs                       /tmp           tmpfs   defaults,nosuid,nodev                   0      0
-shm                         /dev/shm       tmpfs   nosuid,nodev,noexec                     0      0
+# 5. FILESYSTEM VIRTUALE
+tmpfs                       /tmp           tmpfs   defaults,nosuid,nodev                           0      0 
+UUID=40175288-0055-44da-9612-c080122d04c8  /media/ilnanny/dati-linux  ext4  noatime,rw,nofail,x-gvfs-show  0  2

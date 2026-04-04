@@ -5,7 +5,7 @@
   <property name="background-darkness" type="double" value="0.95999999999999996"/>
   <property name="dropdown-status-icon" type="bool" value="false"/>
   <property name="dropdown-width" type="uint" value="80"/>
-  <property name="font-name" type="string" value="FiraCode Nerd Font 15"/>
+  <property name="font-name" type="string" value="JetBrainsMonoNL Nerd Font 14"/>
   <property name="misc-always-show-tabs" type="bool" value="false"/>
   <property name="misc-bell" type="bool" value="false"/>
   <property name="misc-borders-default" type="bool" value="true"/>
@@ -24,8 +24,8 @@
   <property name="misc-highlight-urls" type="bool" value="true"/>
   <property name="misc-copy-on-select" type="bool" value="true"/>
   <property name="unsafe-paste" type="bool" value="false"/>
-  <property name="color-foreground" type="string" value="#dcdcdc"/>
-  <property name="color-background" type="string" value="#273e35363e4a"/>
+  <property name="color-foreground" type="string" value="#b709bcbfbfff"/>
+  <property name="color-background" type="string" value="#2ccc38a73fff"/>
   <property name="color-background-vary" type="bool" value="false"/>
   <property name="color-cursor-foreground" type="string" value=""/>
   <property name="color-cursor" type="string" value="#dcdcdc"/>
@@ -41,4 +41,5 @@
   <property name="tab-activity-color" type="string" value="#aa0000"/>
   <property name="scrolling-bar" type="string" value="TERMINAL_SCROLLBAR_NONE"/>
   <property name="misc-slim-tabs" type="bool" value="true"/>
+  <property name="scrolling-unlimited" type="bool" value="true"/>
 </channel>
