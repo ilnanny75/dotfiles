@@ -17,14 +17,17 @@ green='\[\e[0;32m\]'                         # Verde: Successo o Utente
 nc='\[\e[0m\]'                               # Reset: Torna al predefinito
 
 # --- ⚙️ Variabili di Sistema -----------------------------
-export LANG="it_IT.UTF-8"                    # Lingua sistema: Italiano
+export LANG="it_IT.UTF-8"                    # Lingua sistema
 export LC_ALL="it_IT.UTF-8"                  # Forza localizzazione
-export XKBMAP="it"                           # Layout tastiera: Italiano
-export TERM="xterm-256color"                 # Supporto colore 256 tonalità
+export XKBMAP="it"                           # Layout tastiera
+export TERM="xterm-256color"                 # Colore 256 tonalità
 export EDITOR="geany"                        # Editor predefinito
 export BROWSER="firefox"                     # Browser predefinito
 export FILEMANAGER="thunar"                  # Gestore file predefinito
 export QT_QPA_PLATFORMTHEME=qt5ct            # Tema Qt gestito da qt5ct
+
+# --- 🔑 Integrazione Gemini Protetta ---------------------
+[ -f "$HOME/.gemini_key" ] && . "$HOME/.gemini_key"
 
 # --- 📂 Gestione Percorsi (PATH) -------------------------
 export PATH="$HOME/dotfiles/scripts/bin:$HOME/bin:$PATH" # Priorità ai tuoi script

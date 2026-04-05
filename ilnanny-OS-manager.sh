@@ -24,7 +24,6 @@ _trova_dotfiles() {
         "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
         /media/Dati/dotfiles
         /mnt/Dati/dotfiles
-        /media/"$USER"/Dati/dotfiles
         "$HOME/dotfiles"
     )
     for p in "${candidati[@]}"; do
@@ -39,36 +38,37 @@ _trova_dotfiles() {
 
 DOTFILES="$(_trova_dotfiles)"
 if [[ -z "$DOTFILES" ]]; then
-    echo -e "${R}\n  ✖  ERRORE CRITICO: dotfiles non trovati!${RESET}"
+    echo -e "${R}  [!] ERRORE: dotfiles non trovati!${RESET}"
     exit 1
 fi
 
 OS_ID=$(grep -w "^ID" /etc/os-release 2>/dev/null | cut -d= -f2 | tr -d '"')
 OS_ID="${OS_ID:-unknown}"
-LOG_FILE="/tmp/ilnanny-setup-$(date +%Y%m%d_%H%M%S).log"
-ERRORI=0
 
 # ── Helpers ─────────────────────────────────────────────────────────
-ok()     { echo -e "${V}  ✅  $*${RESET}";   echo "[OK]  $*" >> "$LOG_FILE"; }
-info()   { echo -e "${C}  ℹ️   $*${RESET}";   echo "[INF] $*" >> "$LOG_FILE"; }
-warn()   { echo -e "${G}  ⚠️   $*${RESET}";   echo "[WRN] $*" >> "$LOG_FILE"; }
-err()    { echo -e "${R}  ✖   $*${RESET}";   echo "[ERR] $*" >> "$LOG_FILE"; (( ERRORI++ )); }
+ok()     { echo -e "${V}  [OK]  $*${RESET}"; }
+info()   { echo -e "${C}  [INF] $*${RESET}"; }
+warn()   { echo -e "${G}  [WRN] $*${RESET}"; }
+err()    { echo -e "${R}  [ERR] $*${RESET}"; }
 step()   { echo -e "\n${B}${C}  ▶  $*${RESET}\n"; }
 sep()    { echo -e "${DIM}${C}  ─────────────────────────────────────────${RESET}"; }
 
 confirm() {
-    echo -en "${G}  ❓  $1 [s/N] ${RESET}"
+    echo -en "${G}  [?] $1 [s/N] ${RESET}"
     read -r risposta
     [[ "$risposta" =~ ^[sS]$ ]]
 }
 
+# ── Header (Versione Open - No Glitch) ──────────────────────────────
 header() {
     clear
-    echo -e "${C}┌──────────────────────────────────────────────────┐${RESET}"
-    echo -e "${C}│${B}    󱓞  ilnanny LAB MANAGER — MASTER 2026         ${RESET}${C}│${RESET}"
-    printf "${C}│${RESET}    OS: %-42s ${C}│${RESET}\n" "${OS_ID^^}"
-    printf "${C}│${RESET}    DOTFILES: %-38s ${C}│${RESET}\n" "$DOTFILES"
-    echo -e "${C}└──────────────────────────────────────────────────┘${RESET}"
+    local FOLDER=$(basename "$DOTFILES")
+    echo -e "${C}───────────────────────────────────────────────────${RESET}"
+    echo -e "${B}    ilnanny LAB MANAGER - MASTER 2026${RESET}"
+    echo -e "${DIM}    OS: ${OS_ID^^}${RESET}"
+    echo -e "${DIM}    DOTFILES: ${FOLDER}${RESET}"
+    echo -e "${C}───────────────────────────────────────────────────${RESET}"
+    echo ""
 }
 
 # ── Installazione Dipendenze ────────────────────────────────────────
@@ -111,9 +111,8 @@ safe_link() {
         rm "$dst"
     elif [ -e "$dst" ]; then
         mv "$dst" "${dst}.bak_$(date +%H%M%S)"
-        info "Backup esistente: $(basename "$dst")"
     fi
-    ln -sf "$src" "$dst" && ok "Link: ${dst/$HOME/~} -> Dotfiles"
+    ln -sf "$src" "$dst" && ok "Link: $(basename "$dst")"
 }
 
 deploy_bashrc() {
@@ -136,22 +135,8 @@ deploy_bin() {
 
 deploy_config() {
     step "Deploy ~/.config (Link Diretti)"
-    local src_root="$DOTFILES/config"
-    local dst_root="$HOME/.config"
-    mkdir -p "$dst_root"
-
-    for src in "$src_root"/*; do
-        local nome=$(basename "$src")
-        local dst="$dst_root/$nome"
-        
-        if [ -e "$dst" ] || [ -L "$dst" ]; then
-            if [ -d "$dst" ] && [ ! -L "$dst" ]; then
-                mv "$dst" "${dst}.bak_$(date +%H%M%S)"
-            else
-                rm -rf "$dst"
-            fi
-        fi
-        ln -sf "$src" "$dst" && ok "Config: $nome linkata"
+    for src in "$DOTFILES/config"/*; do
+        safe_link "$src" "$HOME/.config/$(basename "$src")"
     done
 }
 
@@ -167,18 +152,23 @@ clean_cache() {
 reload_xfce() {
     step "Ricarica ambiente XFCE"
     
-    # 1. Riavvio Pannello (Gestione nativa XFCE per evitare errori DBus)
     if command -v xfce4-panel &>/dev/null; then
         xfce4-panel --restart 2>/dev/null
-        ok "xfce4-panel riavviato"
+        ok "Pannello riavviato"
     fi
 
-    # 2. Riavvio altri componenti
-    local comps=(xfsettingsd xfwm4 xfdesktop)
+    if command -v xfwm4 &>/dev/null; then
+        # Uso di --replace per Debian/XFCE stabilità
+        xfwm4 --replace --daemon 2>/dev/null &
+        sleep 1
+        ok "xfwm4 ricaricato"
+    fi
+
+    local comps=(xfsettingsd xfdesktop)
     for c in "${comps[@]}"; do
         if command -v "$c" &>/dev/null; then
             pkill -x "$c" 2>/dev/null
-            sleep 0.2
+            sleep 0.3
             "$c" --daemon 2>/dev/null
             ok "$c riavviato"
         fi
@@ -188,23 +178,23 @@ reload_xfce() {
 # ── Menu ────────────────────────────────────────────────────────────
 while true; do
     header
-    echo -e "  ${V}1)${RESET}  󰑭   SETUP TOTALE          ${DIM}(Soft + Config + Cache + Reload)${RESET}"
-    echo -e "  ${V}2)${RESET}  󰒓   SOLO CONFIG           ${DIM}(Link + Cache + Reload)${RESET}"
-    echo -e "  ${V}3)${RESET}  󰊢   GIT PUSH              ${DIM}(Sincronizza Lab)${RESET}"
-    echo -e "  ${V}4)${RESET}  󰑓   RELOAD XFCE           ${DIM}(Cache + WM & Panel)${RESET}"
+    echo -e "  ${V}1)${RESET}  SETUP TOTALE"
+    echo -e "  ${V}2)${RESET}  SOLO CONFIG"
+    echo -e "  ${V}3)${RESET}  GIT PUSH"
+    echo -e "  ${V}4)${RESET}  RELOAD XFCE"
     echo -e ""
-    echo -e "  ${R}0)${RESET}  󰈆   ESCI"
+    echo -e "  ${R}0)${RESET}  ESCI"
     echo ""
     sep
     echo -en "  ${B}${C}Scegli operazione: ${RESET}"
     read -r scelta
 
     case $scelta in
-        1) install_deps; deploy_bashrc; deploy_bin; deploy_config; clean_cache; reload_xfce; echo -e "\nPremi INVIO..."; read ;;
-        2) deploy_bashrc; deploy_bin; deploy_config; clean_cache; reload_xfce; echo -e "\nPremi INVIO..."; read ;;
+        1) install_deps; deploy_bashrc; deploy_bin; deploy_config; clean_cache; sleep 1; reload_xfce; echo -e "\nPremi INVIO..."; read ;;
+        2) deploy_bashrc; deploy_bin; deploy_config; clean_cache; sleep 1; reload_xfce; echo -e "\nPremi INVIO..."; read ;;
         3) cd "$DOTFILES" && git status && confirm "Eseguire Push?" && git add -A && git commit -m "update $(date)" && git push; read ;;
         4) clean_cache; reload_xfce; sleep 2 ;;
-        0) clear; echo -e "${C}  Ciao Cristian! 👋${RESET}\n"; exit 0 ;;
+        0) clear; exit 0 ;;
         *) warn "Scelta non valida." ; sleep 1 ;;
     esac
 done
