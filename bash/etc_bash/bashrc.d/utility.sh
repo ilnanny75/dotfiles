@@ -5,7 +5,7 @@
 # informativo rapido (ii) per la diagnostica hardware/kernel.
 #
 # Autore: ilnanny 2026
-# Mail: ilnannyhack@gmail.com
+# Mail:   ilnannyhack@gmail.com
 # GitHub: https://github.com/ilnanny75
 # ═══════════════════════════════════════════════════════════════════
 
@@ -37,5 +37,5 @@ ii() {                                                  # Riepilogo sistema
     echo -e "\nSei su: \e[1;31m$HOSTNAME\e[m"           # Nome Host
     echo -e "\n\e[1;31mKernel:\e[m "; uname -a          # Versione Kernel
     echo -e "\n\e[1;31mMemoria:\e[m"; free -h           # RAM leggibile
-    echo -e "\n\e[1;31mIP Loc.:\e[m "; hostname -I       # IP Locale
+    echo -e "\n\e[1;31mIP Loc.:\e[m "; hostname -I      # IP Locale
 }

@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 # ═══════════════════════════════════════════════════════════════════
 # Nota: Script MASTER SETUP per la gestione e automazione del Lab. 
-# Si occupa di rilevare i dotfiles, installare dipendenze su diverse distro 
-# (Void, Arch, Debian/MX), configurare link simbolici e ricaricare XFCE.
+# Si occupa di rilevare i dotfiles, installare dipendenze su 3 distro 
+# Void, Arch, Debian, configurare link simbolici e ricaricare XFCE.
 #
 # Autore: ilnanny 2026
 # Mail: ilnannyhack@gmail.com
 # GitHub: https://github.com/ilnanny75
 # ═══════════════════════════════════════════════════════════════════
 
-# Permette ai cicli for di ignorare pattern vuoti (Risolve errore riga 178)
+# Permette ai cicli for di ignorare pattern vuoti
 shopt -s nullglob
 
 # ── Colori ──────────────────────────────────────────────────────────
@@ -144,7 +144,6 @@ deploy_config() {
         local nome=$(basename "$src")
         local dst="$dst_root/$nome"
         
-        # Rimuove file/cartelle di sistema per forzare l'uso dei tuoi dotfiles
         if [ -e "$dst" ] || [ -L "$dst" ]; then
             if [ -d "$dst" ] && [ ! -L "$dst" ]; then
                 mv "$dst" "${dst}.bak_$(date +%H%M%S)"
@@ -156,15 +155,31 @@ deploy_config() {
     done
 }
 
+# ── Pulizia Cache ───────────────────────────────────────────────────
+clean_cache() {
+    step "Pulizia cache XFCE"
+    rm -rf ~/.cache/sessions/*
+    rm -rf ~/.cache/xfce4/*
+    ok "Cache pulita correttamente"
+}
+
 # ── Reload Ambiente ─────────────────────────────────────────────────
 reload_xfce() {
     step "Ricarica ambiente XFCE"
-    local comps=(xfsettingsd xfce4-panel xfwm4 xfdesktop)
+    
+    # 1. Riavvio Pannello (Gestione nativa XFCE per evitare errori DBus)
+    if command -v xfce4-panel &>/dev/null; then
+        xfce4-panel --restart 2>/dev/null
+        ok "xfce4-panel riavviato"
+    fi
+
+    # 2. Riavvio altri componenti
+    local comps=(xfsettingsd xfwm4 xfdesktop)
     for c in "${comps[@]}"; do
         if command -v "$c" &>/dev/null; then
             pkill -x "$c" 2>/dev/null
             sleep 0.2
-            [[ "$c" == "xfce4-panel" ]] && xfce4-panel --restart 2>/dev/null || "$c" --daemon 2>/dev/null
+            "$c" --daemon 2>/dev/null
             ok "$c riavviato"
         fi
     done
@@ -173,10 +188,10 @@ reload_xfce() {
 # ── Menu ────────────────────────────────────────────────────────────
 while true; do
     header
-    echo -e "  ${V}1)${RESET}  󰑭   SETUP TOTALE          ${DIM}(Soft + Config + Reload)${RESET}"
-    echo -e "  ${V}2)${RESET}  󰒓   SOLO CONFIG           ${DIM}(Forza Link Simbolici)${RESET}"
+    echo -e "  ${V}1)${RESET}  󰑭   SETUP TOTALE          ${DIM}(Soft + Config + Cache + Reload)${RESET}"
+    echo -e "  ${V}2)${RESET}  󰒓   SOLO CONFIG           ${DIM}(Link + Cache + Reload)${RESET}"
     echo -e "  ${V}3)${RESET}  󰊢   GIT PUSH              ${DIM}(Sincronizza Lab)${RESET}"
-    echo -e "  ${V}4)${RESET}  󰑓   RELOAD XFCE           ${DIM}(WM & Panel)${RESET}"
+    echo -e "  ${V}4)${RESET}  󰑓   RELOAD XFCE           ${DIM}(Cache + WM & Panel)${RESET}"
     echo -e ""
     echo -e "  ${R}0)${RESET}  󰈆   ESCI"
     echo ""
@@ -185,10 +200,10 @@ while true; do
     read -r scelta
 
     case $scelta in
-        1) install_deps; deploy_bashrc; deploy_bin; deploy_config; reload_xfce; echo -e "\nPremi INVIO..."; read ;;
-        2) deploy_bashrc; deploy_bin; deploy_config; reload_xfce; echo -e "\nPremi INVIO..."; read ;;
+        1) install_deps; deploy_bashrc; deploy_bin; deploy_config; clean_cache; reload_xfce; echo -e "\nPremi INVIO..."; read ;;
+        2) deploy_bashrc; deploy_bin; deploy_config; clean_cache; reload_xfce; echo -e "\nPremi INVIO..."; read ;;
         3) cd "$DOTFILES" && git status && confirm "Eseguire Push?" && git add -A && git commit -m "update $(date)" && git push; read ;;
-        4) reload_xfce; sleep 2 ;;
+        4) clean_cache; reload_xfce; sleep 2 ;;
         0) clear; echo -e "${C}  Ciao Cristian! 👋${RESET}\n"; exit 0 ;;
         *) warn "Scelta non valida." ; sleep 1 ;;
     esac

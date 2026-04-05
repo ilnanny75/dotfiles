@@ -1,5 +1,5 @@
 #==========================================================
-#  O.S.      : Gnu Linux (Multi-Distro: Arch, Debian, Void)
+#  O.S.      : Gnu Linux Arch, Debian, Void
 #  Author    : Cristian Pozzessere (ilnanny)
 #  Github    : https://github.com/ilnanny75
 #  File      : Master Bash Config - Lab 2026
@@ -12,10 +12,8 @@ case $- in
 esac
 
 # 2. Caricamento Profili di Sistema
-# append_path è definita qui per compatibilità multi-distro:
-# su shell non-login (XFCE terminal, ecc.) /etc/profile non viene
-# caricato, quindi i profile.d che la usano (es. perlbin.sh su Arch)
-# andrebbero in errore. La definisco  prima di caricarli.
+# append_path é definita qui per compatibilità multi distro:
+# su shell non-login /etc/profile non viene caricato.
 append_path() {
     case ":${PATH}:" in
         *:"$1":*) ;;
@@ -31,7 +29,7 @@ fi
 
 unset -f append_path
 
-# 3. IL CUORE DEI DOTFILES (Dinamico)
+# 3. IL Dotfilers Core. .
 MY_BASH_DIR="$HOME/.bashrc.d"
 
 if [ -d "$MY_BASH_DIR" ]; then
@@ -40,8 +38,8 @@ if [ -d "$MY_BASH_DIR" ]; then
     done
 fi
 
-# 4. PATH Personale
+# 4. PATH Personale.
 export PATH="$HOME/dotfiles/scripts/bin:$HOME/bin:$PATH"
 
-# 5. Impostazioni Prompt
+# 5. Impostazioni Prompt.
 PS1='┌─[✔]───[\u@\h]───[\w]───[\s]\n└───▶ '

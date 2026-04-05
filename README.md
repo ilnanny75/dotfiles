@@ -9,7 +9,7 @@
 
 <hr>
 
-<p><strong>Laboratorio personale di icone, script e configurazioni Linux (Debian, Void, Arch).</strong></p>
+<p><strong>Laboratorio personale di icone, script e configurazioni Linux Debian, Void e Arch.</strong></p>
 
 <hr>
 
