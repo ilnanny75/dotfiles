@@ -42,4 +42,5 @@
   <property name="scrolling-bar" type="string" value="TERMINAL_SCROLLBAR_NONE"/>
   <property name="misc-slim-tabs" type="bool" value="true"/>
   <property name="scrolling-unlimited" type="bool" value="true"/>
+  <property name="misc-show-unsafe-paste-dialog" type="bool" value="false"/>
 </channel>
