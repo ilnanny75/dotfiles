@@ -59,8 +59,6 @@ confirm() {
 }
 
 # ── Header con cornice doppia allineata ──────────────────────────────
-# Nota: printf con \e non funziona; i codici ANSI non hanno larghezza
-# visibile, quindi la cornice viene calcolata sul testo puro.
 header() {
     clear
     local FOLDER
@@ -75,7 +73,6 @@ header() {
     local BOT="╚$(printf '═%.0s' $(seq 1 $W))╝"
 
     # Stampa una riga con bordi laterali, testo centrato/allineato a sx
-    # $1 = testo visibile, $2 = colore opzionale
     _riga() {
         local testo="$1" colore="${2:-}"
         local pad=$(( W - ${#testo} - 1 ))
@@ -95,20 +92,15 @@ header() {
 }
 
 # ── Installazione dust su Debian via rustup + cargo ─────────────────
-# I repo Debian hanno rust/cargo datati; rustup installa la versione
-# stabile corrente e mette cargo in ~/.cargo/bin (nel PATH dopo reload).
 _installa_dust_debian() {
     step "Installazione dust (Debian: rustup → cargo)"
 
-    # Dipendenze build minime per rustup e du-dust
     sudo apt-get install -y curl build-essential pkg-config libssl-dev 2>/dev/null
 
     if ! command -v cargo &>/dev/null; then
         info "cargo non trovato — installo rustup..."
         curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \
             | sh -s -- -y --no-modify-path
-        # Carica l'ambiente rust nella sessione corrente
-        # shellcheck source=/dev/null
         source "$HOME/.cargo/env" 2>/dev/null || \
             export PATH="$HOME/.cargo/bin:$PATH"
         ok "rustup installato"
@@ -130,11 +122,9 @@ install_deps() {
     step "Verifica software di sistema"
     declare -A PKGS
 
-    # dust: su Arch/Void è nel repo come 'dust'; su Debian non c'è,
-    # viene installato via cargo se disponibile oppure saltato.
-    PKGS[void]="curl wget github-cli xdg-user-dirs git tree dust"
-    PKGS[arch]="curl wget github-cli xdg-user-dirs git tree dust"
-    PKGS[debian]="curl wget gh xdg-user-dirs git tree"
+    PKGS[void]="curl wget github-cli xdg-user-dirs git tree dust rename"
+    PKGS[arch]="curl wget github-cli xdg-user-dirs git tree dust perl-rename"
+    PKGS[debian]="curl wget gh xdg-user-dirs git tree rename"
     PKGS[mx]="${PKGS[debian]}"
 
     local pkg_list="${PKGS[$OS_ID]}"
@@ -144,6 +134,7 @@ install_deps() {
     for pkg in $pkg_list; do
         local cmd="$pkg"
         [[ "$pkg" == "github-cli" ]] && cmd="gh"
+        [[ "$pkg" == "perl-rename" ]] && cmd="perl-rename"
         command -v "$cmd" &>/dev/null || da_installare+=("$pkg")
     done
 
@@ -153,7 +144,6 @@ install_deps() {
                 void)      sudo xbps-install -Sy "${da_installare[@]}" ;;
                 arch)      sudo pacman -Sy --needed --noconfirm "${da_installare[@]}" ;;
                 debian|mx) sudo apt-get update && sudo apt-get install -y "${da_installare[@]}"
-                           # dust non è nei repo Debian: installa via cargo (rustup)
                            if ! command -v dust &>/dev/null; then
                                _installa_dust_debian
                            fi ;;
@@ -203,8 +193,6 @@ deploy_config() {
 }
 
 # ── Deploy NerdFonts ────────────────────────────────────────────────
-# Crea symlink di dotfiles/NerdFonts/ in ~/.local/share/fonts/
-# e aggiorna la cache font di sistema.
 deploy_fonts() {
     step "Deploy NerdFonts → ~/.local/share/fonts"
     local src="$DOTFILES/NerdFonts"
@@ -216,11 +204,8 @@ deploy_fonts() {
     fi
 
     mkdir -p "$dst"
-
-    # Symlink della cartella NerdFonts intera (mantiene struttura interna)
     safe_link "$src" "$dst/NerdFonts"
 
-    # Aggiorna cache font
     if command -v fc-cache &>/dev/null; then
         fc-cache -fv "$dst" &>/dev/null
         ok "Cache font aggiornata"
@@ -238,15 +223,9 @@ clean_cache() {
 }
 
 # ── Reload Ambiente XFCE ─────────────────────────────────────────────
-# Nota sul problema del menu desktop freezato:
-# Il bug era un race condition: xfwm4 --replace veniva lanciato prima
-# che il vecchio processo terminasse, lasciando xfdesktop in uno stato
-# inconsistente (menu tasto destro bloccato). 
-# Fix: kill esplicito + attesa + riavvio ordinato dei componenti.
 reload_xfce() {
     step "Ricarica ambiente XFCE"
 
-    # 1. xfwm4 — kill esplicito poi riavvio (evita race con --replace)
     if command -v xfwm4 &>/dev/null; then
         pkill -x xfwm4 2>/dev/null
         sleep 1
@@ -255,7 +234,6 @@ reload_xfce() {
         ok "xfwm4 riavviato"
     fi
 
-    # 2. xfsettingsd — gestisce temi, font, input
     if command -v xfsettingsd &>/dev/null; then
         pkill -x xfsettingsd 2>/dev/null
         sleep 0.5
@@ -264,7 +242,6 @@ reload_xfce() {
         ok "xfsettingsd riavviato"
     fi
 
-    # 3. xfdesktop — riavviato DOPO xfwm4 per evitare il freeze del menu
     if command -v xfdesktop &>/dev/null; then
         pkill -x xfdesktop 2>/dev/null
         sleep 1
@@ -273,7 +250,6 @@ reload_xfce() {
         ok "xfdesktop riavviato"
     fi
 
-    # 4. Pannello — per ultimo, dipende da wm e desktop pronti
     if command -v xfce4-panel &>/dev/null; then
         xfce4-panel --restart 2>/dev/null
         ok "Pannello riavviato"

@@ -1,0 +1,64 @@
+{
+  "Dev": [
+    {
+	 "name": "Github",
+      "url": "https://github.com/ilnanny75"
+    },
+    {
+      "name": "OpenClipart",
+      "url": "https://openclipart.org"
+    },
+    {
+      "name": "DeviantArt",
+      "url": "https://www.deviantart.com"
+    },
+    {
+      "name": "Gnome Look",
+      "url": "https://www.gnome-look.org"
+    },
+    {
+      "name": "Deepl",
+      "url": "https://www.deepl.com/it/translator"
+    }
+  ],
+  "A.I.": [
+    {
+      "name": "Claude",
+      "url": "https://claude.ai"
+    },
+    {
+      "name": "ChatGPT",
+      "url": "https://chatgpt.com"
+    },
+    {
+      "name": "Gemini",
+      "url": "https://gemini.google.com"
+    },
+    {
+      "name": "Perplexity",
+      "url": "https://perplexity.ai"
+    }
+  ],
+  "Social": [
+    {
+      "name": "YouTube",
+      "url": "https://youtube.com"
+    },
+    {
+      "name": "Reddit",
+      "url": "https://reddit.com"
+    },
+    {
+      "name": "Instagram",
+      "url": "https://instagram.com"
+    },
+    {
+      "name": "Facebook",
+      "url": "https://facebook.com"
+    },
+    {
+      "name": "Gmail",
+      "url": "https://mail.google.com/mail"
+    }
+  ]
+}
