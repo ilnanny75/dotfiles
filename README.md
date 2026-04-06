@@ -32,21 +32,4 @@ cd ~/dotfiles && chmod +x ilnanny-OS-manager.sh && ./ilnanny-OS-manager.sh
 </ul>
 
 <hr>
-
-<h3>📔 MEMO Rapido</h3>
-<ul>
-  <li><strong>pigia</strong>: Il comando definitivo per Git. Gestisce commit e push in un colpo solo.</li>
-  <li><strong>multigit</strong>: Il tuo nuovo "coltellino svizzero" per pulire la cache e bonificare i repo.</li>
-  <li><strong>up</strong>: Sincronizza il repository locale con quello online (git pull).</li>
-  <li><strong>install</strong>: Installa pacchetti usando il gestore corretto della tua distro.</li>
-  <li><strong>update</strong>: Aggiorna l'intero sistema (core e pacchetti).</li>
-  <li><strong>treed</strong>: Visualizza la struttura delle cartelle senza lag di immagini.</li>
-  <li><strong>vedi</strong>: Esplora i file saltando i binari pesanti (immagini/PDF).</li>
-</ul>
-
-<hr>
-
-<h3>🛠️ Manutenzione e Bonifica</h3>
-<p>Se riscontri problemi con i vecchi riferimenti (email di terzi o vecchi nomi utente), lancia il comando:</p>
-<p><strong>multigit</strong> e seleziona l'opzione <strong>9 (BONIFICA LAB)</strong>.</p>
-<p>Questo imposterà automaticamente l'utente <strong>ilnanny75</strong>, l'email <strong>ilnannyhack@gmail.com</strong> e convertirà i branch da <i>master</i> a <i>main</i>.</p>
+<i>main</i>.</p>

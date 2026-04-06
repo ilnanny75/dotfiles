@@ -23,6 +23,7 @@
         <value type="int" value="17"/>
         <value type="int" value="38"/>
         <value type="int" value="5"/>
+        <value type="int" value="8"/>
         <value type="int" value="13"/>
         <value type="int" value="44"/>
         <value type="int" value="7"/>
@@ -193,6 +194,11 @@
     </property>
     <property name="plugin-11" type="string" value="separator">
       <property name="style" type="uint" value="0"/>
+    </property>
+    <property name="plugin-8" type="string" value="launcher">
+      <property name="items" type="array">
+        <value type="string" value="17754962851.desktop"/>
+      </property>
     </property>
   </property>
 </channel>
