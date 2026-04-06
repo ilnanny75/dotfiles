@@ -51,7 +51,6 @@ info()   { echo -e "${C}  [INF] $*${RESET}"; }
 warn()   { echo -e "${G}  [WRN] $*${RESET}"; }
 err()    { echo -e "${R}  [ERR] $*${RESET}"; }
 step()   { echo -e "\n${B}${C}  ▶  $*${RESET}\n"; }
-sep()    { echo -e "${DIM}${C}  ─────────────────────────────────────────${RESET}"; }
 
 confirm() {
     echo -en "${G}  [?] $1 [s/N] ${RESET}"
@@ -59,25 +58,83 @@ confirm() {
     [[ "$risposta" =~ ^[sS]$ ]]
 }
 
-# ── Header (Versione Open - No Glitch) ──────────────────────────────
+# ── Header con cornice doppia allineata ──────────────────────────────
+# Nota: printf con \e non funziona; i codici ANSI non hanno larghezza
+# visibile, quindi la cornice viene calcolata sul testo puro.
 header() {
     clear
-    local FOLDER=$(basename "$DOTFILES")
-    echo -e "${C}───────────────────────────────────────────────────${RESET}"
-    echo -e "${B}    ilnanny LAB MANAGER - MASTER 2026${RESET}"
-    echo -e "${DIM}    OS: ${OS_ID^^}${RESET}"
-    echo -e "${DIM}    DOTFILES: ${FOLDER}${RESET}"
-    echo -e "${C}───────────────────────────────────────────────────${RESET}"
+    local FOLDER
+    FOLDER=$(basename "$DOTFILES")
+
+    # Larghezza interna fissa (caratteri visibili tra i bordi)
+    local W=49
+
+    # Righe della cornice con caratteri box-drawing doppi
+    local TOP="╔$(printf '═%.0s' $(seq 1 $W))╗"
+    local MID="╠$(printf '═%.0s' $(seq 1 $W))╣"
+    local BOT="╚$(printf '═%.0s' $(seq 1 $W))╝"
+
+    # Stampa una riga con bordi laterali, testo centrato/allineato a sx
+    # $1 = testo visibile, $2 = colore opzionale
+    _riga() {
+        local testo="$1" colore="${2:-}"
+        local pad=$(( W - ${#testo} - 1 ))
+        printf "${C}║${RESET} ${colore}%-*s${RESET}${C}║${RESET}\n" "$((W-1))" "$testo"
+    }
+
+    echo -e "${C}${TOP}${RESET}"
+    _riga ""
+    _riga "  ilnanny LAB MANAGER - MASTER 2026" "${B}"
+    _riga ""
+    echo -e "${C}${MID}${RESET}"
+    _riga "  OS      : ${OS_ID^^}"
+    _riga "  DOTFILES: ${FOLDER}"
+    _riga ""
+    echo -e "${C}${BOT}${RESET}"
     echo ""
+}
+
+# ── Installazione dust su Debian via rustup + cargo ─────────────────
+# I repo Debian hanno rust/cargo datati; rustup installa la versione
+# stabile corrente e mette cargo in ~/.cargo/bin (nel PATH dopo reload).
+_installa_dust_debian() {
+    step "Installazione dust (Debian: rustup → cargo)"
+
+    # Dipendenze build minime per rustup e du-dust
+    sudo apt-get install -y curl build-essential pkg-config libssl-dev 2>/dev/null
+
+    if ! command -v cargo &>/dev/null; then
+        info "cargo non trovato — installo rustup..."
+        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \
+            | sh -s -- -y --no-modify-path
+        # Carica l'ambiente rust nella sessione corrente
+        # shellcheck source=/dev/null
+        source "$HOME/.cargo/env" 2>/dev/null || \
+            export PATH="$HOME/.cargo/bin:$PATH"
+        ok "rustup installato"
+    else
+        info "cargo già presente: $(cargo --version)"
+    fi
+
+    if command -v cargo &>/dev/null; then
+        info "Compilazione du-dust (può richiedere qualche minuto)..."
+        cargo install du-dust 2>/dev/null && ok "dust installato" \
+            || err "Errore durante la compilazione di du-dust"
+    else
+        err "cargo non disponibile, impossibile installare dust"
+    fi
 }
 
 # ── Installazione Dipendenze ────────────────────────────────────────
 install_deps() {
     step "Verifica software di sistema"
     declare -A PKGS
-    PKGS[void]="curl wget github-cli xdg-user-dirs git"
-    PKGS[arch]="curl wget github-cli xdg-user-dirs git"
-    PKGS[debian]="curl wget gh xdg-user-dirs git"
+
+    # dust: su Arch/Void è nel repo come 'dust'; su Debian non c'è,
+    # viene installato via cargo se disponibile oppure saltato.
+    PKGS[void]="curl wget github-cli xdg-user-dirs git tree dust"
+    PKGS[arch]="curl wget github-cli xdg-user-dirs git tree dust"
+    PKGS[debian]="curl wget gh xdg-user-dirs git tree"
     PKGS[mx]="${PKGS[debian]}"
 
     local pkg_list="${PKGS[$OS_ID]}"
@@ -85,16 +142,21 @@ install_deps() {
 
     local da_installare=()
     for pkg in $pkg_list; do
-        local cmd="$pkg"; [[ "$pkg" == "github-cli" ]] && cmd="gh"
+        local cmd="$pkg"
+        [[ "$pkg" == "github-cli" ]] && cmd="gh"
         command -v "$cmd" &>/dev/null || da_installare+=("$pkg")
     done
 
     if [[ ${#da_installare[@]} -gt 0 ]]; then
-        if confirm "Installare componenti mancanti?"; then
+        if confirm "Installare componenti mancanti? (${da_installare[*]})"; then
             case "$OS_ID" in
                 void)      sudo xbps-install -Sy "${da_installare[@]}" ;;
                 arch)      sudo pacman -Sy --needed --noconfirm "${da_installare[@]}" ;;
-                debian|mx) sudo apt-get update && sudo apt-get install -y "${da_installare[@]}" ;;
+                debian|mx) sudo apt-get update && sudo apt-get install -y "${da_installare[@]}"
+                           # dust non è nei repo Debian: installa via cargo (rustup)
+                           if ! command -v dust &>/dev/null; then
+                               _installa_dust_debian
+                           fi ;;
             esac
         fi
     else
@@ -106,8 +168,8 @@ install_deps() {
 safe_link() {
     local src="$1" dst="$2"
     [[ ! -e "$src" ]] && return
-    
-    if [ -L "$dst" ]; then 
+
+    if [ -L "$dst" ]; then
         rm "$dst"
     elif [ -e "$dst" ]; then
         mv "$dst" "${dst}.bak_$(date +%H%M%S)"
@@ -140,6 +202,33 @@ deploy_config() {
     done
 }
 
+# ── Deploy NerdFonts ────────────────────────────────────────────────
+# Crea symlink di dotfiles/NerdFonts/ in ~/.local/share/fonts/
+# e aggiorna la cache font di sistema.
+deploy_fonts() {
+    step "Deploy NerdFonts → ~/.local/share/fonts"
+    local src="$DOTFILES/NerdFonts"
+    local dst="$HOME/.local/share/fonts"
+
+    if [[ ! -d "$src" ]]; then
+        warn "Cartella NerdFonts non trovata in: $src"
+        return
+    fi
+
+    mkdir -p "$dst"
+
+    # Symlink della cartella NerdFonts intera (mantiene struttura interna)
+    safe_link "$src" "$dst/NerdFonts"
+
+    # Aggiorna cache font
+    if command -v fc-cache &>/dev/null; then
+        fc-cache -fv "$dst" &>/dev/null
+        ok "Cache font aggiornata"
+    else
+        warn "fc-cache non trovato, cache font non aggiornata"
+    fi
+}
+
 # ── Pulizia Cache ───────────────────────────────────────────────────
 clean_cache() {
     step "Pulizia cache XFCE"
@@ -148,52 +237,72 @@ clean_cache() {
     ok "Cache pulita correttamente"
 }
 
-# ── Reload Ambiente ─────────────────────────────────────────────────
+# ── Reload Ambiente XFCE ─────────────────────────────────────────────
+# Nota sul problema del menu desktop freezato:
+# Il bug era un race condition: xfwm4 --replace veniva lanciato prima
+# che il vecchio processo terminasse, lasciando xfdesktop in uno stato
+# inconsistente (menu tasto destro bloccato). 
+# Fix: kill esplicito + attesa + riavvio ordinato dei componenti.
 reload_xfce() {
     step "Ricarica ambiente XFCE"
-    
+
+    # 1. xfwm4 — kill esplicito poi riavvio (evita race con --replace)
+    if command -v xfwm4 &>/dev/null; then
+        pkill -x xfwm4 2>/dev/null
+        sleep 1
+        xfwm4 --daemon 2>/dev/null &
+        sleep 1
+        ok "xfwm4 riavviato"
+    fi
+
+    # 2. xfsettingsd — gestisce temi, font, input
+    if command -v xfsettingsd &>/dev/null; then
+        pkill -x xfsettingsd 2>/dev/null
+        sleep 0.5
+        xfsettingsd --daemon 2>/dev/null &
+        sleep 0.5
+        ok "xfsettingsd riavviato"
+    fi
+
+    # 3. xfdesktop — riavviato DOPO xfwm4 per evitare il freeze del menu
+    if command -v xfdesktop &>/dev/null; then
+        pkill -x xfdesktop 2>/dev/null
+        sleep 1
+        xfdesktop --daemon 2>/dev/null &
+        sleep 0.5
+        ok "xfdesktop riavviato"
+    fi
+
+    # 4. Pannello — per ultimo, dipende da wm e desktop pronti
     if command -v xfce4-panel &>/dev/null; then
         xfce4-panel --restart 2>/dev/null
         ok "Pannello riavviato"
     fi
-
-    if command -v xfwm4 &>/dev/null; then
-        # Uso di --replace per Debian/XFCE stabilità
-        xfwm4 --replace --daemon 2>/dev/null &
-        sleep 1
-        ok "xfwm4 ricaricato"
-    fi
-
-    local comps=(xfsettingsd xfdesktop)
-    for c in "${comps[@]}"; do
-        if command -v "$c" &>/dev/null; then
-            pkill -x "$c" 2>/dev/null
-            sleep 0.3
-            "$c" --daemon 2>/dev/null
-            ok "$c riavviato"
-        fi
-    done
 }
 
-# ── Menu ────────────────────────────────────────────────────────────
+# ── Menu ─────────────────────────────────────────────────────────────
 while true; do
     header
-    echo -e "  ${V}1)${RESET}  SETUP TOTALE"
-    echo -e "  ${V}2)${RESET}  SOLO CONFIG"
-    echo -e "  ${V}3)${RESET}  GIT PUSH"
-    echo -e "  ${V}4)${RESET}  RELOAD XFCE"
-    echo -e ""
-    echo -e "  ${R}0)${RESET}  ESCI"
+
+    echo -e "${C}╔$(printf '═%.0s' $(seq 1 49))╗${RESET}"
+    printf "${C}║${RESET}  ${V}1)${RESET}  %-43s${C}║${RESET}\n" "SETUP TOTALE"
+    printf "${C}║${RESET}  ${V}2)${RESET}  %-43s${C}║${RESET}\n" "SOLO CONFIG"
+    printf "${C}║${RESET}  ${V}3)${RESET}  %-43s${C}║${RESET}\n" "GIT PUSH"
+    printf "${C}║${RESET}  ${V}4)${RESET}  %-43s${C}║${RESET}\n" "RELOAD XFCE"
+    printf "${C}║${RESET}  ${V}5)${RESET}  %-43s${C}║${RESET}\n" "DEPLOY FONTS"
+    printf "${C}║${RESET}  %-47s${C}║${RESET}\n" ""
+    printf "${C}║${RESET}  ${R}0)${RESET}  %-43s${C}║${RESET}\n" "ESCI"
+    echo -e "${C}╚$(printf '═%.0s' $(seq 1 49))╝${RESET}"
     echo ""
-    sep
     echo -en "  ${B}${C}Scegli operazione: ${RESET}"
     read -r scelta
 
     case $scelta in
-        1) install_deps; deploy_bashrc; deploy_bin; deploy_config; clean_cache; sleep 1; reload_xfce; echo -e "\nPremi INVIO..."; read ;;
-        2) deploy_bashrc; deploy_bin; deploy_config; clean_cache; sleep 1; reload_xfce; echo -e "\nPremi INVIO..."; read ;;
+        1) install_deps; deploy_bashrc; deploy_bin; deploy_config; deploy_fonts; clean_cache; sleep 1; reload_xfce; echo -e "\nPremi INVIO..."; read ;;
+        2) deploy_bashrc; deploy_bin; deploy_config; deploy_fonts; clean_cache; sleep 1; reload_xfce; echo -e "\nPremi INVIO..."; read ;;
         3) cd "$DOTFILES" && git status && confirm "Eseguire Push?" && git add -A && git commit -m "update $(date)" && git push; read ;;
         4) clean_cache; reload_xfce; sleep 2 ;;
+        5) deploy_fonts; echo -e "\nPremi INVIO..."; read ;;
         0) clear; exit 0 ;;
         *) warn "Scelta non valida." ; sleep 1 ;;
     esac

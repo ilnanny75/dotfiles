@@ -5,7 +5,7 @@
   <property name="background-darkness" type="double" value="0.95999999999999996"/>
   <property name="dropdown-status-icon" type="bool" value="false"/>
   <property name="dropdown-width" type="uint" value="80"/>
-  <property name="font-name" type="string" value="FiraCode Nerd Font weight=450 14"/>
+  <property name="font-name" type="string" value="FiraCode Nerd Font Medium 15"/>
   <property name="misc-always-show-tabs" type="bool" value="false"/>
   <property name="misc-bell" type="bool" value="false"/>
   <property name="misc-borders-default" type="bool" value="true"/>
