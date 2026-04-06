@@ -8,7 +8,7 @@
 # GitHub: https://github.com/ilnanny75
 # ═══════════════════════════════════════════════════════════════════
 
-# --- 📂 Navigazione e Struttura --------------------------
+# ---  Navigazione e Struttura --------------------------
 alias blkid='lsblk -o NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL,MODEL'
 alias ls='ls --group-directories-first --color=auto'               # Directory per prime
 alias l='ls -la'                                                   # Lista completa
@@ -18,11 +18,12 @@ alias treed='tree -h --du -a -C -I "*.png|*.jpg|*.pdf|*.svg|.git"' # Albero puli
 alias ds='dust'                                                    # Analisi spazio con Dust
 alias ds8='dust -d 1'                                              # Dust limitato al primo livello
 
-# ---  Lab 2026 e Percorsi ------------------------------
+# ---   Percorsi ------------------------------
 alias dots='cd ~/dotfiles'                               # Cartella Repo
 alias gbin='cd ~/dotfiles/scripts/bin'                   # Cartella Bin
 alias cdd='cd ~/dotfiles/bash/etc_bash/bashrc.d/'        # Moduli Shell
 alias lscripts='ls ~/dotfiles/scripts/bin/'              # Legge tutti gli scripts 
+alias godot='thunar ~/dotfiles &'                         # Apre dotfiles con thunar
 
 # ---  Git & GitHub  ------------------------------------
 alias pigia='~/dotfiles/scripts/bin/ilnanny-git-manager.sh'    # Aggiorna repo su Github
