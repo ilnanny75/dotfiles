@@ -113,7 +113,6 @@
         <value type="string" value="xfce4-file-manager.desktop"/>
         <value type="string" value="xfce4-terminal-emulator.desktop"/>
         <value type="string" value="xfce4-screenshooter.desktop"/>
-        <value type="string" value="com.uploadedlobster.peek.desktop"/>
       </property>
     </property>
     <property name="plugin-3" type="string" value="pulseaudio">
@@ -123,6 +122,7 @@
     <property name="plugin-6" type="string" value="power-manager-plugin"/>
     <property name="plugin-7" type="string" value="systray">
       <property name="known-legacy-items" type="array">
+        <value type="string" value="connessione wi-fi «tim-47375923» attiva: tim-47375923 (56%)"/>
         <value type="string" value="geany"/>
         <value type="string" value="polkit-mate-authentication-agent-1"/>
         <value type="string" value="connessione wi-fi «tim-47375923» attiva: tim-47375923 (80%)"/>
