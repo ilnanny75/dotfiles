@@ -61,37 +61,13 @@ confirm() {
 header() {
     clear
     echo -e "${C}═════════════════════════════════════════════════════${RESET}"
-    echo -e "${B}${V}    󰊠  ILNANNY OS-MANAGER v2.0 - [${C}Cyber-Lab${V}]${RESET}"
+    echo -e "${B}${V}    󰊠  ILNANNY OS-MANAGER v2.1 - [${C}${OS_ID^^}${V}]${RESET}"
     echo -e "${C}═════════════════════════════════════════════════════${RESET}"
-}
-
-# ── Installazione dust su Debian via rustup + cargo ─────────────────
-_installa_dust_debian() {
-    step "Installazione dust (Debian: rustup → cargo)"
-    sudo apt-get install -y curl build-essential pkg-config libssl-dev 2>/dev/null
-    if ! command -v cargo &>/dev/null; then
-        info "cargo non trovato — installo rustup..."
-        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \
-            | sh -s -- -y --no-modify-path
-        # shellcheck source=/dev/null
-        source "$HOME/.cargo/env" 2>/dev/null || \
-            export PATH="$HOME/.cargo/bin:$PATH"
-        ok "rustup installato"
-    else
-        info "cargo già presente: $(cargo --version)"
-    fi
-    if command -v cargo &>/dev/null; then
-        info "Compilazione du-dust (può richiedere qualche minuto)..."
-        cargo install du-dust 2>/dev/null && ok "dust installato" \
-            || err "Errore durante la compilazione di du-dust"
-    else
-        err "cargo non disponibile, impossibile installare dust"
-    fi
 }
 
 # ── Installazione Dipendenze ────────────────────────────────────────
 install_deps() {
-    step "Verifica software di sistema"
+    step "Verifica software di sistema su $OS_ID"
     declare -A PKGS
     PKGS[void]="curl wget github-cli xdg-user-dirs git tree dust"
     PKGS[arch]="curl wget github-cli xdg-user-dirs git tree dust"
@@ -113,10 +89,7 @@ install_deps() {
             case "$OS_ID" in
                 void)      sudo xbps-install -Sy "${da_installare[@]}" ;;
                 arch)      sudo pacman -Sy --needed --noconfirm "${da_installare[@]}" ;;
-                debian|mx) sudo apt-get update && sudo apt-get install -y "${da_installare[@]}"
-                           if ! command -v dust &>/dev/null; then
-                               _installa_dust_debian
-                           fi ;;
+                debian|mx) sudo apt-get update && sudo apt-get install -y "${da_installare[@]}" ;;
             esac
         fi
     else
@@ -155,134 +128,67 @@ deploy_bin() {
 }
 
 deploy_config() {
-    step "Deploy ~/.config (Link Diretti)"
+    step "Deploy ~/.config"
     mkdir -p "$HOME/.config"
-    
     for src in "$DOTFILES/config"/*; do
         target="$HOME/.config/$(basename "$src")"
-        if [ -L "$target" ]; then
-            rm "$target"
-        fi
         safe_link "$src" "$target"
     done
 }
 
 deploy_fonts() {
-    step "Deploy NerdFonts → ~/.local/share/fonts"
+    step "Deploy NerdFonts"
     local src="$DOTFILES/NerdFonts"
     local dst="$HOME/.local/share/fonts"
-    if [[ ! -d "$src" ]]; then
-        warn "Cartella NerdFonts non trovata in: $src"
-        return
-    fi
+    [[ ! -d "$src" ]] && { warn "Cartella NerdFonts non trovata"; return; }
     mkdir -p "$dst"
     safe_link "$src" "$dst/NerdFonts"
-    if command -v fc-cache &>/dev/null; then
-        fc-cache -fv "$dst" &>/dev/null
-        ok "Cache font aggiornata"
-    else
-        warn "fc-cache non trovato, cache font non aggiornata"
-    fi
+    command -v fc-cache &>/dev/null && fc-cache -fv "$dst" &>/dev/null
 }
 
-# ── NUOVA FUNZIONE: Gestione Wallpaper di Sistema ──────────────────
+# ── Gestione Wallpaper ──────────────────────────────────────────────
 deploy_wallpapers() {
     step "Deploy Wallpapers → /usr/share/wallpapers"
     local src="$DOTFILES/graphics/wallpapers"
     local dst="/usr/share/wallpapers"
+    [[ ! -d "$src" ]] && { warn "Wallpapers non trovati in $src"; return; }
 
-    if [[ ! -d "$src" ]]; then
-        warn "Cartella wallpapers non trovata in: $src"
-        return
-    fi
-
-    info "Richiesta permessi root per copiare i wallpaper in /usr/share"
-    
+    info "Richiesta sudo per sincronizzare /usr/share"
     if [[ -d "$dst" && ! -L "$dst" ]]; then
-        info "Rinomino cartella esistente in .bak"
         sudo mv "$dst" "${dst}.bak_$(date +%H%M%S)"
     elif [[ -L "$dst" ]]; then
         sudo rm "$dst"
     fi
-
-    sudo cp -r "$src" "$dst" && ok "Wallpapers copiati con successo in $dst"
+    sudo cp -r "$src" "$dst" && ok "Wallpapers copiati."
 }
 
+# ── Utility e Ricarica ──────────────────────────────────────────────
 clean_cache() {
-    step "Pulizia cache XFCE"
+    step "Pulizia cache"
     rm -rf ~/.cache/sessions/*
     rm -rf ~/.cache/xfce4/*
-    ok "Cache pulita correttamente"
+    ok "Cache pulita."
 }
 
 reload_xfce() {
-    step "Ricarica ambiente XFCE"
-
-    if command -v xfwm4 &>/dev/null; then
-        pkill -x xfwm4 2>/dev/null
-        sleep 1
-        xfwm4 --daemon 2>/dev/null &
-        sleep 1
-        ok "xfwm4 riavviato"
-    fi
-
-    if command -v xfsettingsd &>/dev/null; then
-        pkill -x xfsettingsd 2>/dev/null
-        sleep 0.5
-        xfsettingsd --daemon 2>/dev/null &
-        sleep 0.5
-        ok "xfsettingsd riavviato"
-    fi
-
-    if command -v xfdesktop &>/dev/null; then
-        pkill -x xfdesktop 2>/dev/null
-        sleep 1
-        xfdesktop --daemon 2>/dev/null &
-        sleep 0.5
-        ok "xfdesktop riavviato"
-    fi
-
-    if command -v xfce4-panel &>/dev/null; then
-        xfce4-panel --restart 2>/dev/null
-        ok "Pannello riavviato"
-    fi
+    step "Ricarica XFCE"
+    pkill -x xfwm4; sleep 1; xfwm4 & 
+    pkill -x xfsettingsd; sleep 0.5; xfsettingsd --daemon &
+    pkill -x xfdesktop; sleep 1; xfdesktop --daemon &
+    command -v xfce4-panel &>/dev/null && xfce4-panel --restart
+    ok "Ambiente ricaricato."
 }
 
 _leggi_guide() {
     local doc_dir="${DOTFILES}/docs/emergency_guides"
-    if [[ ! -d "$doc_dir" ]]; then
-        err "La cartella delle guide non esiste: $doc_dir"
-        read -rp "Premi INVIO..."; return
-    fi
+    [[ ! -d "$doc_dir" ]] && { err "Guide non trovate"; return; }
     cd "$doc_dir" || return
     local files=(*.md)
-    if [[ ${#files[@]} -eq 0 ]]; then
-        warn "Nessuna guida .md trovata."
-        read -rp "Premi INVIO..."; cd - >/dev/null; return
-    fi
-    echo -e "${C}󰋖 SELEZIONA UNA GUIDA:${RESET}"
+    echo -e "${C}󰋖 SELEZIONA GUIDA:${RESET}"
     select g in "${files[@]}"; do
-        if [[ -n "$g" ]]; then
-            command -v glow >/dev/null 2>&1 && glow -p "$g" || less "$g"
-            break
-        else
-            warn "Scelta non valida."; break
-        fi
+        [[ -n "$g" ]] && { command -v glow >/dev/null 2>&1 && glow -p "$g" || less "$g"; break; }
     done
     cd - >/dev/null
-}
-
-_build_iso() {
-    local iso_dir="/media/ilnanny/dati-linux/Dev/ilnanny-os-repair"
-    if [[ ! -d "$iso_dir" ]]; then
-        err "Cartella build non trovata in: $iso_dir"
-        read -rp "Premi INVIO..."; return
-    fi
-    info "Avvio creazione ISO... Le ventole potrebbero decollare! ✈️"
-    cd "$iso_dir" || return
-    sudo lb clean && sudo lb build 2>&1 | tee build_log.txt
-    ok "Operazione completata! Controlla il file .iso"
-    read -rp "Premi INVIO per tornare al menu..."
 }
 
 # ── Menu Master ─────────────────────────────────────────────────────
@@ -296,8 +202,6 @@ while true; do
     printf "${C}║${RESET}  ${V}5)${RESET}  󱓞 %-41s${C}║${RESET}\n" "DEPLOY NERD FONTS"
     printf "${C}║${RESET}  %-47s${C}║${RESET}\n" ""
     printf "${C}║${RESET}  ${G}6)${RESET}  󰋖 %-41s${C}║${RESET}\n" "LEGGI GUIDE EMERGENZA"
-    printf "${C}║${RESET}  ${G}7)${RESET}  󰒋 %-41s${C}║${RESET}\n" "BUILD ISO RIPARAZIONE"
-    printf "${C}║${RESET}  %-47s${C}║${RESET}\n" ""
     printf "${C}║${RESET}  ${R}0)${RESET}  󰈆 %-41s${C}║${RESET}\n" "ESCI"
     echo -e "${C}╚$(printf '═%.0s' $(seq 1 49))╝${RESET}"
     echo ""
@@ -305,13 +209,12 @@ while true; do
     read -r scelta
 
     case $scelta in
-        1) install_deps; deploy_bashrc; deploy_bin; deploy_config; deploy_fonts; deploy_wallpapers; clean_cache; sleep 1; reload_xfce; echo -e "\nPremi INVIO..."; read -r ;;
-        2) deploy_bashrc; deploy_bin; deploy_config; deploy_fonts; deploy_wallpapers; clean_cache; sleep 1; reload_xfce; echo -e "\nPremi INVIO..."; read -r ;;
-        3) cd "$DOTFILES" && git status && confirm "Eseguire Push?" && git add -A && git commit -m "update $(date)" && git push; read -rp "Fatto. Premi INVIO..." ;;
+        1) install_deps; deploy_bashrc; deploy_bin; deploy_config; deploy_fonts; deploy_wallpapers; clean_cache; reload_xfce; echo -e "\nPremi INVIO..."; read -r ;;
+        2) deploy_bashrc; deploy_bin; deploy_config; deploy_fonts; deploy_wallpapers; clean_cache; reload_xfce; echo -e "\nPremi INVIO..."; read -r ;;
+        3) cd "$DOTFILES" && git add -A && git commit -m "update $(date)" && git push; read -rp "Premi INVIO..." ;;
         4) clean_cache; reload_xfce; sleep 2 ;;
-        5) deploy_fonts; echo -e "\nPremi INVIO..."; read -r ;;
+        5) deploy_fonts; read -r ;;
         6) _leggi_guide ;;
-        7) _build_iso ;;
         0) clear; exit 0 ;;
         *) warn "Scelta non valida."; sleep 1 ;;
     esac
