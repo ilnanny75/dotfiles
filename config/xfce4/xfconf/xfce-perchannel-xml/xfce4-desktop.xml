@@ -31,7 +31,7 @@
       </property>
       <property name="monitoreDP-1" type="empty">
         <property name="workspace0" type="empty">
-          <property name="last-image" type="string" value="/usr/share/wallpapers/xfce4-wall.png"/>
+          <property name="last-image" type="string" value="/usr/share/wallpapers/nokto-eta.png"/>
           <property name="image-style" type="int" value="4"/>
           <property name="color-style" type="int" value="3"/>
         </property>
