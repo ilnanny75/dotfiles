@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=Xfce Settings Daemon
+Exec=xfsettingsd
+OnlyShowIn=XFCE;
+RunHook=0

@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=Xfce Panel
+Exec=xfce4-panel
+OnlyShowIn=XFCE;
+RunHook=0

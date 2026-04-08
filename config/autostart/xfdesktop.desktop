@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=Xfce Desktop
+Exec=xfdesktop
+OnlyShowIn=XFCE;
+RunHook=0
