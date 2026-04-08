@@ -32,4 +32,4 @@ cd ~/dotfiles && chmod +x ilnanny-OS-manager.sh && ./ilnanny-OS-manager.sh
 </ul>
 
 <hr>
-<i>main</i>.</p>
+---
