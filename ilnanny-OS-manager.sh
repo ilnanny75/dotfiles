@@ -171,12 +171,29 @@ clean_cache() {
 }
 
 reload_xfce() {
-    step "Ricarica XFCE"
-    pkill -x xfwm4; sleep 1; xfwm4 & 
-    pkill -x xfsettingsd; sleep 0.5; xfsettingsd --daemon &
-    pkill -x xfdesktop; sleep 1; xfdesktop --daemon &
-    command -v xfce4-panel &>/dev/null && xfce4-panel --restart
-    ok "Ambiente ricaricato."
+    step "Ricarica XFCE (Modalità Safe)"
+    
+    # Riavvio Window Manager
+    pkill -x xfwm4
+    sleep 1
+    nohup xfwm4 >/dev/null 2>&1 & disown
+    
+    # Riavvio Demone Impostazioni
+    pkill -x xfsettingsd
+    sleep 0.5
+    nohup xfsettingsd >/dev/null 2>&1 & disown
+    
+    # Riavvio Desktop (Sfondo e icone)
+    pkill -x xfdesktop
+    sleep 1
+    nohup xfdesktop >/dev/null 2>&1 & disown
+    
+    # Riavvio Pannello
+    if command -v xfce4-panel &>/dev/null; then
+        xfce4-panel --restart >/dev/null 2>&1 & disown
+    fi
+    
+    ok "Ambiente ricaricato. Ora puoi chiudere il terminale senza freeze."
 }
 
 _leggi_guide() {
