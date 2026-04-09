@@ -3,18 +3,18 @@
 <channel name="xfce4-terminal" version="1.0">
   <property name="background-mode" type="string" value="TERMINAL_BACKGROUND_TRANSPARENT"/>
   <property name="background-darkness" type="double" value="0.94999999999999996"/>
-  <property name="color-foreground" type="string" value="#c804cccccb10"/>
-  <property name="color-background" type="string" value="#3d3d44445555"/>
-  <property name="color-cursor" type="string" value="#dcdcdc"/>
-  <property name="color-selection" type="string" value="#A6B0B3"/>
-  <property name="color-selection-background" type="string" value="#252D31"/>
-  <property name="color-selection-use-default" type="bool" value="false"/>
-  <property name="color-palette" type="string" value="rgb(50,56,70);rgb(155,86,86);rgb(119,158,138);rgb(223,175,143);rgb(154,184,215);rgb(220,140,195);rgb(140,208,211);rgb(185,191,196);rgb(112,144,128);rgb(220,163,163);rgb(119,158,138);rgb(240,223,175);rgb(148,191,243);rgb(236,147,211);rgb(147,224,227);rgb(185,191,196)"/>
+  <property name="color-foreground" type="string" value="#bb1abb1cbbbb"/>
+  <property name="color-background" type="string" value="#2d3f3c0445f8"/>
+  <property name="color-cursor" type="string" value="#93a1a1"/>
+  <property name="color-selection" type="string" value=""/>
+  <property name="color-selection-background" type="string" value=""/>
+  <property name="color-selection-use-default" type="bool" value="true"/>
+  <property name="color-palette" type="string" value="#073642;#dc322f;#859900;#b58900;#268bd2;#d33682;#2aa198;#eee8d5;#002b36;#cb4b16;#586e75;#657b83;#839496;#6c71c4;#93a1a1;#fdf6e3"/>
   <property name="command-login-shell" type="bool" value="true"/>
   <property name="dropdown-keep-above" type="bool" value="false"/>
   <property name="dropdown-width" type="uint" value="45"/>
   <property name="dropdown-opacity" type="uint" value="91"/>
-  <property name="font-name" type="string" value="GohuFont uni14 Nerd Font Mono Bold 15"/>
+  <property name="font-name" type="string" value="FiraCode Nerd Font Mono weight=450 16"/>
   <property name="misc-always-show-tabs" type="bool" value="false"/>
   <property name="misc-bell" type="bool" value="false"/>
   <property name="misc-bell-urgent" type="bool" value="false"/>
@@ -43,4 +43,12 @@
   <property name="misc-show-unsafe-paste-dialog" type="bool" value="false"/>
   <property name="scrolling-bar" type="string" value="TERMINAL_SCROLLBAR_NONE"/>
   <property name="scrolling-unlimited" type="bool" value="true"/>
+  <property name="color-background-vary" type="bool" value="false"/>
+  <property name="color-cursor-foreground" type="string" value=""/>
+  <property name="color-cursor-use-default" type="bool" value="true"/>
+  <property name="color-bold" type="string" value="#93a1a1"/>
+  <property name="color-bold-use-default" type="bool" value="false"/>
+  <property name="color-bold-is-bright" type="bool" value="true"/>
+  <property name="color-use-theme" type="bool" value="false"/>
+  <property name="tab-activity-color" type="string" value="#dc322f"/>
 </channel>

@@ -23,23 +23,23 @@
   ],
   "A.I.": [
     {
-      "name": "Claude",
-      "url": "https://claude.ai"
+      "name": "Gemini",
+      "url": "https://gemini.google.com"		
     },
     {
       "name": "ChatGPT",
       "url": "https://chatgpt.com"
     },
     {
-      "name": "Gemini",
-      "url": "https://gemini.google.com"
+      "name": "Claude",
+      "url": "https://claude.ai"
     },
     {
       "name": "Perplexity",
       "url": "https://perplexity.ai"
     }
   ],
-  "Social": [
+  "Social / Email": [
     {
       "name": "YouTube",
       "url": "https://youtube.com"

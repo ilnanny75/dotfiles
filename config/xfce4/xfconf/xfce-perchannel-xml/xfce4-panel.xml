@@ -85,11 +85,17 @@
         <value type="string" value="xfce4-screenshooter.desktop"/>
       </property>
       <property name="recent" type="array">
+        <value type="string" value="xfce4-color-settings.desktop"/>
+        <value type="string" value="xfce4-settings-editor.desktop"/>
+        <value type="string" value="code-oss.desktop"/>
         <value type="string" value="vlc.desktop"/>
       </property>
+      <property name="menu-height" type="int" value="543"/>
+      <property name="menu-width" type="int" value="568"/>
     </property>
     <property name="plugin-6" type="string" value="systray">
       <property name="known-legacy-items" type="array">
+        <value type="string" value="connessione wi-fi «tim-47375923» attiva: tim-47375923 (62%)"/>
         <value type="string" value="connessione wi-fi «tim-47375923» attiva: tim-47375923 (57%)"/>
         <value type="string" value="connessione wi-fi «tim-47375923» attiva: tim-47375923 (69%)"/>
         <value type="string" value="connessione wi-fi «tim-47375923» attiva: tim-47375923 (68%)"/>
@@ -111,7 +117,7 @@
     <property name="plugin-7" type="string" value="pulseaudio">
       <property name="enable-keyboard-shortcuts" type="bool" value="true"/>
       <property name="volume-step" type="uint" value="4"/>
-      <property name="known-players" type="string" value="vlc"/>
+      <property name="known-players" type="string" value="Firefox;vlc"/>
     </property>
     <property name="plugin-8" type="string" value="tasklist">
       <property name="sort-order" type="uint" value="4"/>
