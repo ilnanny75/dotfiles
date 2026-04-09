@@ -87,7 +87,6 @@
       <property name="recent" type="array">
         <value type="string" value="xfce4-color-settings.desktop"/>
         <value type="string" value="xfce4-settings-editor.desktop"/>
-        <value type="string" value="code-oss.desktop"/>
         <value type="string" value="vlc.desktop"/>
       </property>
       <property name="menu-height" type="int" value="543"/>
