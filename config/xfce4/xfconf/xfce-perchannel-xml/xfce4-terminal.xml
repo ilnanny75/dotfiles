@@ -14,7 +14,7 @@
   <property name="dropdown-keep-above" type="bool" value="false"/>
   <property name="dropdown-width" type="uint" value="45"/>
   <property name="dropdown-opacity" type="uint" value="91"/>
-  <property name="font-name" type="string" value="FiraCode Nerd Font weight=450 14"/>
+  <property name="font-name" type="string" value="GohuFont uni14 Nerd Font Mono Bold 15"/>
   <property name="misc-always-show-tabs" type="bool" value="false"/>
   <property name="misc-bell" type="bool" value="false"/>
   <property name="misc-bell-urgent" type="bool" value="false"/>

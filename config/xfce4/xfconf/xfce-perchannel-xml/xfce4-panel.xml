@@ -84,9 +84,13 @@
         <value type="string" value="xfce4-terminal-emulator.desktop"/>
         <value type="string" value="xfce4-screenshooter.desktop"/>
       </property>
+      <property name="recent" type="array">
+        <value type="string" value="vlc.desktop"/>
+      </property>
     </property>
     <property name="plugin-6" type="string" value="systray">
       <property name="known-legacy-items" type="array">
+        <value type="string" value="connessione wi-fi «tim-47375923» attiva: tim-47375923 (57%)"/>
         <value type="string" value="connessione wi-fi «tim-47375923» attiva: tim-47375923 (69%)"/>
         <value type="string" value="connessione wi-fi «tim-47375923» attiva: tim-47375923 (68%)"/>
         <value type="string" value="connessione wi-fi «tim-47375923» attiva: tim-47375923 (67%)"/>
@@ -94,6 +98,7 @@
         <value type="string" value="connessione wi-fi «tim-47375923» attiva: tim-47375923 (66%)"/>
       </property>
       <property name="known-items" type="array">
+        <value type="string" value="vlc"/>
         <value type="string" value="blueman"/>
       </property>
       <property name="menu-is-primary" type="bool" value="true"/>
@@ -106,6 +111,7 @@
     <property name="plugin-7" type="string" value="pulseaudio">
       <property name="enable-keyboard-shortcuts" type="bool" value="true"/>
       <property name="volume-step" type="uint" value="4"/>
+      <property name="known-players" type="string" value="vlc"/>
     </property>
     <property name="plugin-8" type="string" value="tasklist">
       <property name="sort-order" type="uint" value="4"/>
