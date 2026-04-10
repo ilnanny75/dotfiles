@@ -36,12 +36,13 @@ alias up='git pull'                                            # Tira giù le mo
 # ---  AI Gemini  ---------------------------------------
 alias gemini='python3 ~/dotfiles/scripts/bin/gemini.py'        # Apre Gemini AI nel Terminale
 
-# ---  Sistema (XFCE4-Terminal) -------------------------
+# ---  Sistema   ----------------------------------------
 alias gy='geany'                                         # Apri Geany
 alias htop='xfce4-terminal -e htop'                      # Htop in Terminale
 alias bashome='geany ~/.bashrc'                          # Modifica bashrc
 alias fstab='sudo geany /etc/fstab'                      # Edit dischi
 alias meteo='curl wttr.in/Taranto'                       # Meteo locale
+alias software='bash ~/dotfiles/scripts/bin/ilnanny-postinstall.sh' # Apre il gestore di pacchetti
 
 # ---  Multimedia e conversioni -------------------------
 alias 300dpi='for i in *; do inkscape -d=300 -C --export-filename="${i%.*}.png" "$i"; done'

@@ -8,10 +8,11 @@
         <property name="color1" type="empty"/>
         <property name="color2" type="empty"/>
         <property name="color-style" type="empty"/>
-        <property name="image-path" type="empty"/>
-        <property name="image-show" type="empty"/>
+        <property name="image-path" type="string" value="/media/ilnanny/dati-linux/dotfiles/graphics/wallpapers/xfcce4-fhd.png"/>
+        <property name="image-show" type="bool" value="true"/>
         <property name="last-image" type="empty"/>
         <property name="last-single-image" type="empty"/>
+        <property name="image-style" type="int" value="5"/>
       </property>
       <property name="monitor1" type="empty">
         <property name="brightness" type="empty"/>
@@ -25,7 +26,7 @@
       </property>
       <property name="monitoreDP1" type="empty">
         <property name="workspace0" type="empty">
-          <property name="last-image" type="string" value="/usr/share/wallpapers/1920x1080-xfce4.png"/>
+          <property name="last-image" type="string" value="/media/ilnanny/dati-linux/dotfiles/graphics/wallpapers/xfcce4-fhd.png"/>
           <property name="image-style" type="int" value="4"/>
         </property>
       </property>
