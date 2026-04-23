@@ -29,17 +29,6 @@ alias software='ilnanny-postinstall.sh'
 alias meteo='curl wttr.in/Taranto'
 alias install-grub-sda='sudo grub-install /dev/sda'
 
-# Grub globale
-update_grub_custom() {
-    if [ -f /boot/efi/EFI/fedora/grub.cfg ]; then
-        sudo grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg
-    elif [ -f /boot/grub2/grub.cfg ]; then
-        sudo grub2-mkconfig -o /boot/grub2/grub.cfg
-    else
-        sudo grub-mkconfig -o /boot/grub/grub.cfg
-    fi
-}
-alias update-grub-all='update_grub_custom'
 
 ii() { # Visualizza riepilogo rapido del sistema
     echo -e "\nSei su: \e[1;31m$HOSTNAME\e[m"

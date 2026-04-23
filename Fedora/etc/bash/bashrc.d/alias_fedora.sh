@@ -17,3 +17,5 @@ alias info='dnf info'                                    # Info sul pacchetto
 # Pulizia sistema Cache, Temp e Cestino
 alias clean='sudo dnf clean all && rm -rf /tmp/* && rm -rf ~/.local/share/Trash/*'
 
+# --- Gestione GRUB (Fedora) ---
+alias update-grub-all='sudo grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg'

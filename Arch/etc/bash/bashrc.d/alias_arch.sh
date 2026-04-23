@@ -34,3 +34,6 @@ alias unlock='sudo rm /var/lib/pacman/db.lck'
 alias ynstall='yay -S'                       # Installa le chicche da AUR
 alias ysearch='yay -Ss'                      # Cerca nel mondo AUR
 alias yremove='yay -Rs'                      # Rimuove pacchetti AUR
+
+# --- Gestione GRUB (Arch) ---
+alias update-grub-all='sudo grub-mkconfig -o /boot/grub/grub.cfg'

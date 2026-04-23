@@ -29,3 +29,5 @@ alias pkg-check="sudo xbps-pkgdb -a"
 alias lock="sudo xbps-pkgdb -m hold"
 alias unlock="sudo xbps-pkgdb -m unhold"
 
+# --- Gestione GRUB (Void) ---
+alias update-grub-all='sudo grub-mkconfig -o /boot/grub/grub.cfg'

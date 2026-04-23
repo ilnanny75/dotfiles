@@ -31,3 +31,6 @@ alias manager='~/dotfiles/ilnanny-OS-manager.sh' #
 # --- 📔 Utility e Visualizzazione ------------------------
 alias vedi='ls -sh --color=auto -I "*.png" -I "*.jpg" -I "*.pdf"' # Guarda i file senza il "rumore" dei binari 
 alias treed='tree -h --du -a -C -I "*.png|*.jpg|*.pdf"'  # Albero delle cartelle pulito e veloce
+
+# --- Gestione GRUB (Debian) ---
+alias update-grub-all='sudo grub-mkconfig -o /boot/grub/grub.cfg'
