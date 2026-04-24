@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # ═══════════════════════════════════════════════════════════════════
-# Nota: Manager semplificato per il push dei dotfiles. 
-# Automatizza l'aggiunta di file e l'invio al repository GitHub.
+# Nota: Automatizza l'aggiunta di file e l'invio al repository Git.
 #
 # Autore: ilnanny 2026
 # Mail: ilnannyhack@gmail.com
