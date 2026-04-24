@@ -3,7 +3,7 @@
 ## 1. Ripristino GRUB (Bootloader)
 Comandi rapidi per reinstallare il bootloader in base alla distro:
 
-- **Debian/Ubuntu**: sudo dpkg-reconfigure grub-efi-amd64
+- **Debian**: sudo dpkg-reconfigure grub-efi-amd64
 - **Fedora**: sudo dnf reinstall grub2-efi shim
 - **Arch**: sudo grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
 

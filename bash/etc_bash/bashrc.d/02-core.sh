@@ -28,7 +28,8 @@ alias gemini='python3 gemini.py'
 alias software='ilnanny-postinstall.sh'
 alias meteo='curl wttr.in/Taranto'
 alias install-grub-sda='sudo grub-install /dev/sda'
-
+alias bleachbit='GTK_THEME=Nordic bleachbit'
+alias root-bleachbit='sudo GTK_THEME=Nordic bleachbit'
 
 ii() { # Visualizza riepilogo rapido del sistema
     echo -e "\nSei su: \e[1;31m$HOSTNAME\e[m"
