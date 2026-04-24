@@ -1,32 +1,35 @@
 #!/usr/bin/env bash
-# ═══════════════════════════════════════════════════════════════════
-# Nota: Automatizza l'aggiunta di file e l'invio al repository Git.
+# ═══════════════════════════════════════════════════════════════════════
+# Nota: Automatizza l'invio al repository Git della cartella corrente.
 #
 # Autore: ilnanny 2026
-# Mail: ilnannyhack@gmail.com
-# GitHub: https://github.com/ilnanny75
-# ═══════════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════════════
 
-# Colori per un output leggibile
+# Colori
 V="\e[32m"
 C="\e[36m"
 R="\e[31m"
 RESET="\e[0m"
 
 git_setup() {
-    echo -e "${C}--- AGGIORNAMENTO REPOSITORY ---${RESET}"
+    # 1. Verifica se sei in un repository Git
+    if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
+        echo -e "${R}Errore: Questa cartella non è un repository Git.${RESET}"
+        exit 1
+    fi
 
-    # Entra nella cartella dei dotfiles
-    cd "$HOME/dotfiles" || { echo -e "${R}Errore: Cartella non trovata${RESET}"; exit 1; }
+    # Recupera il nome del repository 
+    REPO_NAME=$(basename "$(git rev-parse --show-toplevel)")
+    echo -e "${C}--- AGGIORNAMENTO REPOSITORY: ${REPO_NAME} ---${RESET}"
 
-    # FIX PERMESSI: Evita che Git segnali ogni file come 'cambiato' a causa di Fedora/SELinux
+    # Mantiene l'impostazione per Fedora/SELinux
     git config core.fileMode false
 
-    # Aggiunge tutto, inclusi i nuovi font e icone
+    # Aggiunge tutto
     git add .
 
     # Chiede il messaggio del commit
-    echo -e "${V}Inserisci il messaggio del commit (es. 'Aggiunti font'):${RESET}"
+    echo -e "${V}Inserisci il messaggio del commit:${RESET}"
     read -r messaggio
 
     if [ -z "$messaggio" ]; then
@@ -35,20 +38,22 @@ git_setup() {
 
     git commit -m "$messaggio"
 
-    echo -e "${C}Invio dei dati a GitHub...${RESET}"
+    # Rileva il ramo corrente in modo dinamico (non solo 'main')
+    CURRENT_BRANCH=$(git branch --show-current)
+
+    echo -e "${C}Invio dei dati a GitHub sul ramo ${CURRENT_BRANCH}...${RESET}"
     
-    # Prova il push standard. Se fallisce per mancanza di upstream, lo imposta.
-    if ! git push 2>/dev/null; then
-        echo -e "${C}Configurazione upstream in corso per 'main'...${RESET}"
-        git push --set-upstream origin main
+    # Push dinamico sul ramo corrente
+    if ! git push origin "$CURRENT_BRANCH" 2>/dev/null; then
+        echo -e "${V}Configurazione del ramo upstream e invio...${RESET}"
+        git push --set-upstream origin "$CURRENT_BRANCH"
     fi
 
     if [ $? -eq 0 ]; then
-        echo -e "${V}✅ Operazione completata con successo!${RESET}"
+        echo -e "${V}✅ Operazione completata con successo su ${REPO_NAME}!${RESET}"
     else
-        echo -e "${R}❌ Errore durante il push. Controlla la connessione o i permessi.${RESET}"
+        echo -e "${R}❌ Errore durante l'invio dei dati.${RESET}"
     fi
 }
 
-# Esegue la funzione
 git_setup
