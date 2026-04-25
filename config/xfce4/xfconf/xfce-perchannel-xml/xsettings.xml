@@ -3,7 +3,7 @@
 <channel name="xsettings" version="1.0">
   <property name="Net" type="empty">
     <property name="ThemeName" type="string" value="Nordic"/>
-    <property name="IconThemeName" type="string" value="Lila-HD"/>
+    <property name="IconThemeName" type="string" value="Lila_HD_Blue"/>
     <property name="DoubleClickTime" type="empty"/>
     <property name="DoubleClickDistance" type="empty"/>
     <property name="DndDragThreshold" type="empty"/>
@@ -36,6 +36,15 @@
     <property name="DialogsUseHeader" type="empty"/>
     <property name="TitlebarMiddleClick" type="empty"/>
     <property name="ImModule" type="string" value="gtk-im-context-simple:xim"/>
+    <property name="CursorBlinkTimeout" type="int" value="10"/>
+    <property name="OverlayScrolling" type="bool" value="true"/>
+    <property name="EnableAnimations" type="bool" value="true"/>
+    <property name="EnablePrimaryPaste" type="bool" value="true"/>
+    <property name="RecentFilesEnabled" type="bool" value="true"/>
+    <property name="RecentFilesMaxAge" type="int" value="-1"/>
+    <property name="TitlebarRightClick" type="string" value="menu"/>
+    <property name="TitlebarDoubleClick" type="string" value="toggle-maximize"/>
+    <property name="KeynavUseCaret" type="bool" value="false"/>
   </property>
   <property name="Gdk" type="empty">
     <property name="WindowScalingFactor" type="empty"/>
