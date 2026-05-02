@@ -1,0 +1,15 @@
+# /etc/fstab: CONFIGURAZIONE VOID LINUX (SSD ESTERNO)
+# <file system>                            <mount point>             <type>   <options>                    <dump> <pass>
+
+# 1. PARTIZIONE EFI (sd**)
+UUID=CD12-E650                              /boot/efi                 vfat    defaults                        0      2 
+
+# 2. PARTIZIONE ROOT (Void sd**)
+UUID=************************************   /                         ext4    noatime,rw                      0      1 
+
+# 4. PARTIZIONI DATI EXTRA (sd**)
+UUID=************************************  /media/ilnanny/dati-linux  ext4    noatime,rw,nofail,x-gvfs-show   0      2
+
+# 5. FILESYSTEM VIRTUALE
+tmpfs                                      /tmp                       tmpfs   defaults,nosuid,nodev           0      0 
+
