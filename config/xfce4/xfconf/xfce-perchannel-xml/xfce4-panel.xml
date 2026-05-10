@@ -115,8 +115,8 @@
         <value type="string" value="org.inkscape.Inkscape.desktop"/>
       </property>
       <property name="launcher-show-description" type="bool" value="false"/>
-      <property name="menu-height" type="int" value="694"/>
-      <property name="menu-width" type="int" value="550"/>
+      <property name="menu-height" type="int" value="720"/>
+      <property name="menu-width" type="int" value="555"/>
       <property name="position-categories-alternate" type="bool" value="true"/>
       <property name="position-categories-horizontal" type="bool" value="false"/>
       <property name="position-commands-alternate" type="bool" value="false"/>
@@ -124,8 +124,9 @@
       <property name="position-search-alternate" type="bool" value="true"/>
       <property name="profile-shape" type="int" value="1"/>
       <property name="recent" type="array">
-        <value type="string" value="gimp.desktop"/>
         <value type="string" value="gparted.desktop"/>
+        <value type="string" value="org.mageia.dnfdragora.desktop"/>
+        <value type="string" value="gimp.desktop"/>
         <value type="string" value="xfce4-appfinder.desktop"/>
         <value type="string" value="xfce4-color-settings.desktop"/>
         <value type="string" value="xfce4-settings-editor.desktop"/>
@@ -133,10 +134,12 @@
     </property>
     <property name="plugin-6" type="string" value="systray">
       <property name="known-items" type="array">
+        <value type="string" value="vlc"/>
         <value type="string" value="dnfdragora-updater"/>
         <value type="string" value="blueman"/>
       </property>
       <property name="known-legacy-items" type="array">
+        <value type="string" value="pragha music player"/>
         <value type="string" value="connessione wi-fi «tim-47375923» attiva: tim-47375923 (57%)"/>
         <value type="string" value="connessione wi-fi «tim-47375923» attiva: tim-47375923 (65%)"/>
         <value type="string" value="connessione wi-fi «tim-47375923» attiva: tim-47375923 (73%)"/>

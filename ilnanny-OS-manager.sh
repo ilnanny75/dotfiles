@@ -3,7 +3,7 @@
 # Nota: Master Setup Script per la gestione e automazione dei 
 # dotfiles, installare dipendenze su Void, Arch, Debian e Fedora.
 #
-# Versione: 2.6 
+# Versione: 2.7 (Audio Fix Edition)
 # Autore  : ilnanny 2026
 # ═══════════════════════════════════════════════════════════════════
 
@@ -62,15 +62,11 @@ safe_link() {
     local dst="$2"
     
     if [[ -e "$src" ]]; then
-        # Se la cartella esiste,crea un backup
         if [[ -d "$dst" && ! -L "$dst" ]]; then
             warn "Backup cartella esistente: $dst"
             mv "$dst" "${dst}.bak_$(date +%H%M%S)"
         fi
-
         mkdir -p "$(dirname "$dst")"
-        
-        # Usa -n (o --no-dereference) evita link loop
         ln -sfn "$src" "$dst"
     else
         err "Sorgente non trovata: $src"
@@ -81,8 +77,30 @@ safe_link() {
 header() {
     clear
     echo -e "${C}═════════════════════════════════════════════════════${RESET}"
-    echo -e "${B}${V}    󰊠  ILNANNY OS-MANAGER v2.6 - [${C}${OS_ID^^}${V}]${RESET}"
+    echo -e "${B}${V}    󰊠  ILNANNY OS-MANAGER v2.7 - [${C}${OS_ID^^}${V}]${RESET}"
     echo -e "${C}═════════════════════════════════════════════════════${RESET}"
+}
+
+# ── Fix Audio specifico per Matebook ES8336
+fix_audio_matebook() {
+    step "Fix Audio Matebook (ES8336)"
+    
+    # 1. Unmute canali ALSA (dal tuo script originale)
+    info "Sblocco canali ALSA..."
+    for control in "Speaker" "Headphone" "DAC" "Output Mixer" "Master"; do
+        amixer -c 0 sset "$control" unmute 100% > /dev/null 2>&1
+    done
+
+    # 2. Configurazione PipeWire/WirePlumber
+    info "Impostazione uscita predefinita PipeWire..."
+    NODE_ID=$(wpctl status | grep -i "ES8336" | grep -v "HDMI" | head -n 1 | sed 's/[^0-9]*\([0-9]\+\).*/\1/')
+    
+    if [ ! -z "$NODE_ID" ]; then
+        wpctl set-default "$NODE_ID"
+        ok "Audio sbloccato e reindirizzato (Node: $NODE_ID)."
+    else
+        warn "Nodo ES8336 non trovato. Verifica driver SOF."
+    fi
 }
 
 # ── Installazione Dipendenze 
@@ -160,7 +178,6 @@ deploy_config() {
     mkdir -p "$HOME/.config"
     for src in "$DOTFILES/config"/*; do
         [[ "$(basename "$src")" == "Code" ]] && continue
-        
         target="$HOME/.config/$(basename "$src")"
         safe_link "$src" "$target"
     done
@@ -202,7 +219,6 @@ clean_cache() {
 
 reload_xfce() {
     step "Ricarica Ambiente Desktop"
-    # Ignora errori se i processi non sono attivi
     pkill -x xfwm4 xfsettingsd xfdesktop xfce4-panel 2>/dev/null
     sleep 1
     nohup xfsettingsd >/dev/null 2>&1 &
@@ -231,26 +247,28 @@ _leggi_guide() {
 while true; do
     header
     echo -e "${C}╔═══════════════════════════════════════════════════╗${RESET}"
-    printf "${C}║${RESET}  ${V}1)${RESET}  🚀 %-40s${C}║${RESET}\n" "SETUP TOTALE (Install + Link + Reload)"
-    printf "${C}║${RESET}  ${V}2)${RESET}  ⚙️  %-40s${C}║${RESET}\n" "SOLO RE-DEPLOY CONFIG"
-    printf "${C}║${RESET}  ${V}3)${RESET}  󰊢 %-41s${C}║${RESET}\n" "GIT PUSH (Manager Script)"
-    printf "${C}║${RESET}  ${V}4)${RESET}  󱓞 %-41s${C}║${RESET}\n" "RESTART XFCE & CLEAN"
-    printf "${C}║${RESET}  ${V}5)${RESET}  󱓞 %-41s${C}║${RESET}\n" "UPDATE FONTS"
-    printf "${C}║${RESET}  %-47s${C}║${RESET}\n" ""
-    printf "${C}║${RESET}  ${G}6)${RESET}  󰋖 %-41s${C}║${RESET}\n" "GUIDE DI EMERGENZA"
-    printf "${C}║${RESET}  ${R}0)${RESET}  󰈆 %-41s${C}║${RESET}\n" "ESCI"
+    printf "${C}║${RESET}  ${V}1)${RESET}  🚀 %-41s ${C}║${RESET}\n" "SETUP TOTALE (Install + Link + Audio)"
+    printf "${C}║${RESET}  ${V}2)${RESET}  ⚙️  %-41s ${C}║${RESET}\n" "SOLO RE-DEPLOY CONFIG"
+    printf "${C}║${RESET}  ${V}3)${RESET}  󰊢 %-42s ${C}║${RESET}\n" "GIT PUSH (Manager Script)"
+    printf "${C}║${RESET}  ${V}4)${RESET}  󱓞 %-42s ${C}║${RESET}\n" "RESTART XFCE & AUDIO FIX"
+    printf "${C}║${RESET}  ${V}5)${RESET}  󱓞 %-42s ${C}║${RESET}\n" "UPDATE FONTS"
+    printf "${C}║${RESET}  %-48s ${C}║${RESET}\n" ""
+    printf "${C}║${RESET}  ${V}7)${RESET}  󰓃 %-42s ${C}║${RESET}\n" "FIX AUDIO MATEBOOK"
+    printf "${C}║${RESET}  ${G}6)${RESET}  󰋖 %-42s ${C}║${RESET}\n" "GUIDE DI EMERGENZA"
+    printf "${C}║${RESET}  ${R}0)${RESET}  󰈆 %-42s ${C}║${RESET}\n" "ESCI"
     echo -e "${C}╚═══════════════════════════════════════════════════╝${RESET}"
     echo ""
     echo -en "  ${B}${C}󰘳 Inserisci codice: ${RESET}"
     read -r scelta
 
     case $scelta in
-        1) install_deps; deploy_bashrc; deploy_bin; deploy_config; deploy_fonts; deploy_wallpapers; clean_cache; reload_xfce; read -rp "Fine. Premi INVIO..." ;;
+        1) install_deps; deploy_bashrc; deploy_bin; deploy_config; deploy_fonts; deploy_wallpapers; fix_audio_matebook; clean_cache; reload_xfce; read -rp "Fine. Premi INVIO..." ;;
         2) deploy_bashrc; deploy_bin; deploy_config; deploy_fonts; clean_cache; reload_xfce; read -rp "Fine. Premi INVIO..." ;;
         3) "$DOTFILES/scripts/bin/ilnanny-git-manager.sh"; read -rp "Premi INVIO..." ;;
-        4) clean_cache; reload_xfce; sleep 2 ;;
+        4) clean_cache; fix_audio_matebook; reload_xfce; sleep 2 ;;
         5) deploy_fonts; read -rp "Fine. Premi INVIO..." ;;
         6) _leggi_guide ;;
+        7) fix_audio_matebook; read -rp "Premi INVIO..." ;;
         0) clear; exit 0 ;;
         *) warn "Scelta non valida."; sleep 1 ;;
     esac

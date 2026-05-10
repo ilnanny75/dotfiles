@@ -9,7 +9,7 @@
 # ═══════════════════════════════════════════════════════════════════
 
 # ---  Navigazione e Struttura -----------------------
-alias blkid='lsblk -o NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL,MODEL'
+alias blkid='lsblk -o NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL,MODEL,UUID' 
 alias ls='ls --group-directories-first --color=auto'
 alias l='ls -la'
 alias ll='ls -lh'
@@ -18,9 +18,9 @@ alias treed='tree -h --du -a -C --dirsfirst -I ".git|*.webp|*.xbm|*.png|*.jpg|*.
 alias ds='dust'
 
 # ---  Percorsi Rapidi -------------------------------
-alias dots='cd ~/dotfiles'
-alias gbin='cd ~/dotfiles/scripts/bin'
-alias cdd='cd ~/dotfiles/bash/etc_bash/bashrc.d/'
+alias godots='cd ~/dotfiles'
+alias gobin='cd ~/dotfiles/scripts/bin'
+alias gobash='cd ~/dotfiles/bash/etc_bash/bashrc.d/'
 alias godot='thunar ~/dotfiles &'
 
 # ---  Utility di Sistema e AI -----------------------

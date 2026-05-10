@@ -1,0 +1,74 @@
+{
+  "Dev / Art": [
+    {
+      "name": "GitHub",
+      "url": "https://github.com"
+    },
+    {
+      "name": "Gnome Look",
+      "url": "https://www.gnome-look.org"
+    },
+    {
+      "name": "OpenClipart",
+      "url": "https://openclipart.org"
+    },
+    {
+      "name": "DeviantArt",
+      "url": "https://www.deviantart.com"
+    }
+  ],
+  "A.I.": [
+    {
+      "name": "Gemini",
+      "url": "https://gemini.google.com"
+    },
+    {
+      "name": "Claude",
+      "url": "https://claude.ai"
+    },
+    {
+      "name": "ChatGPT",
+      "url": "https://chatgpt.com"
+    },
+    {
+      "name": "Deepl",
+      "url": "https://www.deepl.com/it/translator"
+    }
+  ],
+  "Social / Email": [
+    {
+      "name": "Gmail",
+      "url": "https://gmail.com"
+    },
+    {
+      "name": "YouTube",
+      "url": "https://youtube.com"
+    },
+    {
+      "name": "Instagram",
+      "url": "https://instagram.com"
+    },
+    {
+      "name": "Facebook",
+      "url": "https://facebook.com"
+    }
+  ],
+  "Coltellerie": [
+    {
+      "name": "Bjornlands",
+      "url": "https://www.bjornlands.com/"
+    },
+    {
+      "name": "Knifestock",
+      "url": "https://www.knifestock.it"
+    },
+    {
+      "name": "Knife and tools",
+      "url": "https://www.knivesandtools.it/"
+    },
+    {
+      "name": "Passione per i coltelli",
+      "url": "https://www.passionepericoltelli.com"
+    }
+  ]
+}
